@@ -23,12 +23,12 @@ action :join do
 end
 
 action :unjoin do
-  if exists?		
+  if computer_exists?		
 	powershell "unjoin_#{new_resource.name}" do
       code <<-EOH
 	  $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
 	  $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_user}', $secpasswd)
-	  Remove-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true
+	  Remove-Computer -UnjoinDomainCredential $mycreds -Force:$true
 	  EOH
     end
 	
