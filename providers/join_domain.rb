@@ -34,7 +34,7 @@ action :unjoin do
 	
 	new_resource.updated_by_last_action(true)
   else
-    Chef::Log.error("The domain does not exist or was not reachable, please check your network settings")
+    Chef::Log.error("The computer is already a member of a workgroup")
 	new_resource.updated_by_last_action(false)
   end
 end
