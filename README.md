@@ -23,7 +23,7 @@ Attributes
 Resource/Provider
 =================
 
-`domain`
+`domain_controller`
 --------
 
 ### Actions
@@ -33,23 +33,21 @@ Resource/Provider
 ### Attribute Parameters
 
 - name: name attribute.  Name of the forest/domain to operate against.
-- type: type of install. Valid values: forest, domain, child/replica, read-only/RO.
+- type: type of install. Valid values: forest, domain, read-only.
 - safe_mode_pass: safe mode administrative password.
-- force: ensures command executes when run through powershell.
 - options: additional options as needed by AD DS Deployment Cmdlets http://technet.microsoft.com/en-us/library/hh974719.aspx.  Single parameters use nil for key value, see example below.
-
 
 ### Examples
 
     # Create Contoso.com forest
-	windows_ad_domain "contoso.com" do
+	windows_ad_domain_controller "contoso.com" do
       action :create
       type "forest"
       safe_mode_pass "Passw0rd"
     end
 	
 	# Create Contoso.com forest with DNS, Win2008 Operational Mode
-	windows_ad_domain "contoso.com" do
+	windows_ad_domain_controller "contoso.com" do
       action :create
       type "forest"
       safe_mode_pass "Passw0rd"
@@ -58,19 +56,41 @@ Resource/Provider
 			   })
     end
 	
-	# Create partners.contoso child domain
-	windows_ad_domain "partners.contoso.com" do
-      action :create
-      type "domain"
-      safe_mode_pass "Passw0rd"
-    end
-	
 	# Remove Domain Controller
-	windows_ad_domain "contoso.com" do
+	windows_ad_domain_controller "contoso.com" do
       action :delete
       local_pass "Passw0rd"
     end
+
+
+`domain`
+--------	
+
+### Actions
+- :join: Joins computer to domain
+- :unjoin: Removes computer from domain
+
+### Attribute Parameters
+
+- name: name attribute.  Name of the forest/domain to operate against.
+- domain_user: User account to join the domain.
+- domain_pass: User password to join the domain.
+
+### Examples
+
+    # Join Contoso.com domain
+	windows_ad_domain "contoso.com" do
+      action :join
+      domain_pass "Passw0rd"
+	  domain_user "Administrator"
+    end
 	
+	# Unjoin Contoso.com domain
+	windows_ad_domain "contoso.com" do
+      action :unjoin
+      domain_pass "Passw0rd"
+	  domain_user "Administrator"
+    end
 
 Usage
 =====
