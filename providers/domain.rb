@@ -33,7 +33,6 @@ action :delete do
 	cmd << " -Force:$true"
 	cmd << " -ForceRemoval"
     if last_dc?
-	# only if last DC
 	  cmd << " -DemoteOperationMasterRole"
 	end	  
     
@@ -69,7 +68,6 @@ def create_command
 end
 
 def exists?
-# need method to determine if domain / forest exists
   ldap_path = new_resource.name.split(".").map! { |k| "dc=#{k}" }.join(",")
   check = Mixlib::ShellOut.new("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')").run_command
   check.stdout.match("True")
@@ -78,5 +76,4 @@ end
 def last_dc?
   dsquery = Mixlib::ShellOut.new("dsquery server -forest").run_command
   dsquery.stdout.split("\n").size == 1
-# returns single line for each DC in forest, won't work if ADDS tools aren't installed
 end
