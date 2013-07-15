@@ -5,15 +5,20 @@ action :join do
 	Chef::Log.error("The domain does not exist or was not reachable, please check your network settings")
 	new_resource.updated_by_last_action(false)
   else
-    powershell "join_#{new_resource.name}" do
-      code <<-EOH
-	  $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-	  $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_user}', $secpasswd)
-	  Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true -Restart
-	  EOH
-    end
-	
+    if computer_exists?
+      Chef::Log.error("The computer is already joined to the domain")
+	  new_resource.updated_by_last_action(true)
+	else
+	  powershell "join_#{new_resource.name}" do
+        code <<-EOH
+	    $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
+	    $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_user}', $secpasswd)
+	    Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true
+	    EOH
+	  end
+		
 	new_resource.updated_by_last_action(true)
+	end
   end
 end
 
@@ -23,7 +28,7 @@ action :unjoin do
       code <<-EOH
 	  $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
 	  $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_user}', $secpasswd)
-	  Remove-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true -Restart
+	  Remove-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true
 	  EOH
     end
 	
@@ -35,8 +40,12 @@ action :unjoin do
 end
 
 def exists?
-# need method to determine if domain / forest exists
   ldap_path = new_resource.name.split(".").map! { |k| "dc=#{k}" }.join(",")
   check = Mixlib::ShellOut.new("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')").run_command
   check.stdout.match("True")
+end
+
+def computer_exists?
+  comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
+  comp.stdout.match("#{new_resource.name}")
 end
