@@ -60,9 +60,9 @@ def create_command
     "Install-ADDSForest"
   when "domain"
     "install-ADDSDomain"
-  when "replica", "DC"
+  when "replica"
     "Install-ADDSDomainController"
-  when "read-only", "RO"
+  when "read-only"
     "Add-ADDSReadOnlyDomainControllerAccount"
   end
 end
