@@ -59,6 +59,10 @@ def create_command
   case new_resource.type
   when "forest"
     "Install-ADDSForest"
+  when "domain"
+    "install-ADDSDomain"
+  when "replica", "DC"
+    "Install-ADDSDomainController"
   when "read-only", "RO"
     "Add-ADDSReadOnlyDomainControllerAccount"
   end
