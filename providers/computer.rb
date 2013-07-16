@@ -14,12 +14,13 @@ action :add do
 	new_resource.options.each do |option, value|
      cmd << " -#{option} #{value}"
     end 
-  end
-	
+  
   execute "add_#{new_resource.name}" do
     command cmd
   end  
+  
   new_resource.updated_by_last_action(true)
+  end
 end
 
 action :modify do
@@ -32,6 +33,7 @@ end
 
 action :remove do
 
+<<<<<<< HEAD
 end
 
 def exists?
