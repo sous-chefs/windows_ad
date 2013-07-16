@@ -33,7 +33,6 @@ end
 
 action :remove do
 
-<<<<<<< HEAD
 end
 
 def exists?
