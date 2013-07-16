@@ -36,6 +36,6 @@ action :remove do
 end
 
 def exists?
-  check = Mixlib::ShellOut.new("dsquery #{new_resource.type} -name #{new_resource.name}").run_command
-  !check.stdout.match("")
+  check = Mixlib::ShellOut.new("dsquery computer -name #{new_resource.name}").run_command
+  check.stdout.match("")
 end
