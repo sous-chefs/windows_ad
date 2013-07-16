@@ -91,7 +91,37 @@ Resource/Provider
       domain_pass "Passw0rd"
 	  domain_user "Administrator"
     end
+	
+`computer`
+--------	
 
+### Actions
+- :add: Creates a computer object in Active Directory
+
+### Attribute Parameters
+
+- name: name attribute.  Name of the computer object.
+- type: Type of AD Object
+- domain_name: FQDN
+- ou: Organization Unit path where object is located.
+
+### Examples
+
+    # Create computer "workstation1" in the Computers OU
+    windows_ad_computer "workstation1" do
+      action :add
+      domain_name "contoso.com"
+      ou "computers"
+    end
+	
+	# Create computer "workstation1" in the Computers OU with description of "Computer"
+    windows_ad_computer "workstation1" do
+      action :add
+      domain_name "contoso.com"
+      ou "computers"
+      options ({ "desc" => "computer" })
+    end
+	
 Usage
 =====
 #### windows_ad::default
