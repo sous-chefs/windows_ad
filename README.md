@@ -23,18 +23,22 @@ Attributes
 Resource/Provider
 =================
 
-`domain_controller`
+`domain`
 --------
 
 ### Actions
 - :create: Installs a forest, domain, or domain controller
 - :delete: Removes a domain controller from domain
+- :join: Joins computer to domain
+- :unjoin: Removes computer from domain
 
 ### Attribute Parameters
 
 - name: name attribute.  Name of the forest/domain to operate against.
 - type: type of install. Valid values: forest, domain, read-only.
 - safe_mode_pass: safe mode administrative password.
+- domain_user: User account to join the domain.
+- domain_pass: User password to join the domain.
 - options: additional options as needed by AD DS Deployment Cmdlets http://technet.microsoft.com/en-us/library/hh974719.aspx.  Single parameters use nil for key value, see example below.
 
 ### Examples
@@ -61,23 +65,7 @@ Resource/Provider
       action :delete
       local_pass "Passw0rd"
     end
-
-
-`domain`
---------	
-
-### Actions
-- :join: Joins computer to domain
-- :unjoin: Removes computer from domain
-
-### Attribute Parameters
-
-- name: name attribute.  Name of the forest/domain to operate against.
-- domain_user: User account to join the domain.
-- domain_pass: User password to join the domain.
-
-### Examples
-
+	
     # Join Contoso.com domain
 	windows_ad_domain "contoso.com" do
       action :join
@@ -91,7 +79,7 @@ Resource/Provider
       domain_pass "Passw0rd"
 	  domain_user "Administrator"
     end
-	
+
 `computer`
 --------	
 
