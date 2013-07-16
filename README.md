@@ -84,14 +84,18 @@ Resource/Provider
 --------	
 
 ### Actions
-- :add: Creates a computer object in Active Directory
+- :add: Adds computers to Active Directory
+- :modify: Modifies an existing object of a specific type in the directory.
+- :move:  Rename an object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+- :remove:  Remove objects of the specified type from Active Directory.
 
 ### Attribute Parameters
 
 - name: name attribute.  Name of the computer object.
-- type: Type of AD Object
 - domain_name: FQDN
 - ou: Organization Unit path where object is located.
+- options: ability to pass additional options
+
 
 ### Examples
 
