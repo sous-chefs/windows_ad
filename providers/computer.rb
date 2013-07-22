@@ -26,20 +26,20 @@ action :modify do
   if exists?
     cmd = "dsmod"
     cmd << " computer "
-	cmd << dn
+    cmd << dn
     
-	new_resource.options.each do |option, value|
+    new_resource.options.each do |option, value|
       cmd << " -#{option} #{value}"
-	  # [-desc Description] [-loc Location] [-disabled {yes | no}] [-reset] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}] [-c] [-q] [{-uc | -uco | -uci}] 
+      # [-desc Description] [-loc Location] [-disabled {yes | no}] [-reset] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}] [-c] [-q] [{-uc | -uco | -uci}] 
     end 
 
     execute "modify_#{new_resource.name}" do
       command cmd
     end
     
-	new_resource.updated_by_last_action(true)
+    new_resource.updated_by_last_action(true)
   else
-	Chef::Log.error("The object does not exist")
+    Chef::Log.error("The object does not exist")
     new_resource.updated_by_last_action(false)
   end
 end
@@ -47,21 +47,21 @@ end
 action :move do
   if exists?
     cmd = "dsmove "
-	cmd << dn
+    cmd << dn
     
-	new_resource.options.each do |option, value|
+    new_resource.options.each do |option, value|
       cmd << " -#{option} #{value}"
-	  # [-newname NewName] [-newparent ParentDN] [{-s Server | -d Domain}] [-u UserName] [-p  {Password | *}] [-q] [{-uc | -uco | -uci}]
+      # [-newname NewName] [-newparent ParentDN] [{-s Server | -d Domain}] [-u UserName] [-p  {Password | *}] [-q] [{-uc | -uco | -uci}]
     end 
   
     execute "move_#{new_resource.name}" do
       command cmd
     end  
-	
+    
     new_resource.updated_by_last_action(true)
   else
     Chef::Log.error("The object does not exist")
-	new_resource.updated_by_last_action(false)
+    new_resource.updated_by_last_action(false)
   end
 end
 
@@ -69,17 +69,17 @@ action :remove do
   if exists?
     cmd = "dsrm "
     cmd << dn
-	cmd << " -noprompt"
+    cmd << " -noprompt"
     
-	new_resource.options.each do |option, value|
+    new_resource.options.each do |option, value|
       cmd << " -#{option} #{value}"
-	  # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
+      # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
     end 
   
     execute "remove_#{new_resource.name}" do
       command cmd
     end  
-	
+    
     new_resource.updated_by_last_action(true)
   else
     Chef::Log.error("The object has already been removed")
