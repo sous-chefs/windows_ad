@@ -94,8 +94,6 @@ def dn
 end
 
 def exists?
-  # if record exists, data returned
-  # if record does not exists, nil returned
   check = Mixlib::ShellOut.new("dsquery computer -name #{new_resource.name}").run_command
   if  check.stdout.include? "#{new_resource.name}"
     false
