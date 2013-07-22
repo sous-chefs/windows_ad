@@ -95,9 +95,9 @@ end
 
 def exists?
   check = Mixlib::ShellOut.new("dsquery computer -name #{new_resource.name}").run_command
-  if  check.stdout.include? "#{new_resource.name}"
-    false
-  else
+  if check.stdout.include? "#{new_resource.name}".downcase or check.stdout.include? "#{new_resource.name}".upcase
     true
+  else
+    false
   end
 end
