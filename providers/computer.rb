@@ -7,11 +7,11 @@ action :add do
   else
     cmd = "dsadd"
     cmd << " computer "
-	cmd << dn
+    cmd << dn
     
-	new_resource.options.each do |option, value|
+    new_resource.options.each do |option, value|
      cmd << " -#{option} #{value}"
-	 # [-samid SAMName] [-desc Description] [-locLocation] [-memberof GroupDN ...] [{-s Server | -d Domain}] [-uUserName] [-p {Password | *}] [-q] [{-uc | -uco | -uci}]
+     # [-samid SAMName] [-desc Description] [-locLocation] [-memberof GroupDN ...] [{-s Server | -d Domain}] [-uUserName] [-p {Password | *}] [-q] [{-uc | -uco | -uci}]
     end 
   
   execute "add_#{new_resource.name}" do
@@ -24,10 +24,7 @@ end
 
 action :modify do
   if exists?
-    Chef::Log.error("The object does not exist")
-    new_resource.updated_by_last_action(false)
-  else
-	cmd = "dsmod"
+    cmd = "dsmod"
     cmd << " computer "
 	cmd << dn
     
@@ -41,14 +38,14 @@ action :modify do
     end
     
 	new_resource.updated_by_last_action(true)
+  else
+	Chef::Log.error("The object does not exist")
+    new_resource.updated_by_last_action(false)
   end
 end
 
 action :move do
   if exists?
-    Chef::Log.error("The object does not exist")
-	new_resource.updated_by_last_action(false)
-  else
     cmd = "dsmove "
 	cmd << dn
     
@@ -62,14 +59,14 @@ action :move do
     end  
 	
     new_resource.updated_by_last_action(true)
+  else
+    Chef::Log.error("The object does not exist")
+	new_resource.updated_by_last_action(false)
   end
 end
 
 action :remove do
   if exists?
-    Chef::Log.error("The object has already been removed")
-    new_resource.updated_by_last_action(false)  
-  else
     cmd = "dsrm "
     cmd << dn
 	cmd << " -noprompt"
@@ -84,16 +81,25 @@ action :remove do
     end  
 	
     new_resource.updated_by_last_action(true)
+  else
+    Chef::Log.error("The object has already been removed")
+    new_resource.updated_by_last_action(false)  
   end
 end
 
 def dn
-  dn = "cn=#{new_resource.name},"
-  dn << "cn=#{new_resource.ou},"
-  dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
+  dn = "CN=#{new_resource.name},"
+  dn << "CN=#{new_resource.ou},"
+  dn << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
 end
 
 def exists?
+  # if record exists, data returned
+  # if record does not exists, nil returned
   check = Mixlib::ShellOut.new("dsquery computer -name #{new_resource.name}").run_command
-  !check.stdout.match("")
+  if  check.stdout.include? "#{new_resource.name}"
+    false
+  else
+    true
+  end
 end
