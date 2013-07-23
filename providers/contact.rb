@@ -96,9 +96,5 @@ end
 def exists?
   contact = Mixlib::ShellOut.new("dsquery contact -name #{new_resource.name}").run_command
   user = Mixlib::ShellOut.new("dsquery user -name #{new_resource.name}").run_command
-  if contact.stdout.include? "#{new_resource.name}" or user.stdout.include? "#{new_resource.name}"
-    true
-  else
-    false
-  end
+  contact.stdout.include? "DC" or user.stdout.include? "DC"
 end
