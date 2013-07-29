@@ -7,7 +7,9 @@ action :add do
   else
     cmd = "dsadd"
     cmd << " ou "
+    cmd << "\""
     cmd << dn
+    cmd << "\""
     
     new_resource.options.each do |option, value|
      cmd << " -#{option} #{value}"
@@ -104,7 +106,7 @@ def exists?
     ldap = "OU=#{new_resource.ou},"
     ldap << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
   end
-  check = Mixlib::ShellOut.new("dsquery ou -name #{new_resource.name}").run_command
+  check = Mixlib::ShellOut.new("dsquery ou -name \"#{new_resource.name}\"").run_command
   path = "OU=#{new_resource.name},"
   path << ldap
   check.stdout.include? path
