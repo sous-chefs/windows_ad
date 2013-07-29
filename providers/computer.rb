@@ -94,6 +94,6 @@ def dn
 end
 
 def exists?
-  check = Mixlib::ShellOut.new("dsquery computer -name #{new_resource.name}").run_command
+  check = Mixlib::ShellOut.new("dsquery computer -name \"#{new_resource.name}\"").run_command
   check.stdout.include? "DC"
 end
