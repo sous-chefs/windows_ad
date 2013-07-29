@@ -7,11 +7,11 @@ action :add do
   else
     cmd = "dsadd"
     cmd << " ou "
-	cmd << dn
+    cmd << dn
     
-	new_resource.options.each do |option, value|
+    new_resource.options.each do |option, value|
      cmd << " -#{option} #{value}"
-	 # [-desc Description] [{-s Server | -d Domain}][-u UserName] [-p {Password | *}] [-q] [{-uc | -uco | -uci}]
+    # [-desc Description] [{-s Server | -d Domain}][-u UserName] [-p {Password | *}] [-q] [{-uc | -uco | -uci}]
     end 
   
     execute "add_#{new_resource.name}" do
@@ -92,13 +92,14 @@ def dn
   if new_resource.ou.nil?
   else
     dn << new_resource.ou.split("/").reverse.map! { |k| "ou=#{k}" }.join(",")
-	dn << ","
+    dn << ","
   end
   dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
 end
 
 def exists?
   if new_resource.ou.nil?
+    ldap = new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
   else
     ldap = "OU=#{new_resource.ou},"
     ldap << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
