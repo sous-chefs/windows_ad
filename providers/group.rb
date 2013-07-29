@@ -7,7 +7,9 @@ action :add do
   else
     cmd = "dsadd"
     cmd << " group "
+    cmd << "\""
     cmd << dn
+    cmd << "\""
     
     new_resource.options.each do |option, value|
      cmd << " -#{option} #{value}"
@@ -61,7 +63,7 @@ action :move do
     new_resource.updated_by_last_action(true)
   else
     Chef::Log.error("The object does not exist")
-	new_resource.updated_by_last_action(false)
+    new_resource.updated_by_last_action(false)
   end
 end
 
@@ -88,12 +90,12 @@ action :remove do
 end
 
 def dn
-  dn = "cn=#{new_resource.name},"
-  dn << "ou=#{new_resource.ou},"
-  dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
+  dn = "CN=#{new_resource.name},"
+  dn << "OU=#{new_resource.ou},"
+  dn << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
 end
 
 def exists?
-  check = Mixlib::ShellOut.new("dsquery group -name #{new_resource.name}").run_command
+  check = Mixlib::ShellOut.new("dsquery group -name \"#{new_resource.name}\"").run_command
   check.stdout.include? "DC"
 end
