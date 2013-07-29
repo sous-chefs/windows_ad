@@ -7,7 +7,9 @@ action :add do
   else
     cmd = "dsadd"
     cmd << " contact "
+    cmd << "\""
     cmd << dn
+    cmd << "\""
     
     new_resource.options.each do |option, value|
       cmd << " -#{option} #{value}"
@@ -94,7 +96,7 @@ def dn
 end
 
 def exists?
-  contact = Mixlib::ShellOut.new("dsquery contact -name #{new_resource.name}").run_command
+  contact = Mixlib::ShellOut.new("dsquery contact -name \"#{new_resource.name}\"").run_command
   user = Mixlib::ShellOut.new("dsquery user -name #{new_resource.name}").run_command
   contact.stdout.include? "DC" or user.stdout.include? "DC"
 end
