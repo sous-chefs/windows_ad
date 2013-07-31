@@ -101,7 +101,14 @@ def dn
 end
 
 def exists?
-  contact = Mixlib::ShellOut.new("dsquery contact -name #{new_resource.name}").run_command
-  user = Mixlib::ShellOut.new("dsquery user -name #{new_resource.name}").run_command
-  contact.stdout.include? "DC" or user.stdout.include? "DC"
+  if new_resource.reverse == "true"
+    reverse_name = new_resource.name.split(" ").reverse.map! { |k| "#{k}" }.join(", ")
+    contact = Mixlib::ShellOut.new("dsquery contact -name \"#{reverse_name}\"").run_command
+    user = Mixlib::ShellOut.new("dsquery user -name \"#{reverse_name}\"").run_command
+    contact.stdout.include? "DC" or user.stdout.include? "DC"
+  else
+    contact = Mixlib::ShellOut.new("dsquery contact -name #{new_resource.name}").run_command
+    user = Mixlib::ShellOut.new("dsquery user -name #{new_resource.name}").run_command
+    contact.stdout.include? "DC" or user.stdout.include? "DC"
+  end
 end
