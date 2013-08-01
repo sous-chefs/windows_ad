@@ -7,3 +7,4 @@
 bin
 Berksfile.lock
 Gemfile.lock
+options.txt
