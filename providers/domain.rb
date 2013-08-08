@@ -63,11 +63,19 @@ action :join do
       new_resource.updated_by_last_action(true)
     else
       powershell "join_#{new_resource.name}" do
-        code <<-EOH
-        $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-        $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_user}', $secpasswd)
-        Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true
-        EOH
+        if node[:os_version] >= "6.2"
+          code <<-EOH
+            $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
+            $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd)
+            Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true
+          EOH
+        else
+          code <<-EOH
+            $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
+            $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd)
+            Add-Computer -DomainName #{new_resource.name} -Credential $mycreds
+          EOH
+        end
       end
 
     new_resource.updated_by_last_action(true)
