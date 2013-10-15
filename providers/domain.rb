@@ -60,7 +60,7 @@ action :join do
   else
     if computer_exists?
       Chef::Log.error("The computer is already joined to the domain")
-      new_resource.updated_by_last_action(true)
+      new_resource.updated_by_last_action(false)
     else
       powershell "join_#{new_resource.name}" do
         if node[:os_version] >= "6.2"
@@ -78,8 +78,10 @@ action :join do
         end
       end
 
-    new_resource.updated_by_last_action(true)
+    new_resource.updated_by_last_action(false)
     end
+    
+    new_resource.updated_by_last_action(true)
   end
 end
 
