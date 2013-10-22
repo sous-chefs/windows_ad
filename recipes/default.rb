@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: active_directory
+# Cookbook Name:: windows_ad
 # Recipe:: default
 # 
 # Copyright 2013, Texas A&M
@@ -40,5 +40,14 @@ if node[:os_version] >= "6.2"
     end
   end
 else
-  Chef::Log.error("This version of Windows Server is currently unsupported")
+  [
+    "NetFx3",
+    "Microsoft-Windows-GroupPolicy-ServerAdminTools-Update",
+    "DirectoryServices-DomainController"
+  ].each do |feature|
+    windows_feature feature do
+      action :install
+    end
+  end
+  Chef::Log.error("This version of Windows Server is currently unsupported beyond installing the required roles and features")
 end
