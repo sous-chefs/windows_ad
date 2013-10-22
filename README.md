@@ -8,9 +8,8 @@ Requirements
 Platform
 --------
 
-* Windows Server 2012 Core
-* Windows Server 2012 Standard
-* Windows Server 2012 Enterprise
+* Windows Server 2008 R2 (features only)
+* Windows Server 2012 Family
 
 Cookbooks
 ---------
@@ -126,8 +125,8 @@ Resource/Provider
       options ({ "desc" => "computer" })
     end
 
-`contact`,
---------
+`contact`
+---------
 
 ### Actions
 - :add: Adds computers to Active Directory
@@ -155,8 +154,8 @@ Resource/Provider
                })
     end
     
-`group`,
---------
+`group`
+-------
 
 ### Actions
 - :add: Adds groups to Active Directory
@@ -190,8 +189,8 @@ Resource/Provider
                })
     end
     
-`ou`,
---------
+`ou`
+----
 
 ### Actions
 - :add: Adds organizational units to Active Directory
@@ -222,8 +221,8 @@ Resource/Provider
       ou "Departments"
     end
     
-`users`,
---------
+`users`
+-------
 
 ### Actions
 - :add: Adds users to Active Directory
