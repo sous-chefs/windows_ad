@@ -96,7 +96,8 @@ def dn
   else
     dn = "cn=#{new_resource.name},"
   end
-    dn << "cn=#{new_resource.ou},"
+    dn << new_resource.ou.split("/").reverse.map! { |k| "ou=#{k}" }.join(",")
+    dn << ","
     dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
 end
 
