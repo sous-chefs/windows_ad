@@ -95,10 +95,10 @@ Resource/Provider
 --------
 
 ### Actions
-- :add: Adds computers to Active Directory
+- :create: Adds computers to Active Directory
 - :modify: Modifies an existing object of a specific type in the directory.
 - :move:  Rename an object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :remove:  Remove objects of the specified type from Active Directory.
+- :delete:  Remove objects of the specified type from Active Directory.
 
 ### Attribute Parameters
 
@@ -112,14 +112,14 @@ Resource/Provider
 
     # Create computer "workstation1" in the Computers OU
     windows_ad_computer "workstation1" do
-      action :add
+      action :create
       domain_name "contoso.com"
       ou "computers"
     end
     
     # Create computer "workstation1" in the Computers OU with description of "Computer"
     windows_ad_computer "workstation1" do
-      action :add
+      action :create
       domain_name "contoso.com"
       ou "computers"
       options ({ "desc" => "computer" })
@@ -129,10 +129,10 @@ Resource/Provider
 ---------
 
 ### Actions
-- :add: Adds computers to Active Directory
+- :create: Adds computers to Active Directory
 - :modify: Modifies an existing object of a specific type in the directory.
 - :move:  Rename an object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :remove:  Remove objects of the specified type from Active Directory.
+- :delete:  Remove objects of the specified type from Active Directory.
 
 ### Attribute Parameters
 
@@ -146,7 +146,7 @@ Resource/Provider
 
     # Create contact "Bob Smith" in the Users OU with firstname "Bob" and lastname "Smith"
     windows_ad_computer "Bob Smith" do
-      action :add
+      action :create
       domain_name "contoso.com"
       ou "users"
       options ({ "fn" => "Bob", 
@@ -158,10 +158,10 @@ Resource/Provider
 -------
 
 ### Actions
-- :add: Adds groups to Active Directory
+- :create: Adds groups to Active Directory
 - :modify: Modifies an existing object of a specific type in the directory.
 - :move:  Rename an object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :remove:  Remove objects of the specified type from Active Directory.
+- :delete:  Remove objects of the specified type from Active Directory.
 
 ### Attribute Parameters
 
@@ -175,14 +175,14 @@ Resource/Provider
 
     # Create group "IT" in the Users OU
     windows_ad_group "IT" do
-      action :add
+      action :create
       domain_name "contoso.com"
       ou "users"
     end
     
     # Create group "IT" in the Users OU with Description "Information Technology Security Group"
     windows_ad_group "IT" do
-      action :add
+      action :create
       domain_name "contoso.com"
       ou "users"
       options ({ "desc" => "Information Technology Security Group"
@@ -193,10 +193,10 @@ Resource/Provider
 ----
 
 ### Actions
-- :add: Adds organizational units to Active Directory
+- :create: Adds organizational units to Active Directory
 - :modify: Modifies an existing object of a specific type in the directory.
 - :move:  Rename an object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :remove:  Remove objects of the specified type from Active Directory.
+- :delete:  Remove objects of the specified type from Active Directory.
 
 ### Attribute Parameters
 
@@ -210,13 +210,13 @@ Resource/Provider
 
     # Create Organizational Unit "Departments" in the root
     windows_ad_group "Departments" do
-      action :add
+      action :create
       domain_name "contoso.com"
     end
     
     # Create Organizational Unit "IT" in the "Department" OUroot
     windows_ad_group "IT" do
-      action :add
+      action :create
       domain_name "contoso.com"
       ou "Departments"
     end
@@ -225,10 +225,10 @@ Resource/Provider
 -------
 
 ### Actions
-- :add: Adds users to Active Directory
+- :create: Adds users to Active Directory
 - :modify: Modifies an existing object of a specific type in the directory.
 - :move:  Rename an object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :remove:  Remove objects of the specified type from Active Directory.
+- :delete:  Remove objects of the specified type from Active Directory.
 
 ### Attribute Parameters
 
@@ -242,7 +242,7 @@ Resource/Provider
 
     # Create user "Joe Smith" in the Users OU
     windows_ad_group "Joe Smith" do
-      action :add
+      action :create
       domain_name "contoso.com"
       ou "users"
       options ({ "samid" => "JSmith",

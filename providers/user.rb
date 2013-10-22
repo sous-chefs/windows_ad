@@ -1,6 +1,6 @@
 require 'mixlib/shellout'
 
-action :add do
+action :create do
   if exists?
     Chef::Log.error("The object already exists")
     new_resource.updated_by_last_action(false)
@@ -16,7 +16,7 @@ action :add do
      #  [-samid SAMName] [-upn UPN] [-fn FirstName] [-mi Initial] [-ln LastName] [-display DisplayName] [-empid EmployeeID] [-pwd {Password | *}] [-desc Description] [-memberof Group ...] [-office Office] [-tel PhoneNumber] [-email Email] [-hometel HomePhoneNumber] [-pager PagerNumber] [-mobile CellPhoneNumber] [-fax FaxNumber] [-iptel IPPhoneNumber] [-webpg WebPage] [-title Title] [-dept Department] [-company Company] [-mgr Manager] [-hmdir HomeDirectory] [-hmdrv DriveLetter:][-profile ProfilePath] [-loscr ScriptPath] [-mustchpwd {yes | no}] [-canchpwd {yes | no}] [-reversiblepwd {yes | no}] [-pwdneverexpires {yes | no}] [-acctexpires NumberOfDays] [-disabled {yes | no}] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}] [-q] [{-uc | -uco | -uci}]
     end 
   
-  execute "add_#{new_resource.name}" do
+  execute "Create_#{new_resource.name}" do
     command cmd
   end  
   
@@ -35,7 +35,7 @@ action :modify do
       #  [-upn UPN] [-fn FirstName] [-mi Initial] [-ln LastName] [-display DisplayName] [-empid EmployeeID] [-pwd (Password | *)] [-desc Description] [-office Office] [-tel PhoneNumber] [-email E-mailAddress] [-hometel HomePhoneNumber] [-pager PagerNumber] [-mobile CellPhoneNumber] [-fax FaxNumber] [-iptel IPPhoneNumber] [-webpg WebPage] [-title Title] [-dept Department] [-company Company] [-mgr Manager] [-hmdir HomeDirectory] [-hmdrv DriveLetter:] [-profile ProfilePath] [-loscr ScriptPath] [-mustchpwd {yes | no}] [-canchpwd {yes | no}] [-reversiblepwd {yes | no}] [-pwdneverexpires {yes | no}] [-acctexpires NumberOfDays] [-disabled {yes | no}] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c] [-q] [{-uc | -uco | -uci}] 
     end 
 
-    execute "modify_#{new_resource.name}" do
+    execute "Modify_#{new_resource.name}" do
       command cmd
     end
     
@@ -53,10 +53,10 @@ action :move do
     
     new_resource.options.each do |option, value|
       cmd << " -#{option} #{value}"
-	  # [-newname NewName] [-newparent ParentDN] [{-s Server | -d Domain}] [-u UserName] [-p  {Password | *}] [-q] [{-uc | -uco | -uci}]
+      # [-newname NewName] [-newparent ParentDN] [{-s Server | -d Domain}] [-u UserName] [-p  {Password | *}] [-q] [{-uc | -uco | -uci}]
     end 
   
-    execute "move_#{new_resource.name}" do
+    execute "Move_#{new_resource.name}" do
       command cmd
     end  
     
@@ -67,7 +67,7 @@ action :move do
   end
 end
 
-action :remove do
+action :delete do
   if exists?
     cmd = "dsrm "
     cmd << dn
@@ -78,7 +78,7 @@ action :remove do
       # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
     end 
   
-    execute "remove_#{new_resource.name}" do
+    execute "Create_#{new_resource.name}" do
       command cmd
     end  
     
@@ -96,9 +96,13 @@ def dn
   else
     dn = "cn=#{new_resource.name},"
   end
+  if /(U|u)sers/.match(new_resource.ou)
+    dn << "cn=#{new_resource.ou},"
+  else
     dn << new_resource.ou.split("/").reverse.map! { |k| "ou=#{k}" }.join(",")
     dn << ","
-    dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
+  end
+  dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
 end
 
 def exists?

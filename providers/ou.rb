@@ -1,6 +1,6 @@
 require 'mixlib/shellout'
 
-action :add do
+action :create do
   if parent?
   # indent all
     if exists?
@@ -18,7 +18,7 @@ action :add do
       # [-desc Description] [{-s Server | -d Domain}][-u UserName] [-p {Password | *}] [-q] [{-uc | -uco | -uci}]
       end 
     
-      execute "add_#{new_resource.name}" do
+      execute "Create_#{new_resource.name}" do
         command cmd
       end  
     
@@ -41,7 +41,7 @@ action :modify do
       # [-desc Description] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c] [-q] [{-uc | -uco | -uci}]
     end 
 
-    execute "modify_#{new_resource.name}" do
+    execute "Modify_#{new_resource.name}" do
       command cmd
     end
     
@@ -62,7 +62,7 @@ action :move do
       # [-newname NewName] [-newparent ParentDN] [{-s Server | -d Domain}] [-u UserName] [-p  {Password | *}] [-q] [{-uc | -uco | -uci}]
     end 
   
-    execute "move_#{new_resource.name}" do
+    execute "Move_#{new_resource.name}" do
       command cmd
     end  
     
@@ -73,7 +73,7 @@ action :move do
   end
 end
 
-action :remove do
+action :delete do
   if exists?
     cmd = "dsrm "
     cmd << dn
@@ -84,7 +84,7 @@ action :remove do
       # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
     end 
   
-    execute "remove_#{new_resource.name}" do
+    execute "Delete_#{new_resource.name}" do
       command cmd
     end  
     

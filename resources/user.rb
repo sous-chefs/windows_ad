@@ -1,5 +1,5 @@
-actions :add, :modify, :move, :remove
-default_action :add
+actions :create, :modify, :move, :delete
+default_action :create
 
 attribute :name, :kind_of => String, :name_attribute => true
 attribute :domain_name, :kind_of => String
