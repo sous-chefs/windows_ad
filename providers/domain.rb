@@ -8,19 +8,19 @@ action :create do
     cmd << " -DomainName #{new_resource.name}"
     cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
     cmd << " -Force:$true"
-    
+
     new_resource.options.each do |option, value|
       if value.nil?
         cmd << " -#{option}"
       else
         cmd << " -#{option} '#{value}'"
       end
-    end 
-    
+    end
+
     powershell "create_domain_#{new_resource.name}" do
       code cmd
     end
-  
+
     new_resource.updated_by_last_action(true)
   end
 end
@@ -34,7 +34,7 @@ action :delete do
     if last_dc?
       cmd << " -DemoteOperationMasterRole"
     end
-    
+
     new_resource.options.each do |option, value|
       if value.nil?
         cmd << " -#{option}"
@@ -45,8 +45,8 @@ action :delete do
 
     powershell "remove_domain_#{new_resource.name}" do
       code cmd
-    end  
-    
+    end
+
     new_resource.updated_by_last_action(true)
   else
     new_resource.updated_by_last_action(false)
@@ -80,7 +80,7 @@ action :join do
 
     new_resource.updated_by_last_action(false)
     end
-    
+
     new_resource.updated_by_last_action(true)
   end
 end
@@ -94,7 +94,7 @@ action :unjoin do
       Remove-Computer -UnjoinDomainCredential $mycreds -Force:$true
       EOH
     end
-    
+
     new_resource.updated_by_last_action(true)
   else
     Chef::Log.error("The computer is already a member of a workgroup")
@@ -110,7 +110,7 @@ end
 
 def computer_exists?
   comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
-  comp.stdout.include? ("#{new_resource.name}") or comp.stdout.include? ("#{new_resource.name}.upcase") 
+  comp.stdout.include? ("#{new_resource.name}") or comp.stdout.include? ("#{new_resource.name}.upcase")
   true
 end
 
