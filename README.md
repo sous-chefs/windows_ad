@@ -145,7 +145,7 @@ Resource/Provider
 ### Examples
 
     # Create contact "Bob Smith" in the Users OU with firstname "Bob" and lastname "Smith"
-    windows_ad_computer "Bob Smith" do
+    windows_ad_contact "Bob Smith" do
       action :create
       domain_name "contoso.com"
       ou "users"
@@ -209,13 +209,13 @@ Resource/Provider
 ### Examples
 
     # Create Organizational Unit "Departments" in the root
-    windows_ad_group "Departments" do
+    windows_ad_ou "Departments" do
       action :create
       domain_name "contoso.com"
     end
     
     # Create Organizational Unit "IT" in the "Department" OUroot
-    windows_ad_group "IT" do
+    windows_ad_ou "IT" do
       action :create
       domain_name "contoso.com"
       ou "Departments"
@@ -241,7 +241,7 @@ Resource/Provider
 ### Examples
 
     # Create user "Joe Smith" in the Users OU
-    windows_ad_group "Joe Smith" do
+    windows_ad_user "Joe Smith" do
       action :create
       domain_name "contoso.com"
       ou "users"

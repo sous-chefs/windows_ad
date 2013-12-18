@@ -111,7 +111,6 @@ end
 def computer_exists?
   comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
   comp.stdout.include? ("#{new_resource.name}") or comp.stdout.include? ("#{new_resource.name}.upcase")
-  true
 end
 
 def last_dc?
