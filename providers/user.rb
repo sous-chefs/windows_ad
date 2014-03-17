@@ -91,7 +91,7 @@ end
 
 def dn
   if new_resource.reverse == "true"
-    name = new_resource.name.split(" ").reverse.map! { |k| "#{k}" }.join("\\, ")
+    name = new_resource.name.split(" ").reverse.map! { |k| k }.join("\\, ")
     dn = "cn=#{name},"
   else
     dn = "cn=#{new_resource.name},"
@@ -107,7 +107,7 @@ end
 
 def exists?
   if new_resource.reverse == "true"
-    reverse_name = new_resource.name.split(" ").reverse.map! { |k| "#{k}" }.join(", ")
+    reverse_name = new_resource.name.split(" ").reverse.map! { |k| k }.join(", ")
     contact = Mixlib::ShellOut.new("dsquery contact -name \"#{reverse_name}\"").run_command
     user = Mixlib::ShellOut.new("dsquery user -name \"#{reverse_name}\"").run_command
     contact.stdout.include? "DC" or user.stdout.include? "DC"
