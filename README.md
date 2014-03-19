@@ -15,7 +15,6 @@ Cookbooks
 ---------
 
 - Windows - Official windows cookbook from opscode https://github.com/opscode-cookbooks/windows.git
-- Powershell - Official powershell cookbook from opscode https://github.com/opscode-cookbooks/powershell.git
 
 Usage
 ==========
