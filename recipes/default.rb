@@ -1,4 +1,5 @@
 #
+# Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Recipe:: default
 # 

@@ -17,7 +17,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :chef_solo do |chef|
     chef.add_recipe("windows")
-    chef.add_recipe("powershell")
     chef.add_recipe("windows_ad")
   end
   
