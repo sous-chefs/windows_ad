@@ -54,14 +54,14 @@ Resource/Provider
 ### Examples
 
     # Create Contoso.com forest
-    windows_ad_domain_controller "contoso.com" do
+    windows_ad_domain "contoso.com" do
       action :create
       type "forest"
       safe_mode_pass "Passw0rd"
     end
     
     # Create Contoso.com forest with DNS, Win2008 Operational Mode
-    windows_ad_domain_controller "contoso.com" do
+    windows_ad_domain "contoso.com" do
       action :create
       type "forest"
       safe_mode_pass "Passw0rd"
@@ -71,7 +71,7 @@ Resource/Provider
     end
     
     # Remove Domain Controller
-    windows_ad_domain_controller "contoso.com" do
+    windows_ad_domain "contoso.com" do
       action :delete
       local_pass "Passw0rd"
     end
