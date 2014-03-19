@@ -1,6 +1,6 @@
 windows_ad Cookbook
 =================
-This cookbook installs Active Directory Domain Services on Windows 2012 including all necessary roles and features.
+This cookbook installs Active Directory Domain Services on Windows Server 2012 including all necessary roles and features.
 
 Requirements
 ============
