@@ -94,17 +94,17 @@ Resource/Provider
 --------
 
 ### Actions
-- :create: Adds computers to Active Directory
-- :modify: Modifies an existing object of a specific type in the directory.
-- :move:  Rename an object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :delete:  Remove objects of the specified type from Active Directory.
+- :create: Adds a computer object to Active Directory
+- :modify: Modifies an existing computer object.
+- :move:  Rename a computer object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+- :delete:  Remove a computer object from Active Directory.
 
 ### Attribute Parameters
 
 - name: name attribute.  Name of the computer object.
 - domain_name: FQDN
-- ou: Organization Unit path where object is located.
-- options: ability to pass additional options
+- ou: Organization Unit path where object is to be located.
+- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754539.aspx
 
 
 ### Examples
@@ -128,17 +128,17 @@ Resource/Provider
 ---------
 
 ### Actions
-- :create: Adds computers to Active Directory
-- :modify: Modifies an existing object of a specific type in the directory.
-- :move:  Rename an object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :delete:  Remove objects of the specified type from Active Directory.
+- :create: Adds a contact object to Active Directory
+- :modify: Modifies an existing contact object.
+- :move:  Rename a contact object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+- :delete:  Remove a contact object from Active Directory.
 
 ### Attribute Parameters
 
-- name: name attribute.  Name of the computer object.
+- name: name attribute.  Name of the contact object.
 - domain_name: FQDN
-- ou: Organization Unit path where object is located.
-- options: ability to pass additional options
+- ou: Organization Unit path where object is to be located.
+- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc771883.aspx
 
 
 ### Examples
@@ -157,17 +157,17 @@ Resource/Provider
 -------
 
 ### Actions
-- :create: Adds groups to Active Directory
-- :modify: Modifies an existing object of a specific type in the directory.
-- :move:  Rename an object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :delete:  Remove objects of the specified type from Active Directory.
+- :create: Adds a group object to Active Directory
+- :modify: Modifies a group object.
+- :move:  Rename a group object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+- :delete:  Remove a group object from Active Directory.
 
 ### Attribute Parameters
 
 - name: name attribute.  Name of the group object.
 - domain_name: FQDN
-- ou: Organization Unit path where object is located.
-- options: ability to pass additional options
+- ou: Organization Unit path where object is to be located.
+- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754037.aspx
 
 
 ### Examples
@@ -192,17 +192,17 @@ Resource/Provider
 ----
 
 ### Actions
-- :create: Adds organizational units to Active Directory
-- :modify: Modifies an existing object of a specific type in the directory.
-- :move:  Rename an object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :delete:  Remove objects of the specified type from Active Directory.
+- :create: Adds organizational units to Active Directory.
+- :modify: Modifies an organizational unit.
+- :move:  Rename an organizational unit object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+- :delete:  Remove an organizational unit object from Active Directory.
 
 ### Attribute Parameters
 
 - name: name attribute.  Name of the Organization Unit object.
 - domain_name: FQDN
-- ou: Organization Unit path where object is located.
-- options: ability to pass additional options
+- ou: Organization Unit path where object is to be located.
+- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
 
 
 ### Examples
@@ -224,17 +224,17 @@ Resource/Provider
 -------
 
 ### Actions
-- :create: Adds users to Active Directory
-- :modify: Modifies an existing object of a specific type in the directory.
-- :move:  Rename an object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :delete:  Remove objects of the specified type from Active Directory.
+- :create: Adds a user object to Active Directory.
+- :modify: Modifies an user object.
+- :move:  Rename an user object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+- :delete:  Remove an user object from Active Directory.
 
 ### Attribute Parameters
 
 - name: name attribute.  Name of the user object.
 - domain_name: FQDN
 - ou: Organization Unit path where object is located.
-- options: ability to pass additional options
+- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc731279.aspx
 - reverse: allows the reversing of "First Name Last Name" to "Last Name, First Name"
 
 ### Examples
