@@ -39,8 +39,8 @@ Resource/Provider
 ### Actions
 - :create: Installs a forest, domain, or domain controller
 - :delete: Removes a domain controller from domain
-- :join: Joins computer to domain
-- :unjoin: Removes computer from domain
+- :join: Joins computer to domain and restarts the machine.
+- :unjoin: Removes computer from domain and restarts the machine.
 
 ### Attribute Parameters
 
