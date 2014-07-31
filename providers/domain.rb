@@ -86,7 +86,7 @@ action :join do
     new_resource.updated_by_last_action(false)
   else
     if computer_exists?
-      Chef::Log.error("The computer is already joined to the domain")
+      Chef::Log.debug("The computer is already joined to the domain")
       new_resource.updated_by_last_action(false)
     else
       powershell_script "join_#{new_resource.name}" do
@@ -124,7 +124,7 @@ action :unjoin do
 
     new_resource.updated_by_last_action(true)
   else
-    Chef::Log.error("The computer is already a member of a workgroup")
+    Chef::Log.debug("The computer is already a member of a workgroup")
     new_resource.updated_by_last_action(false)
   end
 end
