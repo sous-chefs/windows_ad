@@ -36,6 +36,13 @@ action :create do
     cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
     cmd << " -Force:$true"
 
+    if new_resource.type != 'forest'
+      if !new_resource.domain_user.nil? && !new_resource.domain_user.empty? &&
+         !new_resource.domain_pass.nil? && !new_resource.domain_pass.empty?
+        cmd = create_ps_credential(new_resource.domain_user, new_resource.domain_pass) + cmd + " -Credential $mycreds"
+      end
+    end
+
     new_resource.options.each do |option, value|
       if value.nil?
         cmd << " -#{option}"
@@ -92,14 +99,12 @@ action :join do
       powershell_script "join_#{new_resource.name}" do
         if node[:os_version] >= "6.2"
           code <<-EOH
-            $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-            $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd)
+            #{create_ps_credential(new_resource.domain_user, new_resource.domain_pass)}
             Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true -Restart
           EOH
         else
           code <<-EOH
-            $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-            $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd)
+            #{create_ps_credential(new_resource.domain_user, new_resource.domain_pass)}
             Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Restart
           EOH
         end
@@ -116,8 +121,7 @@ action :unjoin do
   if computer_exists?
     powershell_script "unjoin_#{new_resource.name}" do
       code <<-EOH
-      $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-      $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_user}', $secpasswd)
+      #{create_ps_credential(new_resource.domain_user, new_resource.domain_pass)}
       Remove-Computer -UnjoinDomainCredential $mycreds -Force:$true -Restart
       EOH
     end
@@ -156,4 +160,11 @@ def create_command
   when "read-only"
     "Add-ADDSReadOnlyDomainControllerAccount"
   end
+end
+
+def create_ps_credential(user, pass)
+  return <<-EOH
+  $secpasswd = ConvertTo-SecureString '#{pass}' -AsPlainText -Force
+  $mycreds = New-Object System.Management.Automation.PSCredential ('#{user}', $secpasswd)
+  EOH
 end
