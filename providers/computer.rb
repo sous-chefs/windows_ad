@@ -29,7 +29,7 @@ require 'mixlib/shellout'
 
 action :create do
   if exists?
-    Chef::Log.error("The object already exists")
+    Chef::Log.debug("The object already exists")
     new_resource.updated_by_last_action(false)
   else
     cmd = "dsadd"
@@ -109,7 +109,7 @@ action :delete do
 
     new_resource.updated_by_last_action(true)
   else
-    Chef::Log.error("The object has already been removed")
+    Chef::Log.debug("The object has already been removed")
     new_resource.updated_by_last_action(false)  
   end
 end
