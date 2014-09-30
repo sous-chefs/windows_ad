@@ -1,0 +1,12 @@
+.vagrant
+.kitchen
+.kitchen.local.yml
+.cache
+.bundle
+.swp
+bin
+Berksfile.lock
+Gemfile.lock
+options.txt
+recipes/contoso.rb
+Vagrantfile
