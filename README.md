@@ -8,7 +8,7 @@ Requirements
 Platform
 --------
 
-* Windows Server 2008 R2 (features only)
+* Windows Server 2008 R2 
 * Windows Server 2012 Family
 
 Cookbooks
@@ -49,7 +49,9 @@ Resource/Provider
 - safe_mode_pass: safe mode administrative password.
 - domain_user: User account to join the domain.
 - domain_pass: User password to join the domain.
-- options: additional options as needed by AD DS Deployment Cmdlets http://technet.microsoft.com/en-us/library/hh974719.aspx.  Single parameters use nil for key value, see example below.
+- local_pass: Local Administrator Password for removing domain controller.
+- replica_type: For Windows Server 2008, specifies installing new or additional domain controller.  Valid values: domain, replica.
+- options: additional options as needed by AD DS Deployment http://technet.microsoft.com/en-us/library/cc732887.aspx for Windows Server 2008 and http://technet.microsoft.com/en-us/library/hh974719.aspx for Windows Server 2012.  Single parameters use nil for key value, see example below.
 
 ### Examples
 
@@ -60,7 +62,18 @@ Resource/Provider
       safe_mode_pass "Passw0rd"
     end
     
-    # Create Contoso.com forest with DNS, Win2008 Operational Mode
+    # Create Contoso.com forest with DNS, Win2008 R2 Operational Mode Windows Server 2008 R2
+    windows_ad_domain "contoso.com" do
+      action :create
+      type "forest"
+      safe_mode_pass "Passw0rd"
+      options ({ "domainlevel" => "4",
+				 "forestlevel" => "4",
+                 "InstallDNS" => "yes"
+               })
+    end
+	
+	# Create Contoso.com forest with DNS, Win2008 Operational Mode Windows Server 2012
     windows_ad_domain "contoso.com" do
       action :create
       type "forest"

@@ -1,7 +1,7 @@
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
-# Resource:: domain
+# Recipe:: contoso
 # 
 # Copyright 2013, Texas A&M
 #
@@ -25,14 +25,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-actions :create, :delete, :join, :unjoin
-default_action :create
-
-attribute :name, :kind_of => String, :name_attribute => true
-attribute :domain_user, :kind_of => String
-attribute :domain_pass, :kind_of => String
-attribute :type, :kind_of => String, :default => "forest"
-attribute :safe_mode_pass, :kind_of => String
-attribute :options, :kind_of => Hash, :default => {}
-attribute :local_pass, :kind_of => String
-attribute :replica_type, :kind_of => String, :default => "domain"
+windows_ad_domain "contoso.com" do
+  action :create
+  type "forest"
+  safe_mode_pass "Passw0rd"
+end
