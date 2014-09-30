@@ -1,5 +1,9 @@
 # CHANGELOG for windows_ad
 
+## 0.3.2:
+
+* Logic change to ensure server 2012 is still works correctly.
+
 ## 0.3.0:
 
 * Support for Windows Server 2008 R2 for domain provider
