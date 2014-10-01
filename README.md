@@ -68,12 +68,12 @@ Resource/Provider
       type "forest"
       safe_mode_pass "Passw0rd"
       options ({ "domainlevel" => "4",
-				 "forestlevel" => "4",
+                 "forestlevel" => "4",
                  "InstallDNS" => "yes"
                })
     end
-	
-	# Create Contoso.com forest with DNS, Win2008 Operational Mode Windows Server 2012
+
+    # Create Contoso.com forest with DNS, Win2008 Operational Mode Windows Server 2012
     windows_ad_domain "contoso.com" do
       action :create
       type "forest"

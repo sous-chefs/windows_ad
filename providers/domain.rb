@@ -34,18 +34,18 @@ action :create do
   else
     if node[:os_version] >= "6.2"
       cmd = create_command
-	  cmd << " -DomainName #{new_resource.name}"
-	  cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
+      cmd << " -DomainName #{new_resource.name}"
+      cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << " -Force:$true"
     else node[:os_version] <= "6.1"
-	  cmd = "dcpromo -unattend"
-	  cmd << " -newDomain:#{new_resource.type}"
-	  cmd << " -NewDomainDNSName:#{new_resource.name}"
-	  cmd << " -RebootOnCompletion:Yes"
-	  cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
-	  cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
-	end
-	
+      cmd = "dcpromo -unattend"
+      cmd << " -newDomain:#{new_resource.type}"
+      cmd << " -NewDomainDNSName:#{new_resource.name}"
+      cmd << " -RebootOnCompletion:Yes"
+      cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
+      cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
+    end
+
     new_resource.options.each do |option, value|
       if value.nil?
         cmd << " -#{option}"
@@ -156,7 +156,7 @@ def last_dc?
 end
 
 def create_command
-   if node[:os_version] > '6.2'
+  if node[:os_version] > '6.2'
     case new_resource.type
       when "forest"
         "Install-ADDSForest"
@@ -166,17 +166,17 @@ def create_command
         "Install-ADDSDomainController"
       when "read-only"
         "Add-ADDSReadOnlyDomainControllerAccount"
-	end
+  end
   else
     case new_resource.type
       when "forest"
         "forest"
-  	  when "domain"
-  	    "domain"
+      when "domain"
+        "domain"
       when "read-only"
-	    "domain"
-	  when "replica"
-	    "replica"
-	end
+        "domain"
+      when "replica"
+        "replica"
+    end
   end
 end

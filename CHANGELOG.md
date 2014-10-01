@@ -1,8 +1,12 @@
 # CHANGELOG for windows_ad
 
+## 0.3.3
+
+* Formatting changes - remove tabs
+
 ## 0.3.2:
 
-* Logic change to ensure server 2012 is still works correctly.
+* Logic change to ensure server 2012 is still works correctly
 
 ## 0.3.0:
 
