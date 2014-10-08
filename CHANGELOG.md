@@ -1,5 +1,9 @@
 # CHANGELOG for windows_ad
 
+## 0.3.4
+
+* Corrected domain join for Windows Server 2008
+
 ## 0.3.3
 
 * Formatting changes - remove tabs
