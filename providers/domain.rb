@@ -27,6 +27,7 @@
 
 require 'mixlib/shellout'
 
+
 action :create do
   
   if exists?
@@ -107,11 +108,7 @@ action :join do
             Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true -Restart
           EOH
         else
-          code <<-EOH
-            $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-            $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd)
-            Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Restart
-          EOH
+          code "netdom join #{node[:hostname]} /d #{new_resource.name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass} /reboot"
         end
       end
 
