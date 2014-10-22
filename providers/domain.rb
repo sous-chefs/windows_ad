@@ -34,7 +34,9 @@ action :create do
     new_resource.updated_by_last_action(false)
   else
     if node[:os_version] >= "6.2"
-      cmd = create_command
+      cmd = "$secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force;"
+      cmd << "$mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd);"
+      cmd << create_command
       cmd << " -DomainName #{new_resource.name}"
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << " -Force:$true"
@@ -158,11 +160,11 @@ def create_command
       when "forest"
         "Install-ADDSForest"
       when "domain"
-        "install-ADDSDomain"
+        "install-ADDSDomain -Credential $mycreds"
       when "replica"
-        "Install-ADDSDomainController"
+        "Install-ADDSDomainController -Credential $mycreds"
       when "read-only"
-        "Add-ADDSReadOnlyDomainControllerAccount"
+        "Add-ADDSReadOnlyDomainControllerAccount -Credential $mycreds"
   end
   else
     case new_resource.type

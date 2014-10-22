@@ -47,8 +47,8 @@ Resource/Provider
 - name: name attribute.  Name of the forest/domain to operate against.
 - type: type of install. Valid values: forest, domain, read-only.
 - safe_mode_pass: safe mode administrative password.
-- domain_user: User account to join the domain.
-- domain_pass: User password to join the domain.
+- domain_user: User account to join the domain or to create a domain controller. **Required**: for `:create` except on `type` `forest` on windows 2012 and above.
+- domain_pass: User password to join the domain or to create a domain controller. **Required**: for `:create` except on `type` `forest` on windows 2012 and above.
 - local_pass: Local Administrator Password for removing domain controller.
 - replica_type: For Windows Server 2008, specifies installing new or additional domain controller.  Valid values: domain, replica.
 - options: additional options as needed by AD DS Deployment http://technet.microsoft.com/en-us/library/cc732887.aspx for Windows Server 2008 and http://technet.microsoft.com/en-us/library/hh974719.aspx for Windows Server 2012.  Single parameters use nil for key value, see example below.
@@ -62,6 +62,15 @@ Resource/Provider
       safe_mode_pass "Passw0rd"
     end
     
+    # Create Contoso.com replica
+    windows_ad_domain "contoso.com" do
+      action :create
+      type "replica"
+      safe_mode_pass "Passw0rd"
+      domain_pass "Passw0rd"
+      domain_user "Administrator"
+    end
+
     # Create Contoso.com forest with DNS, Win2008 R2 Operational Mode Windows Server 2008 R2
     windows_ad_domain "contoso.com" do
       action :create
