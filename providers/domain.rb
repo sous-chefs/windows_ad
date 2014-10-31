@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Provider:: domain
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -29,7 +29,7 @@ require 'mixlib/shellout'
 
 
 action :create do
-  
+
   if exists?
     new_resource.updated_by_last_action(false)
   else
@@ -104,13 +104,18 @@ action :join do
     else
       powershell_script "join_#{new_resource.name}" do
         if node[:os_version] >= "6.2"
+          cmd_text = "Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true -Restart"
+          cmd_text << " -OUPath '#{ou_dn}'" if new_resource.ou
           code <<-EOH
             $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
             $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd)
-            Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true -Restart
+            #{cmd_text}
           EOH
         else
-          code "netdom join #{node[:hostname]} /d #{new_resource.name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass} /reboot"
+          cmd_text = "netdom join #{node[:hostname]} /d #{new_resource.name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass}"
+          cmd_text << " /ou:#{ou_dn}" if new_resource.ou
+          cmd_text << " /reboot"
+          code "#{cmd_text}"
         end
       end
 
@@ -136,6 +141,11 @@ action :unjoin do
     Chef::Log.debug("The computer is already a member of a workgroup")
     new_resource.updated_by_last_action(false)
   end
+end
+
+def ou_dn
+  ou_name << new_resource.ou.split("/").reverse.map { |k| "OU=#{k}" }.join(",") << ","
+  ou_name << new_resource.name.split(".").map! { |k| "DC=#{k}" }.join(",")
 end
 
 def exists?

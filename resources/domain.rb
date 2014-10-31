@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Resource:: domain
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -36,3 +36,4 @@ attribute :safe_mode_pass, :kind_of => String
 attribute :options, :kind_of => Hash, :default => {}
 attribute :local_pass, :kind_of => String
 attribute :replica_type, :kind_of => String, :default => "domain"
+attribute :ou, :kind_of => String
