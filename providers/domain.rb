@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Provider:: domain
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -29,14 +29,12 @@ require 'mixlib/shellout'
 
 
 action :create do
-  
+
   if exists?
     new_resource.updated_by_last_action(false)
   else
     if node[:os_version] >= "6.2"
-      cmd = "$secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force;"
-      cmd << "$mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd);"
-      cmd << create_command
+      cmd = create_command
       cmd << " -DomainName #{new_resource.name}"
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << " -Force:$true"
@@ -156,16 +154,21 @@ end
 
 def create_command
   if node[:os_version] > '6.2'
+    cmd = ''
+    if new_resource.type != "forest"
+      cmd << "$secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force;"
+      cmd << "$mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd);"
+    end
     case new_resource.type
       when "forest"
-        "Install-ADDSForest"
+        cmd << "Install-ADDSForest"
       when "domain"
-        "install-ADDSDomain -Credential $mycreds"
+        cmd << "Install-ADDSDomain -Credential $mycreds"
       when "replica"
-        "Install-ADDSDomainController -Credential $mycreds"
+        cmd << "Install-ADDSDomainController -Credential $mycreds"
       when "read-only"
-        "Add-ADDSReadOnlyDomainControllerAccount -Credential $mycreds"
-  end
+        cmd << "Add-ADDSReadOnlyDomainControllerAccount -Credential $mycreds"
+    end
   else
     case new_resource.type
       when "forest"
