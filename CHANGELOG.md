@@ -1,5 +1,18 @@
 # CHANGELOG for windows_ad
 
+## 0.3.8
+
+* Moved :join and :unjoin actions for computer from :domain provider to :computer provider.
+
+## 0.3.7
+
+* Mark attributes as required for :domain resource
+* Fixed regression on install forest with unnecessary credentials 
+
+## 0.3.6
+
+* Attempt to upload to supermarket
+
 ## 0.3.4
 
 * Corrected domain join for Windows Server 2008

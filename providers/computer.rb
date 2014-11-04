@@ -114,6 +114,67 @@ action :delete do
   end
 end
 
+action :join do
+  if domain_exists?
+    Chef::Log.error("The domain does not exist or was not reachable, please check your network settings")
+    new_resource.updated_by_last_action(false)
+  else
+    if computer_exists?
+      Chef::Log.debug("The computer is already joined to the domain")
+      new_resource.updated_by_last_action(false)
+    else
+      powershell_script "join_#{new_resource.name}" do
+        if node[:os_version] >= "6.2"
+          code <<-EOH
+            $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
+            $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd)
+            Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true -Restart
+          EOH
+        else
+          code "netdom join #{node[:hostname]} /d #{new_resource.name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass} /reboot"
+        end
+      end
+
+    new_resource.updated_by_last_action(false)
+    end
+
+    new_resource.updated_by_last_action(true)
+  end
+end
+
+action :unjoin do
+  if domain_exists?
+    if computer_exists?
+      powershell_script "unjoin_#{new_resource.name}" do
+        code <<-EOH
+        $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
+        $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_user}', $secpasswd)
+        Remove-Computer -UnjoinDomainCredential $mycreds -Force:$true -Restart
+        EOH
+      end
+
+      new_resource.updated_by_last_action(true)
+	else
+      Chef::Log.debug("The computer is already a member of a workgroup")
+      new_resource.updated_by_last_action(false)
+    end
+  else
+    Chef::Log.error("The domain does not exist or was not reachable, please check your network settings")
+    new_resource.updated_by_last_action(false)
+  end
+end
+
+def domain_exists?
+  ldap_path = new_resource.name.split(".").map! { |k| "dc=#{k}" }.join(",")
+  check = Mixlib::ShellOut.new("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')").run_command
+  check.stdout.match("True")
+end
+
+def computer_exists?
+  comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
+  comp.stdout.include?(new_resource.name) or comp.stdout.include?(new_resource.name.upcase)
+end
+
 def dn
   dn = "CN=#{new_resource.name},"
   dn << new_resource.ou.split("/").reverse.map { |k| "OU=#{k}" }.join(",") << ","

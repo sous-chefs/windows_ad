@@ -8,8 +8,8 @@ Requirements
 Platform
 --------
 
-* Windows Server 2008 R2 
-* Windows Server 2012 Family
+* Windows Server 2008 
+* Windows Server 2012 
 
 Cookbooks
 ---------
@@ -39,14 +39,12 @@ Resource/Provider
 ### Actions
 - :create: Installs a forest, domain, or domain controller
 - :delete: Removes a domain controller from domain
-- :join: Joins computer to domain and restarts the machine.
-- :unjoin: Removes computer from domain and restarts the machine.
 
 ### Attribute Parameters
 
 - name: name attribute.  Name of the forest/domain to operate against.
 - type: type of install. Valid values: forest, domain, read-only.
-- safe_mode_pass: safe mode administrative password.
+- safe_mode_pass: safe mode administrative password. **Required**
 - domain_user: User account to join the domain or to create a domain controller. **Required**: for `:create` except on `type` `forest` on windows 2012 and above.
 - domain_pass: User password to join the domain or to create a domain controller. **Required**: for `:create` except on `type` `forest` on windows 2012 and above.
 - local_pass: Local Administrator Password for removing domain controller.
@@ -120,11 +118,15 @@ Resource/Provider
 - :modify: Modifies an existing computer object.
 - :move:  Rename a computer object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
 - :delete:  Remove a computer object from Active Directory.
+- :join: Joins computer to domain and restarts the machine.
+- :unjoin: Removes computer from domain and restarts the machine.
 
 ### Attribute Parameters
 
 - name: name attribute.  Name of the computer object.
 - domain_name: FQDN
+- domain_user: User account to join the domain or to create a domain controller. **Required**: for `:join` and `:unjoin`.
+- domain_pass: User password to join the domain or to create a domain controller. **Required**: for `:join` and `:unjoin`.
 - ou: Organization Unit path where object is to be located.
 - options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754539.aspx
 

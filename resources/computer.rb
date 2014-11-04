@@ -25,10 +25,12 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-actions :create, :modify, :move, :delete
+actions :create, :modify, :move, :delete, :join, :unjoin
 default_action :create
 
 attribute :name, :kind_of => String, :name_attribute => true
 attribute :domain_name, :kind_of => String
 attribute :ou, :kind_of => String
 attribute :options, :kind_of => Hash, :default => {}
+attribute :domain_user, :kind_of => String, :required => true
+attribute :domain_pass, :kind_of => String, :required => true
