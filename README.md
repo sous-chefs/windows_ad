@@ -275,6 +275,32 @@ Resource/Provider
              "pwd" => "Passw0rd"
            })
     end
+
+`group_member`
+-------
+
+### Actions
+- :add: Adds a user to a group.
+- :remove: Removes a user from a group.
+
+### Attribute Parameters
+
+- user_name: user name attribute. Name of the user object.
+- group_name: group name attribute. Name of the group object.
+- domain_name: FQDN.
+- user_ou: Organization Unit path where user object is located.
+- group_ou: Organization Unit path where group object is located.
+
+### Examples
+
+    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups"
+    windows_ad_group_member 'Joe Smith' do
+      action :create
+      group_name  'Admins'
+      domain_name 'contoso.com'
+      user_ou 'users'
+      grou_ou 'AD/Groups'
+    end
     
 
 Contributing

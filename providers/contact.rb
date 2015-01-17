@@ -117,9 +117,9 @@ action :delete do
 end
 
 def dn
-  dn = "cn=#{new_resource.name},"
+  dn = "CN=#{new_resource.name},"
   dn << new_resource.ou.split("/").reverse.map { |k| "OU=#{k}" }.join(",") << ","
-  dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
+  dn << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
 end
 
 def exists?
