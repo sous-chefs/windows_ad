@@ -119,17 +119,17 @@ end
 def dn
   if new_resource.reverse == "true"
     name = new_resource.name.split(" ").reverse.map! { |k| k }.join("\\, ")
-    dn = "cn=#{name},"
+    dn = "CN=#{name},"
   else
-    dn = "cn=#{new_resource.name},"
+    dn = "CN=#{new_resource.name},"
   end
   if /(U|u)sers/.match(new_resource.ou)
-    dn << "cn=#{new_resource.ou},"
+    dn << "CN=#{new_resource.ou},"
   else
-    dn << new_resource.ou.split("/").reverse.map! { |k| "ou=#{k}" }.join(",")
+    dn << new_resource.ou.split("/").reverse.map! { |k| "OU=#{k}" }.join(",")
     dn << ","
   end
-  dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
+  dn << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
 end
 
 def exists?
