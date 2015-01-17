@@ -116,10 +116,15 @@ action :delete do
   end
 end
 
-def dn
-  dn = "CN=#{new_resource.name},"
-  dn << new_resource.ou.split("/").reverse.map { |k| "OU=#{k}" }.join(",") << ","
-  dn << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
+def dn(name, ou, domain)
+  dn = "CN=#{name},"
+  if /(U|u)sers/.match(ou)
+    dn << "CN=#{ou},"
+  else
+    dn << ou.split("/").reverse.map! { |k| "OU=#{k}" }.join(",")
+    dn << ","
+  end
+  dn << domain.split(".").map! { |k| "DC=#{k}" }.join(",")
 end
 
 def exists?
