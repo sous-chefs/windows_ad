@@ -38,10 +38,7 @@ action :create do
     cmd << dn
     cmd << "\""
 
-    new_resource.options.each do |option, value|
-     cmd << " -#{option} \"#{value}\""
-     #  [-samid SAMName] [-upn UPN] [-fn FirstName] [-mi Initial] [-ln LastName] [-display DisplayName] [-empid EmployeeID] [-pwd {Password | *}] [-desc Description] [-memberof Group ...] [-office Office] [-tel PhoneNumber] [-email Email] [-hometel HomePhoneNumber] [-pager PagerNumber] [-mobile CellPhoneNumber] [-fax FaxNumber] [-iptel IPPhoneNumber] [-webpg WebPage] [-title Title] [-dept Department] [-company Company] [-mgr Manager] [-hmdir HomeDirectory] [-hmdrv DriveLetter:][-profile ProfilePath] [-loscr ScriptPath] [-mustchpwd {yes | no}] [-canchpwd {yes | no}] [-reversiblepwd {yes | no}] [-pwdneverexpires {yes | no}] [-acctexpires NumberOfDays] [-disabled {yes | no}] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}] [-q] [{-uc | -uco | -uci}]
-    end
+    cmd << cmd_options(new_resource.options)
 
   execute "Create_#{new_resource.name}" do
     command cmd
@@ -57,10 +54,7 @@ action :modify do
     cmd << " user "
     cmd << dn
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      #  [-upn UPN] [-fn FirstName] [-mi Initial] [-ln LastName] [-display DisplayName] [-empid EmployeeID] [-pwd (Password | *)] [-desc Description] [-office Office] [-tel PhoneNumber] [-email E-mailAddress] [-hometel HomePhoneNumber] [-pager PagerNumber] [-mobile CellPhoneNumber] [-fax FaxNumber] [-iptel IPPhoneNumber] [-webpg WebPage] [-title Title] [-dept Department] [-company Company] [-mgr Manager] [-hmdir HomeDirectory] [-hmdrv DriveLetter:] [-profile ProfilePath] [-loscr ScriptPath] [-mustchpwd {yes | no}] [-canchpwd {yes | no}] [-reversiblepwd {yes | no}] [-pwdneverexpires {yes | no}] [-acctexpires NumberOfDays] [-disabled {yes | no}] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c] [-q] [{-uc | -uco | -uci}]
-    end
+    cmd << cmd_options(new_resource.options)
 
     execute "Modify_#{new_resource.name}" do
       command cmd
@@ -78,10 +72,7 @@ action :move do
     cmd = "dsmove "
     cmd << dn
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-newname NewName] [-newparent ParentDN] [{-s Server | -d Domain}] [-u UserName] [-p  {Password | *}] [-q] [{-uc | -uco | -uci}]
-    end
+    cmd << cmd_options(new_resource.options)
 
     execute "Move_#{new_resource.name}" do
       command cmd
@@ -100,10 +91,7 @@ action :delete do
     cmd << dn
     cmd << " -noprompt"
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
-    end
+    cmd << cmd_options(new_resource.options)
 
     execute "Create_#{new_resource.name}" do
       command cmd
@@ -114,6 +102,15 @@ action :delete do
     Chef::Log.debug("The object has already been removed")
     new_resource.updated_by_last_action(false)
   end
+end
+
+def cmd_options(options)
+  cmd = ''
+  options.each do |option, value|
+    cmd << " -#{option} \"#{value}\""
+    # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
+  end
+  cmd
 end
 
 def dn
