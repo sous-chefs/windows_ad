@@ -73,7 +73,7 @@ end
 
 def dn(name, ou, domain)
   dn = "CN=#{name},"
-  if /(U|u)sers/.match(ou)
+  if ou.downcase == 'users'
     dn << "CN=#{ou},"
   else
     dn << ou.split("/").reverse.map! { |k| "OU=#{k}" }.join(",")

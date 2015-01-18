@@ -115,7 +115,7 @@ end
 
 def dn
   dn = "CN=#{new_resource.name},"
-  if /(U|u)sers/.match(new_resource.ou)
+  if new_resource.ou.downcase == 'users'
     dn << "CN=#{new_resource.ou},"
   else
     dn << new_resource.ou.split("/").reverse.map! { |k| "OU=#{k}" }.join(",")
