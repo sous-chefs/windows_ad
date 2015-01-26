@@ -317,3 +317,7 @@ License and Authors
 ===================
 
 Authors:: Derek Groh (<dgroh@arch.tamu.edu>)
+          Richard Guin          
+          Miroslav Kyurchev (<mkyurchev@gmail.com>)
+		  Matt Wrock (<matt@mattwrock.com>)
+		  Miguel Ferreira (<miguelferreira@me.com>)
