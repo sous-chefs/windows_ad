@@ -295,7 +295,7 @@ Resource/Provider
 
     # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups"
     windows_ad_group_member 'Joe Smith' do
-      action :create
+      action :add
       group_name  'Admins'
       domain_name 'contoso.com'
       user_ou 'users'
