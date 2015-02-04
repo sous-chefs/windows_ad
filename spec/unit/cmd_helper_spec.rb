@@ -15,4 +15,36 @@ describe 'cmd_helper' do
       expect(result).to eq(' -opt1 "val1" -opt2 "val2"')
     end
   end
+
+  describe '#dn' do
+    it 'builds a dn with a name, an OU and a domain' do
+      result = CmdHelper.dn('name', 'unit', 'domain')
+
+      expect(result).to eq('CN=name,OU=unit,DC=domain')
+    end
+
+    it 'splits composit OUs' do
+      result = CmdHelper.dn('name', 'unit/subunit', 'domain')
+
+      expect(result).to eq('CN=name,OU=subunit,OU=unit,DC=domain')
+    end
+
+    it 'splits composit domain names' do
+      result = CmdHelper.dn('name', 'unit', 'domain.local')
+
+      expect(result).to eq('CN=name,OU=unit,DC=domain,DC=local')
+    end
+
+    it 'handles users OU' do
+      result = CmdHelper.dn('name', 'users', 'domain')
+
+      expect(result).to eq('CN=name,CN=users,DC=domain')
+    end
+
+    it 'handles empty OUs' do
+      result = CmdHelper.dn('name', nil, 'domain')
+
+      expect(result).to eq('CN=name,DC=domain')
+    end
+  end
 end

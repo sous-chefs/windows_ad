@@ -107,17 +107,10 @@ end
 def dn
   if new_resource.reverse == "true"
     name = new_resource.name.split(" ").reverse.map! { |k| k }.join("\\, ")
-    dn = "CN=#{name},"
   else
-    dn = "CN=#{new_resource.name},"
+    name = new_resource.name
   end
-  if new_resource.ou.downcase == 'users'
-    dn << "CN=#{new_resource.ou},"
-  else
-    dn << new_resource.ou.split("/").reverse.map! { |k| "OU=#{k}" }.join(",")
-    dn << ","
-  end
-  dn << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
+  CmdHelper.dn(name, new_resource.ou, new_resource.domain_name)
 end
 
 def exists?

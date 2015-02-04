@@ -35,7 +35,7 @@ action :create do
     cmd = "dsadd"
     cmd << " group "
     cmd << "\""
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << "\""
 
     cmd << CmdHelper.cmd_options(new_resource.options)
@@ -52,7 +52,7 @@ action :modify do
   if exists?
     cmd = "dsmod"
     cmd << " group "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
     cmd << CmdHelper.cmd_options(new_resource.options) 
 
@@ -70,7 +70,7 @@ end
 action :move do
   if exists?
     cmd = "dsmove "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
     cmd << CmdHelper.cmd_options(new_resource.options)
 
@@ -88,7 +88,7 @@ end
 action :delete do
   if exists?
     cmd = "dsrm "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << " -noprompt"
 
     cmd << CmdHelper.cmd_options(new_resource.options)
@@ -102,17 +102,6 @@ action :delete do
     Chef::Log.debug("The object has already been removed")
     new_resource.updated_by_last_action(false)  
   end
-end
-
-def dn
-  dn = "CN=#{new_resource.name},"
-  if new_resource.ou.downcase == 'users'
-    dn << "CN=#{new_resource.ou},"
-  else
-    dn << new_resource.ou.split("/").reverse.map! { |k| "OU=#{k}" }.join(",")
-    dn << ","
-  end
-  dn << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
 end
 
 def exists?

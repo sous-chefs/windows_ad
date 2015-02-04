@@ -28,8 +28,8 @@
 require 'mixlib/shellout'
 
 action :add do
-  group_dn = dn(new_resource.group_name, new_resource.group_ou, new_resource.domain_name)
-  user_dn  = dn(new_resource.user_name,  new_resource.user_ou,  new_resource.domain_name)
+  group_dn = CmdHelper.dn(new_resource.group_name, new_resource.group_ou, new_resource.domain_name)
+  user_dn  = CmdHelper.dn(new_resource.user_name,  new_resource.user_ou,  new_resource.domain_name)
 
   if is_member_of?(user_dn, group_dn)
     Chef::Log.debug("The user is already member of the group")
@@ -44,8 +44,8 @@ action :add do
 end
 
 action :remove do
-  group_dn = dn(new_resource.group_name, new_resource.group_ou, new_resource.domain_name)
-  user_dn  = dn(new_resource.user_name,  new_resource.user_ou,  new_resource.domain_name)
+  group_dn = CmdHelper.dn(new_resource.group_name, new_resource.group_ou, new_resource.domain_name)
+  user_dn  = CmdHelper.dn(new_resource.user_name,  new_resource.user_ou,  new_resource.domain_name)
 
   if is_member_of?(user_dn, group_dn)
     execute "Remove_user_#{new_resource.user_name}_from_group_#{new_resource.group_name}" do
@@ -69,17 +69,6 @@ def dsmod_group_cmd(group_dn, user_dn, option)
   cmd << "\""
   cmd << user_dn
   cmd << "\""
-end
-
-def dn(name, ou, domain)
-  dn = "CN=#{name},"
-  if ou.downcase == 'users'
-    dn << "CN=#{ou},"
-  else
-    dn << ou.split("/").reverse.map! { |k| "OU=#{k}" }.join(",")
-    dn << ","
-  end
-  dn << domain.split(".").map! { |k| "DC=#{k}" }.join(",")
 end
 
 def is_member_of?(user_dn, group_dn)
