@@ -121,10 +121,8 @@ end
 
 def dn
   dn = "ou=#{new_resource.name},"
-  if new_resource.ou.nil?
-  else
-    dn << new_resource.ou.split("/").reverse.map! { |k| "ou=#{k}" }.join(",")
-    dn << ","
+  unless new_resource.ou.nil?
+    dn << new_resource.ou.split("/").reverse.map! { |k| "ou=#{k}" }.join(",") << ","
   end
   dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
 end
