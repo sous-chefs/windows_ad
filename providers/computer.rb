@@ -36,7 +36,7 @@ action :create do
     cmd << " computer "
     cmd << dn
 
-    cmd << cmd_options(new_resource.options)
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
     execute "Create_#{new_resource.name}" do
       command cmd
@@ -52,7 +52,7 @@ action :modify do
     cmd << " computer "
     cmd << dn
 
-    cmd << cmd_options(new_resource.options)
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
     execute "Modify_#{new_resource.name}" do
       command cmd
@@ -70,7 +70,7 @@ action :move do
     cmd = "dsmove "
     cmd << dn
 
-    cmd << cmd_options(new_resource.options) 
+    cmd << CmdHelper.cmd_options(new_resource.options) 
 
     execute "Move_#{new_resource.name}" do
       command cmd
@@ -89,7 +89,7 @@ action :delete do
     cmd << dn
     cmd << " -noprompt"
 
-    cmd << cmd_options(new_resource.options) 
+    cmd << CmdHelper.cmd_options(new_resource.options) 
 
     execute "Delete_#{new_resource.name}" do
       command cmd
@@ -100,15 +100,6 @@ action :delete do
     Chef::Log.debug("The object has already been removed")
     new_resource.updated_by_last_action(false)  
   end
-end
-
-def cmd_options(options)
-  cmd = ''
-  options.each do |option, value|
-    cmd << " -#{option} \"#{value}\""
-    # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
-  end
-  cmd
 end
 
 def dn
