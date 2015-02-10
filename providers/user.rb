@@ -25,8 +25,6 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-require 'mixlib/shellout'
-
 action :create do
   if exists?
     Chef::Log.debug("The object already exists")
@@ -38,13 +36,12 @@ action :create do
     cmd << dn
     cmd << "\""
 
+    Chef::Log.info(print_msg("create #{new_resource.name}"))
     cmd << CmdHelper.cmd_options(new_resource.options)
 
-  execute "Create_#{new_resource.name}" do
-    command cmd
-  end
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
-  new_resource.updated_by_last_action(true)
+    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -56,9 +53,8 @@ action :modify do
 
     cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Modify_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("modify #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -74,9 +70,8 @@ action :move do
 
     cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Move_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("move #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -93,9 +88,8 @@ action :delete do
 
     cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Create_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("delete #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -114,14 +108,21 @@ def dn
 end
 
 def exists?
+  cmd_user   = new_resource.cmd_user
+  cmd_pass   = new_resource.cmd_pass
+  cmd_domain = new_resource.cmd_domain
   if new_resource.reverse == "true"
     reverse_name = new_resource.name.split(" ").reverse.map! { |k| k }.join(", ")
-    contact = Mixlib::ShellOut.new("dsquery contact -name \"#{reverse_name}\"").run_command
-    user = Mixlib::ShellOut.new("dsquery user -name \"#{reverse_name}\"").run_command
+    contact = CmdHelper.shell_out("dsquery contact -name \"#{reverse_name}\"", cmd_user, cmd_pass, cmd_domain)
+    user = CmdHelper.shell_out("dsquery user -name \"#{reverse_name}\"", cmd_user, cmd_pass, cmd_domain)
     contact.stdout.include? "DC" or user.stdout.include? "DC"
   else
-    contact = Mixlib::ShellOut.new("dsquery contact -name \"#{new_resource.name}\"").run_command
-    user = Mixlib::ShellOut.new("dsquery user -name \"#{new_resource.name}\"").run_command
+    contact = CmdHelper.shell_out("dsquery contact -name \"#{new_resource.name}\"", cmd_user, cmd_pass, cmd_domain)
+    user = CmdHelper.shell_out("dsquery user -name \"#{new_resource.name}\"", cmd_user, cmd_pass, cmd_domain)
     contact.stdout.include? "DC" or user.stdout.include? "DC"
   end
+end
+
+def print_msg(action)
+  "windows_ad_user[#{action}]"
 end

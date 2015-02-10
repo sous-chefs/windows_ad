@@ -25,8 +25,6 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-require 'mixlib/shellout'
-
 action :create do
   if parent?
   # indent all
@@ -42,9 +40,8 @@ action :create do
 
       cmd << cmd_options(new_resource.options)
 
-      execute "Create_#{new_resource.name}" do
-        command cmd
-      end
+      Chef::Log.info(print_msg("create #{new_resource.name}"))
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
       new_resource.updated_by_last_action(true)
     end
@@ -62,9 +59,8 @@ action :modify do
 
     cmd << cmd_options(new_resource.options)
 
-    execute "Modify_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("modify #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -80,9 +76,8 @@ action :move do
 
     cmd << cmd_options(new_resource.options)
 
-    execute "Move_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("move #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -99,9 +94,8 @@ action :delete do
 
     cmd << cmd_options(new_resource.options)
 
-    execute "Delete_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("delete #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -132,7 +126,8 @@ def parent?
     true
   else
     ldap = new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
-    parent = Mixlib::ShellOut.new("dsquery ou -name \"#{new_resource.ou}\"").run_command
+    parent = CmdHelper.shell_out("dsquery ou -name \"#{new_resource.ou}\"",
+                                 new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
     path = "OU=#{new_resource.ou},"
     path << ldap
     parent.stdout.include? path
@@ -145,8 +140,13 @@ def exists?
     ldap = "OU=#{new_resource.ou},"
     ldap << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
   end
-  check = Mixlib::ShellOut.new("dsquery ou -name \"#{new_resource.name}\"").run_command
+  check = CmdHelper.shell_out("dsquery ou -name \"#{new_resource.name}\"",
+                              new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   path = "OU=#{new_resource.name},"
   path << ldap
   check.stdout.include? path
+end
+
+def print_msg(action)
+  "windows_ad_ou[#{action}]"
 end

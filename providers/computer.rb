@@ -38,9 +38,8 @@ action :create do
 
     cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Create_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("create #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   end
@@ -54,9 +53,8 @@ action :modify do
 
     cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Modify_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("modify #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -72,9 +70,8 @@ action :move do
 
     cmd << CmdHelper.cmd_options(new_resource.options) 
 
-    execute "Move_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("move #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -91,9 +88,8 @@ action :delete do
 
     cmd << CmdHelper.cmd_options(new_resource.options) 
 
-    execute "Delete_#{new_resource.name}" do
-      command cmd
-    end  
+    Chef::Log.info(print_msg("delete #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -103,6 +99,11 @@ action :delete do
 end
 
 def exists?
-  check = Mixlib::ShellOut.new("dsquery computer -name \"#{new_resource.name}\"").run_command
+  check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"",
+                              new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   check.stdout.include? "DC"
+end
+
+def print_msg(action)
+  "windows_ad_contact[#{action}]"
 end
