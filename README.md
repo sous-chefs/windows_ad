@@ -127,6 +127,9 @@ Resource/Provider
 - domain_name: FQDN
 - ou: Organization Unit path where object is to be located.
 - options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754539.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 
 ### Examples
@@ -146,6 +149,16 @@ Resource/Provider
       options ({ "desc" => "computer" })
     end
 
+    # Create computer "workstation1" in the Computers OU using domain admin account
+    windows_ad_computer "workstation1" do
+      action :create
+      domain_name "contoso.com"
+      ou "computers"
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
+
 `contact`
 ---------
 
@@ -161,6 +174,9 @@ Resource/Provider
 - domain_name: FQDN
 - ou: Organization Unit path where object is to be located.
 - options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc771883.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 
 ### Examples
@@ -173,6 +189,20 @@ Resource/Provider
       options ({ "fn" => "Bob", 
                  "ln" => "Smith"
                })
+    end
+
+    # Create contact "Bob Smith" in the Users OU with firstname "Bob" and lastname "Smith"
+    # using domain admin account
+    windows_ad_contact "Bob Smith" do
+      action :create
+      domain_name "contoso.com"
+      ou "users"
+      options ({ "fn" => "Bob", 
+                 "ln" => "Smith"
+               })
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
     end
     
 `group`
@@ -190,6 +220,9 @@ Resource/Provider
 - domain_name: FQDN
 - ou: Organization Unit path where object is to be located.
 - options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754037.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 
 ### Examples
@@ -209,6 +242,16 @@ Resource/Provider
       options ({ "desc" => "Information Technology Security Group"
                })
     end
+
+    # Create group "IT" in the Users OU using domain admin account
+    windows_ad_group "IT" do
+      action :create
+      domain_name "contoso.com"
+      ou "users"
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
     
 `ou`
 ----
@@ -225,6 +268,9 @@ Resource/Provider
 - domain_name: FQDN
 - ou: Organization Unit path where object is to be located.
 - options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 
 ### Examples
@@ -240,6 +286,15 @@ Resource/Provider
       action :create
       domain_name "contoso.com"
       ou "Departments"
+    end
+
+    # Create Organizational Unit "Departments" in the root using domain admin account
+    windows_ad_ou "Departments" do
+      action :create
+      domain_name "contoso.com"
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
     end
     
 `users`
@@ -258,6 +313,9 @@ Resource/Provider
 - ou: Organization Unit path where object is located.
 - options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc731279.aspx
 - reverse: allows the reversing of "First Name Last Name" to "Last Name, First Name"
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 ### Examples
 
@@ -276,6 +334,24 @@ Resource/Provider
            })
     end
 
+    # Create user "Joe Smith" in the Users OU using domain admin account
+    windows_ad_user "Joe Smith" do
+      action :create
+      domain_name "contoso.com"
+      ou "users"
+      options ({ "samid" => "JSmith",
+             "upn" => "JSmith@contoso.com",
+             "fn" => "Joe",
+             "ln" => "Smith",
+             "display" => "Smith, Joe",
+             "disabled" => "no",
+             "pwd" => "Passw0rd"
+           })
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
+
 `group_member`
 -------
 
@@ -290,6 +366,9 @@ Resource/Provider
 - domain_name: FQDN.
 - user_ou: Organization Unit path where user object is located.
 - group_ou: Organization Unit path where group object is located.
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 ### Examples
 
@@ -300,6 +379,18 @@ Resource/Provider
       domain_name 'contoso.com'
       user_ou 'users'
       grou_ou 'AD/Groups'
+    end
+
+    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups" using domain admin account
+    windows_ad_group_member 'Joe Smith' do
+      action :add
+      group_name  'Admins'
+      domain_name 'contoso.com'
+      user_ou 'users'
+      group_ou 'AD/Groups'
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
     end
     
 

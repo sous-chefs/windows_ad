@@ -34,13 +34,12 @@ action :create do
   else
     cmd = "dsadd"
     cmd << " computer "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
-    cmd << cmd_options(new_resource.options)
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Create_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("create #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   end
@@ -50,13 +49,12 @@ action :modify do
   if exists?
     cmd = "dsmod"
     cmd << " computer "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
-    cmd << cmd_options(new_resource.options)
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Modify_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("modify #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -68,13 +66,12 @@ end
 action :move do
   if exists?
     cmd = "dsmove "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
-    cmd << cmd_options(new_resource.options) 
+    cmd << CmdHelper.cmd_options(new_resource.options) 
 
-    execute "Move_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("move #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -86,14 +83,13 @@ end
 action :delete do
   if exists?
     cmd = "dsrm "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << " -noprompt"
 
-    cmd << cmd_options(new_resource.options) 
+    cmd << CmdHelper.cmd_options(new_resource.options) 
 
-    execute "Delete_#{new_resource.name}" do
-      command cmd
-    end  
+    Chef::Log.info(print_msg("delete #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -102,22 +98,12 @@ action :delete do
   end
 end
 
-def cmd_options(options)
-  cmd = ''
-  options.each do |option, value|
-    cmd << " -#{option} \"#{value}\""
-    # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
-  end
-  cmd
-end
-
-def dn
-  dn = "CN=#{new_resource.name},"
-  dn << new_resource.ou.split("/").reverse.map { |k| "OU=#{k}" }.join(",") << ","
-  dn << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
-end
-
 def exists?
-  check = Mixlib::ShellOut.new("dsquery computer -name \"#{new_resource.name}\"").run_command
+  check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"",
+                              new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   check.stdout.include? "DC"
+end
+
+def print_msg(action)
+  "windows_ad_contact[#{action}]"
 end
