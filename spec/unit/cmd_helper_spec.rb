@@ -35,10 +35,34 @@ describe 'cmd_helper' do
       expect(result).to eq('CN=name,OU=unit,DC=domain,DC=local')
     end
 
-    it 'handles users OU' do
+    it 'handles users container' do
       result = CmdHelper.dn('name', 'users', 'domain')
 
       expect(result).to eq('CN=name,CN=users,DC=domain')
+    end
+
+    it 'handles builtin container' do
+      result = CmdHelper.dn('name', 'Builtin', 'domain')
+
+      expect(result).to eq('CN=name,CN=Builtin,DC=domain')
+    end
+
+    it 'handles computers container' do
+      result = CmdHelper.dn('name', 'Computers', 'domain')
+
+      expect(result).to eq('CN=name,CN=Computers,DC=domain')
+    end
+
+    it 'handles foreign security principals container' do
+      result = CmdHelper.dn('name', 'ForeignSecurityPrincipals', 'domain')
+
+      expect(result).to eq('CN=name,CN=ForeignSecurityPrincipals,DC=domain')
+    end
+
+    it 'handles managed service accounts container' do
+      result = CmdHelper.dn('name', 'managed service accounts', 'domain')
+
+      expect(result).to eq('CN=name,CN=managed service accounts,DC=domain')
     end
 
     it 'handles empty OUs' do

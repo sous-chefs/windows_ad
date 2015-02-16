@@ -11,9 +11,11 @@ class CmdHelper
   end
 
   def self.dn(name, ou, domain)
+    containers = [ 'users', 'builtin', 'computers', 'foreignsecurityprincipals', 'managed service accounts' ]
+    
     dn = "CN=#{name},"
     unless ou.nil?
-      if ou.downcase == 'users'
+      if containers.include? ou.downcase
         dn << "CN=#{ou},"
       else
         dn << ou.split("/").reverse.map! { |k| "OU=#{k}" }.join(",") << ","
