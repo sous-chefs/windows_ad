@@ -2,7 +2,7 @@
 # Author:: Miguel Ferreira (<miguelferreira@me.com>)
 # Cookbook Name:: windows_ad
 # Provider:: group_member
-# 
+#
 # Copyright 2015, Schuberg Philis B.V.
 #
 # Permission is hereby granted, free of charge, to any person obtaining
