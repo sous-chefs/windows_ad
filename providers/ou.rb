@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Provider:: ou
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -130,7 +130,7 @@ def parent?
                                  new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
     path = "OU=#{new_resource.ou},"
     path << ldap
-    parent.stdout.include? path
+    parent.stdout.downcase.include? path.downcase
   end
 end
 def exists?
@@ -144,7 +144,7 @@ def exists?
                               new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   path = "OU=#{new_resource.name},"
   path << ldap
-  check.stdout.include? path
+  check.stdout.downcase.include? path.downcase
 end
 
 def print_msg(action)

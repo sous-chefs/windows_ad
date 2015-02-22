@@ -115,11 +115,11 @@ def exists?
     reverse_name = new_resource.name.split(" ").reverse.map! { |k| k }.join(", ")
     contact = CmdHelper.shell_out("dsquery contact -name \"#{reverse_name}\"", cmd_user, cmd_pass, cmd_domain)
     user = CmdHelper.shell_out("dsquery user -name \"#{reverse_name}\"", cmd_user, cmd_pass, cmd_domain)
-    contact.stdout.include? "DC" or user.stdout.include? "DC"
+    contact.stdout.downcase.include? "dc" or user.stdout.downcase.include? "dc"
   else
     contact = CmdHelper.shell_out("dsquery contact -name \"#{new_resource.name}\"", cmd_user, cmd_pass, cmd_domain)
     user = CmdHelper.shell_out("dsquery user -name \"#{new_resource.name}\"", cmd_user, cmd_pass, cmd_domain)
-    contact.stdout.include? "DC" or user.stdout.include? "DC"
+    contact.stdout.downcase.include? "dc" or user.stdout.downcase.include? "dc"
   end
 end
 
