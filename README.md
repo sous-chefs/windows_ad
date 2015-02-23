@@ -8,7 +8,7 @@ Requirements
 Platform
 --------
 
-* Windows Server 2008 R2 
+* Windows Server 2008 R2
 * Windows Server 2012 Family
 
 Cookbooks
@@ -19,7 +19,7 @@ Cookbooks
 Usage
 ==========
 #### windows_ad::default
-The windows_ad::default recipe installs the required roles and features to support a domain controller. 
+The windows_ad::default recipe installs the required roles and features to support a domain controller.
 
 ```json
 {
@@ -61,7 +61,7 @@ Resource/Provider
       type "forest"
       safe_mode_pass "Passw0rd"
     end
-    
+
     # Create Contoso.com replica
     windows_ad_domain "contoso.com" do
       action :create
@@ -91,20 +91,20 @@ Resource/Provider
                  "InstallDNS" => nil
                })
     end
-    
+
     # Remove Domain Controller
     windows_ad_domain "contoso.com" do
       action :delete
       local_pass "Passw0rd"
     end
-    
+
     # Join Contoso.com domain
     windows_ad_domain "contoso.com" do
       action :join
       domain_pass "Passw0rd"
       domain_user "Administrator"
     end
-    
+
     # Unjoin Contoso.com domain
     windows_ad_domain "contoso.com" do
       action :unjoin
@@ -140,7 +140,7 @@ Resource/Provider
       domain_name "contoso.com"
       ou "computers"
     end
-    
+
     # Create computer "workstation1" in the Computers OU with description of "Computer"
     windows_ad_computer "workstation1" do
       action :create
@@ -186,7 +186,7 @@ Resource/Provider
       action :create
       domain_name "contoso.com"
       ou "users"
-      options ({ "fn" => "Bob", 
+      options ({ "fn" => "Bob",
                  "ln" => "Smith"
                })
     end
@@ -197,14 +197,14 @@ Resource/Provider
       action :create
       domain_name "contoso.com"
       ou "users"
-      options ({ "fn" => "Bob", 
+      options ({ "fn" => "Bob",
                  "ln" => "Smith"
                })
       cmd_user "Administrator"
       cmd_pass "password"
       cmd_domain "contoso.com"
     end
-    
+
 `group`
 -------
 
@@ -233,7 +233,7 @@ Resource/Provider
       domain_name "contoso.com"
       ou "users"
     end
-    
+
     # Create group "IT" in the Users OU with Description "Information Technology Security Group"
     windows_ad_group "IT" do
       action :create
@@ -252,7 +252,7 @@ Resource/Provider
       cmd_pass "password"
       cmd_domain "contoso.com"
     end
-    
+
 `ou`
 ----
 
@@ -280,7 +280,7 @@ Resource/Provider
       action :create
       domain_name "contoso.com"
     end
-    
+
     # Create Organizational Unit "IT" in the "Department" OUroot
     windows_ad_ou "IT" do
       action :create
@@ -296,7 +296,7 @@ Resource/Provider
       cmd_pass "password"
       cmd_domain "contoso.com"
     end
-    
+
 `users`
 -------
 
@@ -392,7 +392,15 @@ Resource/Provider
       cmd_pass "password"
       cmd_domain "contoso.com"
     end
-    
+
+
+Testing
+=======
+
+The libraries provided with the cookbook can be tested using RSpec and the tests in `spec/`.
+```bash
+rspec spec/
+```
 
 Contributing
 ============
@@ -408,7 +416,7 @@ License and Authors
 ===================
 
 Authors:: Derek Groh (<dgroh@arch.tamu.edu>)
-          Richard Guin          
+          Richard Guin
           Miroslav Kyurchev (<mkyurchev@gmail.com>)
 		  Matt Wrock (<matt@mattwrock.com>)
 		  Miguel Ferreira (<miguelferreira@me.com>)

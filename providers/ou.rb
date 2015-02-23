@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Provider:: ou
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -116,35 +116,38 @@ end
 def dn
   dn = "ou=#{new_resource.name},"
   unless new_resource.ou.nil?
-    dn << new_resource.ou.split("/").reverse.map! { |k| "ou=#{k}" }.join(",") << ","
+    dn << CmdHelper.ou_partial_dn(new_resource.ou) << ','
   end
-  dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
+  dn << CmdHelper.dc_partial_dn(new_resource.domain_name)
 end
 
 def parent?
   if new_resource.ou.nil?
     true
   else
-    ldap = new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
-    parent = CmdHelper.shell_out("dsquery ou -name \"#{new_resource.ou}\"",
+    ldap = CmdHelper.dc_partial_dn(new_resource.domain_name)
+    parent_ou_name = CmdHelper.ou_leaf(new_resource.ou)
+    parent = CmdHelper.shell_out("dsquery ou -name \"#{parent_ou_name}\"",
                                  new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-    path = "OU=#{new_resource.ou},"
+    path = CmdHelper.ou_partial_dn(new_resource.ou) << ','
     path << ldap
-    parent.stdout.include? path
+    parent.stdout.downcase.include? path.downcase
   end
 end
+
 def exists?
+  dc_partial_dn = CmdHelper.dc_partial_dn(new_resource.domain_name)
   if new_resource.ou.nil?
-    ldap = new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
+    ldap = dc_partial_dn
   else
-    ldap = "OU=#{new_resource.ou},"
-    ldap << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
+    ldap = CmdHelper.ou_partial_dn(new_resource.ou) << ','
+    ldap << dc_partial_dn
   end
   check = CmdHelper.shell_out("dsquery ou -name \"#{new_resource.name}\"",
                               new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   path = "OU=#{new_resource.name},"
   path << ldap
-  check.stdout.include? path
+  check.stdout.downcase.include? path.downcase
 end
 
 def print_msg(action)

@@ -12,16 +12,28 @@ class CmdHelper
 
   def self.dn(name, ou, domain)
     containers = [ 'users', 'builtin', 'computers', 'foreignsecurityprincipals', 'managed service accounts' ]
-    
+
     dn = "CN=#{name},"
     unless ou.nil?
       if containers.include? ou.downcase
         dn << "CN=#{ou},"
       else
-        dn << ou.split("/").reverse.map! { |k| "OU=#{k}" }.join(",") << ","
+        dn << ou_partial_dn(ou) << ','
       end
     end
-    dn << domain.split(".").map! { |k| "DC=#{k}" }.join(",")
+    dn << dc_partial_dn(domain)
+  end
+
+  def self.ou_partial_dn(ou)
+    (ou || '').split('/').reverse.map! { |k| "OU=#{k}" }.join(',')
+  end
+
+  def self.dc_partial_dn(domain)
+    (domain || '').split(".").map! { |k| "DC=#{k}" }.join(',')
+  end
+
+  def self.ou_leaf(ou)
+    (ou || '').split('/').reverse.first || ''
   end
 
   def self.shell_out(cmd, user, pass, domain)
@@ -32,4 +44,5 @@ class CmdHelper
     end
     shellout
   end
+
 end
