@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Provider:: computer
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -68,7 +68,7 @@ action :move do
     cmd = "dsmove "
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
-    cmd << CmdHelper.cmd_options(new_resource.options) 
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
@@ -86,7 +86,7 @@ action :delete do
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << " -noprompt"
 
-    cmd << CmdHelper.cmd_options(new_resource.options) 
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
@@ -94,14 +94,14 @@ action :delete do
     new_resource.updated_by_last_action(true)
   else
     Chef::Log.debug("The object has already been removed")
-    new_resource.updated_by_last_action(false)  
+    new_resource.updated_by_last_action(false)
   end
 end
 
 def exists?
   check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"",
                               new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-  check.stdout.include? "DC"
+  check.stdout.downcase.include? "dc"
 end
 
 def print_msg(action)

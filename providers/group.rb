@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Provider:: group
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -53,7 +53,7 @@ action :modify do
     cmd << " group "
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
-    cmd << CmdHelper.cmd_options(new_resource.options) 
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
@@ -96,13 +96,13 @@ action :delete do
     new_resource.updated_by_last_action(true)
   else
     Chef::Log.debug("The object has already been removed")
-    new_resource.updated_by_last_action(false)  
+    new_resource.updated_by_last_action(false)
   end
 end
 
 def exists?
   check = Mixlib::ShellOut.new("dsquery group -name \"#{new_resource.name}\"").run_command
-  check.stdout.include? "DC"
+  check.stdout.downcase.include? "dc"
 end
 
 def print_msg(action)

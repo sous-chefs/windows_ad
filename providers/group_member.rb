@@ -74,7 +74,7 @@ end
 def is_member_of?(user_dn, group_dn)
   check = CmdHelper.shell_out("dsget group  \"#{group_dn}\"  -members",
                               new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-  check.stdout.include?(user_dn)
+  check.stdout.downcase.include?(user_dn.downcase)
 end
 
 def print_msg(action)

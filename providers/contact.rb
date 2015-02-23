@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Provider:: contact
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -105,7 +105,7 @@ def exists?
                                 new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   user = CmdHelper.shell_out("dsquery user -name #{new_resource.name}",
                              new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-  contact.stdout.include? "DC" or user.stdout.include? "DC"
+  contact.stdout.downcase.include? "dc" or user.stdout.downcase.include? "dc"
 end
 
 def print_msg(action)
