@@ -133,7 +133,8 @@ end
 
 def computer_exists?
   comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
-  comp.stdout.downcase.include?(new_resource.downcase.name) or comp.stdout.downcase.include?(new_resource.downcase.name.upcase)
+  stdout = comp.stdout.downcase
+  stdout.include?(new_resource.name.downcase) or stdout.include?(new_resource.name.downcase)
 end
 
 def last_dc?
