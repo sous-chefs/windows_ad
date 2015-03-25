@@ -1,5 +1,13 @@
 # CHANGELOG for windows_ad
 
+## 0.4.2
+
+* Community contributions - add_domain_join_ou
+
+## 0.4.1
+
+* Community contributions - fix-string-comparison, case-insensitive-comparison, and decompose-nested-ou
+
 ## 0.4.0
 
 * Community contributions - chef_spec support.
