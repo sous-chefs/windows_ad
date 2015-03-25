@@ -51,6 +51,7 @@ Resource/Provider
 - domain_pass: User password to join the domain or to create a domain controller. **Required**: for `:create` except on `type` `forest` on windows 2012 and above.
 - local_pass: Local Administrator Password for removing domain controller.
 - replica_type: For Windows Server 2008, specifies installing new or additional domain controller.  Valid values: domain, replica.
+- ou: When joining to a domain, specify the OU to place the computer in. *Optional*
 - options: additional options as needed by AD DS Deployment http://technet.microsoft.com/en-us/library/cc732887.aspx for Windows Server 2008 and http://technet.microsoft.com/en-us/library/hh974719.aspx for Windows Server 2012.  Single parameters use nil for key value, see example below.
 
 ### Examples
@@ -103,6 +104,14 @@ Resource/Provider
       action :join
       domain_pass "Passw0rd"
       domain_user "Administrator"
+    end
+
+    # Join Contoso.com domain with OU
+    windows_ad_domain "contoso.com" do
+      action :join
+      domain_pass "Passw0rd"
+      domain_user "Administrator"
+      ou "Servers/Web"
     end
 
     # Unjoin Contoso.com domain
