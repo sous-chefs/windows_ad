@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Provider:: ou
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -25,8 +25,6 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-require 'mixlib/shellout'
-
 action :create do
   if parent?
   # indent all
@@ -40,16 +38,12 @@ action :create do
       cmd << dn
       cmd << "\""
 
-      new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-desc Description] [{-s Server | -d Domain}][-u UserName] [-p {Password | *}] [-q] [{-uc | -uco | -uci}]
-      end
+      cmd << cmd_options(new_resource.options)
 
-      execute "Create_#{new_resource.name}" do
-        command cmd
-      end
+      Chef::Log.info(print_msg("create #{new_resource.name}"))
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
-    new_resource.updated_by_last_action(true)
+      new_resource.updated_by_last_action(true)
     end
   else
     Chef::Log.error("The parent OU does not exist")
@@ -63,14 +57,10 @@ action :modify do
     cmd << " ou "
     cmd << dn
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-desc Description] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c] [-q] [{-uc | -uco | -uci}]
-    end
+    cmd << cmd_options(new_resource.options)
 
-    execute "Modify_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("modify #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -84,14 +74,10 @@ action :move do
     cmd = "dsmove "
     cmd << dn
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-newname NewName] [-newparent ParentDN] [{-s Server | -d Domain}] [-u UserName] [-p  {Password | *}] [-q] [{-uc | -uco | -uci}]
-    end
+    cmd << cmd_options(new_resource.options)
 
-    execute "Move_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("move #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -106,14 +92,10 @@ action :delete do
     cmd << dn
     cmd << " -noprompt"
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
-    end
+    cmd << cmd_options(new_resource.options)
 
-    execute "Delete_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("delete #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -122,36 +104,52 @@ action :delete do
   end
 end
 
+def cmd_options(options)
+  cmd = ''
+  options.each do |option, value|
+    cmd << " -#{option} \"#{value}\""
+    # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
+  end
+  cmd
+end
+
 def dn
   dn = "ou=#{new_resource.name},"
-  if new_resource.ou.nil?
-  else
-    dn << new_resource.ou.split("/").reverse.map! { |k| "ou=#{k}" }.join(",")
-    dn << ","
+  unless new_resource.ou.nil?
+    dn << CmdHelper.ou_partial_dn(new_resource.ou) << ','
   end
-  dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
+  dn << CmdHelper.dc_partial_dn(new_resource.domain_name)
 end
 
 def parent?
   if new_resource.ou.nil?
     true
   else
-    ldap = new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
-    parent = Mixlib::ShellOut.new("dsquery ou -name \"#{new_resource.ou}\"").run_command
-    path = "OU=#{new_resource.ou},"
+    ldap = CmdHelper.dc_partial_dn(new_resource.domain_name)
+    parent_ou_name = CmdHelper.ou_leaf(new_resource.ou)
+    parent = CmdHelper.shell_out("dsquery ou -name \"#{parent_ou_name}\"",
+                                 new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    path = CmdHelper.ou_partial_dn(new_resource.ou) << ','
     path << ldap
-    parent.stdout.include? path
+    parent.stdout.downcase.include? path.downcase
   end
 end
+
 def exists?
+  dc_partial_dn = CmdHelper.dc_partial_dn(new_resource.domain_name)
   if new_resource.ou.nil?
-    ldap = new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
+    ldap = dc_partial_dn
   else
-    ldap = "OU=#{new_resource.ou},"
-    ldap << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
+    ldap = CmdHelper.ou_partial_dn(new_resource.ou) << ','
+    ldap << dc_partial_dn
   end
-  check = Mixlib::ShellOut.new("dsquery ou -name \"#{new_resource.name}\"").run_command
+  check = CmdHelper.shell_out("dsquery ou -name \"#{new_resource.name}\"",
+                              new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   path = "OU=#{new_resource.name},"
   path << ldap
-  check.stdout.include? path
+  check.stdout.downcase.include? path.downcase
+end
+
+def print_msg(action)
+  "windows_ad_ou[#{action}]"
 end

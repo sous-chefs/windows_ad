@@ -27,6 +27,7 @@
 
 require 'mixlib/shellout'
 
+ENUM_NAMES = %w{Win2003 Win2008 Win2008R2 Win2012 Win2012R2 Default}
 
 action :create do
 
@@ -34,9 +35,7 @@ action :create do
     new_resource.updated_by_last_action(false)
   else
     if node[:os_version] >= "6.2"
-      cmd = "$secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force;"
-      cmd << "$mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd);"
-      cmd << create_command
+      cmd = create_command
       cmd << " -DomainName #{new_resource.name}"
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << " -Force:$true"
@@ -49,13 +48,7 @@ action :create do
       cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
     end
 
-    new_resource.options.each do |option, value|
-      if value.nil?
-        cmd << " -#{option}"
-      else
-        cmd << " -#{option} '#{value}'"
-      end
-    end
+    cmd << format_options(new_resource.options)
 
     powershell_script "create_domain_#{new_resource.name}" do
       code cmd
@@ -75,13 +68,7 @@ action :delete do
       cmd << " -DemoteOperationMasterRole"
     end
 
-    new_resource.options.each do |option, value|
-      if value.nil?
-        cmd << " -#{option}"
-      else
-        cmd << " -#{option} '#{value}'"
-      end
-    end
+    cmd << format_options(new_resource.options)
 
     powershell_script "remove_domain_#{new_resource.name}" do
       code cmd
@@ -156,7 +143,8 @@ end
 
 def computer_exists?
   comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
-  comp.stdout.include?(new_resource.name) or comp.stdout.include?(new_resource.name.upcase)
+  stdout = comp.stdout.downcase
+  stdout.include?(new_resource.name.downcase) or stdout.include?(new_resource.name.downcase)
 end
 
 def last_dc?
@@ -166,16 +154,21 @@ end
 
 def create_command
   if node[:os_version] > '6.2'
+    cmd = ''
+    if new_resource.type != "forest"
+      cmd << "$secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force;"
+      cmd << "$mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd);"
+    end
     case new_resource.type
       when "forest"
-        "Install-ADDSForest"
+        cmd << "Install-ADDSForest"
       when "domain"
-        "install-ADDSDomain -Credential $mycreds"
+        cmd << "Install-ADDSDomain -Credential $mycreds"
       when "replica"
-        "Install-ADDSDomainController -Credential $mycreds"
+        cmd << "Install-ADDSDomainController -Credential $mycreds"
       when "read-only"
-        "Add-ADDSReadOnlyDomainControllerAccount -Credential $mycreds"
-  end
+        cmd << "Add-ADDSReadOnlyDomainControllerAccount -Credential $mycreds"
+    end
   else
     case new_resource.type
       when "forest"
@@ -186,6 +179,18 @@ def create_command
         "domain"
       when "replica"
         "replica"
+    end
+  end
+end
+
+def format_options(options)
+  options.reduce('') do |cmd, (option, value)|
+    if value.nil?
+      cmd << " -#{option}"
+    elsif ENUM_NAMES.include?(value) || value.is_a?(Numeric)
+      cmd << " -#{option} #{value}"
+    else
+      cmd << " -#{option} '#{value}'"
     end
   end
 end

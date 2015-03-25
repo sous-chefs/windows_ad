@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Provider:: contact
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -35,19 +35,15 @@ action :create do
     cmd = "dsadd"
     cmd << " contact "
     cmd << "\""
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << "\""
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-fn FirstName] [-mi Initial] [-ln LastName] [-display DisplayName] [-desc Description] [-office Office] [-tel PhoneNumber] [-email Email] [-hometel HomePhoneNumber] [-pager PagerNumber] [-mobile CellPhoneNumber] [-fax FaxNumber] [-iptel IPPhoneNumber] [-title Title] [-dept Department] [-company Company] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}] [-q] [{-uc | -uco | -uci}]
-    end
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
-  execute "Create_#{new_resource.name}" do
-    command cmd
-  end
+    Chef::Log.info(print_msg("create #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
-  new_resource.updated_by_last_action(true)
+    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -55,16 +51,12 @@ action :modify do
   if exists?
     cmd = "dsmod"
     cmd << " contact "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      #  [-fn FirstName] [-mi Initial] [-ln LastName] [-display DisplayName] [-desc Description] [-office Office] [-tel PhoneNumber] [-email Email] [-hometel HomePhoneNumber] [-pager PagerNumber] [-mobile CellPhoneNumber] [-fax FaxNumber] [-iptel IPPhoneNumber] [-title Title] [-dept Department] [-company Company] [{-s Server | -d Domain}] [-u UserName][-p {Password | *}] [-c] [-q] [{-uc | -uco | -uci}] 
-    end
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Modify_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("modify #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -76,16 +68,12 @@ end
 action :move do
   if exists?
     cmd = "dsmove "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-newname NewName] [-newparent ParentDN] [{-s Server | -d Domain}] [-u UserName] [-p  {Password | *}] [-q] [{-uc | -uco | -uci}]
-    end
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Move_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("move #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -97,17 +85,13 @@ end
 action :delete do
   if exists?
     cmd = "dsrm "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << " -noprompt"
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
-    end
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Delete_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("delete #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -116,14 +100,14 @@ action :delete do
   end
 end
 
-def dn
-  dn = "cn=#{new_resource.name},"
-  dn << new_resource.ou.split("/").reverse.map { |k| "OU=#{k}" }.join(",") << ","
-  dn << new_resource.domain_name.split(".").map! { |k| "dc=#{k}" }.join(",")
+def exists?
+  contact = CmdHelper.shell_out("dsquery contact -name \"#{new_resource.name}\"",
+                                new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+  user = CmdHelper.shell_out("dsquery user -name #{new_resource.name}",
+                             new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+  contact.stdout.downcase.include? "dc" or user.stdout.downcase.include? "dc"
 end
 
-def exists?
-  contact = Mixlib::ShellOut.new("dsquery contact -name \"#{new_resource.name}\"").run_command
-  user = Mixlib::ShellOut.new("dsquery user -name #{new_resource.name}").run_command
-  contact.stdout.include? "DC" or user.stdout.include? "DC"
+def print_msg(action)
+  "windows_ad_contact[#{action}]"
 end

@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Provider:: computer
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -34,18 +34,14 @@ action :create do
   else
     cmd = "dsadd"
     cmd << " computer "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
-    new_resource.options.each do |option, value|
-     cmd << " -#{option} #{value}"
-     # [-samid SAMName] [-desc Description] [-locLocation] [-memberof GroupDN ...] [{-s Server | -d Domain}] [-uUserName] [-p {Password | *}] [-q] [{-uc | -uco | -uci}]
-    end
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
-  execute "Create_#{new_resource.name}" do
-    command cmd
-  end
+    Chef::Log.info(print_msg("create #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
-  new_resource.updated_by_last_action(true)
+    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -53,16 +49,12 @@ action :modify do
   if exists?
     cmd = "dsmod"
     cmd << " computer "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-desc Description] [-loc Location] [-disabled {yes | no}] [-reset] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}] [-c] [-q] [{-uc | -uco | -uci}] 
-    end
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Modify_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("modify #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -74,16 +66,12 @@ end
 action :move do
   if exists?
     cmd = "dsmove "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-newname NewName] [-newparent ParentDN] [{-s Server | -d Domain}] [-u UserName] [-p  {Password | *}] [-q] [{-uc | -uco | -uci}]
-    end 
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Move_#{new_resource.name}" do
-      command cmd
-    end
+    Chef::Log.info(print_msg("move #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
@@ -95,32 +83,27 @@ end
 action :delete do
   if exists?
     cmd = "dsrm "
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << " -noprompt"
 
-    new_resource.options.each do |option, value|
-      cmd << " -#{option} #{value}"
-      # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
-    end 
+    cmd << CmdHelper.cmd_options(new_resource.options)
 
-    execute "Delete_#{new_resource.name}" do
-      command cmd
-    end  
+    Chef::Log.info(print_msg("delete #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
     Chef::Log.debug("The object has already been removed")
-    new_resource.updated_by_last_action(false)  
+    new_resource.updated_by_last_action(false)
   end
 end
 
-def dn
-  dn = "CN=#{new_resource.name},"
-  dn << new_resource.ou.split("/").reverse.map { |k| "OU=#{k}" }.join(",") << ","
-  dn << new_resource.domain_name.split(".").map! { |k| "DC=#{k}" }.join(",")
+def exists?
+  check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"",
+                              new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+  check.stdout.downcase.include? "dc"
 end
 
-def exists?
-  check = Mixlib::ShellOut.new("dsquery computer -name \"#{new_resource.name}\"").run_command
-  check.stdout.include? "DC"
+def print_msg(action)
+  "windows_ad_contact[#{action}]"
 end

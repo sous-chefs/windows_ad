@@ -1,9 +1,9 @@
 #
-# Author:: Derek Groh (<dgroh@arch.tamu.edu>)
+# Author:: Miguel Ferreira (<miguelferreira@me.com>)
 # Cookbook Name:: windows_ad
-# Resource:: domain
-#
-# Copyright 2013, Texas A&M
+# Provider:: group_member
+# 
+# Copyright 2015, Schuberg Philis B.V.
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -25,15 +25,14 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-actions :create, :delete, :join, :unjoin
-default_action :create
+actions :add, :remove
+default_action :add
 
-attribute :name, :kind_of => String, :name_attribute => true
-attribute :domain_user, :kind_of => String, :required => true
-attribute :domain_pass, :kind_of => String, :required => true
-attribute :type, :kind_of => String, :default => "forest"
-attribute :safe_mode_pass, :kind_of => String, :required => true
-attribute :options, :kind_of => Hash, :default => {}
-attribute :local_pass, :kind_of => String
-attribute :replica_type, :kind_of => String, :default => "domain"
-attribute :ou, :kind_of => String
+attribute :user_name, :kind_of => String, :name_attribute => true
+attribute :group_name, :kind_of => String, :required => true
+attribute :domain_name, :kind_of => String
+attribute :user_ou, :kind_of => String
+attribute :group_ou, :kind_of => String
+attribute :cmd_user, :kind_of => String
+attribute :cmd_pass, :kind_of => String
+attribute :cmd_domain, :kind_of => String

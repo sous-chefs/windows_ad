@@ -8,7 +8,7 @@ Requirements
 Platform
 --------
 
-* Windows Server 2008 R2 
+* Windows Server 2008 R2
 * Windows Server 2012 Family
 
 Cookbooks
@@ -19,7 +19,7 @@ Cookbooks
 Usage
 ==========
 #### windows_ad::default
-The windows_ad::default recipe installs the required roles and features to support a domain controller. 
+The windows_ad::default recipe installs the required roles and features to support a domain controller.
 
 ```json
 {
@@ -61,7 +61,7 @@ Resource/Provider
       type "forest"
       safe_mode_pass "Passw0rd"
     end
-    
+
     # Create Contoso.com replica
     windows_ad_domain "contoso.com" do
       action :create
@@ -91,20 +91,20 @@ Resource/Provider
                  "InstallDNS" => nil
                })
     end
-    
+
     # Remove Domain Controller
     windows_ad_domain "contoso.com" do
       action :delete
       local_pass "Passw0rd"
     end
-    
+
     # Join Contoso.com domain
     windows_ad_domain "contoso.com" do
       action :join
       domain_pass "Passw0rd"
       domain_user "Administrator"
     end
-    
+
     # Unjoin Contoso.com domain
     windows_ad_domain "contoso.com" do
       action :unjoin
@@ -127,6 +127,9 @@ Resource/Provider
 - domain_name: FQDN
 - ou: Organization Unit path where object is to be located.
 - options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754539.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 
 ### Examples
@@ -137,13 +140,23 @@ Resource/Provider
       domain_name "contoso.com"
       ou "computers"
     end
-    
+
     # Create computer "workstation1" in the Computers OU with description of "Computer"
     windows_ad_computer "workstation1" do
       action :create
       domain_name "contoso.com"
       ou "computers"
       options ({ "desc" => "computer" })
+    end
+
+    # Create computer "workstation1" in the Computers OU using domain admin account
+    windows_ad_computer "workstation1" do
+      action :create
+      domain_name "contoso.com"
+      ou "computers"
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
     end
 
 `contact`
@@ -161,6 +174,9 @@ Resource/Provider
 - domain_name: FQDN
 - ou: Organization Unit path where object is to be located.
 - options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc771883.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 
 ### Examples
@@ -170,11 +186,25 @@ Resource/Provider
       action :create
       domain_name "contoso.com"
       ou "users"
-      options ({ "fn" => "Bob", 
+      options ({ "fn" => "Bob",
                  "ln" => "Smith"
                })
     end
-    
+
+    # Create contact "Bob Smith" in the Users OU with firstname "Bob" and lastname "Smith"
+    # using domain admin account
+    windows_ad_contact "Bob Smith" do
+      action :create
+      domain_name "contoso.com"
+      ou "users"
+      options ({ "fn" => "Bob",
+                 "ln" => "Smith"
+               })
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
+
 `group`
 -------
 
@@ -190,6 +220,9 @@ Resource/Provider
 - domain_name: FQDN
 - ou: Organization Unit path where object is to be located.
 - options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754037.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 
 ### Examples
@@ -200,7 +233,7 @@ Resource/Provider
       domain_name "contoso.com"
       ou "users"
     end
-    
+
     # Create group "IT" in the Users OU with Description "Information Technology Security Group"
     windows_ad_group "IT" do
       action :create
@@ -209,7 +242,17 @@ Resource/Provider
       options ({ "desc" => "Information Technology Security Group"
                })
     end
-    
+
+    # Create group "IT" in the Users OU using domain admin account
+    windows_ad_group "IT" do
+      action :create
+      domain_name "contoso.com"
+      ou "users"
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
+
 `ou`
 ----
 
@@ -225,6 +268,9 @@ Resource/Provider
 - domain_name: FQDN
 - ou: Organization Unit path where object is to be located.
 - options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 
 ### Examples
@@ -234,14 +280,23 @@ Resource/Provider
       action :create
       domain_name "contoso.com"
     end
-    
+
     # Create Organizational Unit "IT" in the "Department" OUroot
     windows_ad_ou "IT" do
       action :create
       domain_name "contoso.com"
       ou "Departments"
     end
-    
+
+    # Create Organizational Unit "Departments" in the root using domain admin account
+    windows_ad_ou "Departments" do
+      action :create
+      domain_name "contoso.com"
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
+
 `users`
 -------
 
@@ -258,6 +313,9 @@ Resource/Provider
 - ou: Organization Unit path where object is located.
 - options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc731279.aspx
 - reverse: allows the reversing of "First Name Last Name" to "Last Name, First Name"
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 ### Examples
 
@@ -275,7 +333,74 @@ Resource/Provider
              "pwd" => "Passw0rd"
            })
     end
-    
+
+    # Create user "Joe Smith" in the Users OU using domain admin account
+    windows_ad_user "Joe Smith" do
+      action :create
+      domain_name "contoso.com"
+      ou "users"
+      options ({ "samid" => "JSmith",
+             "upn" => "JSmith@contoso.com",
+             "fn" => "Joe",
+             "ln" => "Smith",
+             "display" => "Smith, Joe",
+             "disabled" => "no",
+             "pwd" => "Passw0rd"
+           })
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
+
+`group_member`
+-------
+
+### Actions
+- :add: Adds a user to a group.
+- :remove: Removes a user from a group.
+
+### Attribute Parameters
+
+- user_name: user name attribute. Name of the user object.
+- group_name: group name attribute. Name of the group object.
+- domain_name: FQDN.
+- user_ou: Organization Unit path where user object is located.
+- group_ou: Organization Unit path where group object is located.
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
+
+### Examples
+
+    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups"
+    windows_ad_group_member 'Joe Smith' do
+      action :add
+      group_name  'Admins'
+      domain_name 'contoso.com'
+      user_ou 'users'
+      grou_ou 'AD/Groups'
+    end
+
+    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups" using domain admin account
+    windows_ad_group_member 'Joe Smith' do
+      action :add
+      group_name  'Admins'
+      domain_name 'contoso.com'
+      user_ou 'users'
+      group_ou 'AD/Groups'
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
+
+
+Testing
+=======
+
+The libraries provided with the cookbook can be tested using RSpec and the tests in `spec/`.
+```bash
+rspec spec/
+```
 
 Contributing
 ============
@@ -291,3 +416,7 @@ License and Authors
 ===================
 
 Authors:: Derek Groh (<dgroh@arch.tamu.edu>)
+          Richard Guin
+          Miroslav Kyurchev (<mkyurchev@gmail.com>)
+		  Matt Wrock (<matt@mattwrock.com>)
+		  Miguel Ferreira (<miguelferreira@me.com>)
