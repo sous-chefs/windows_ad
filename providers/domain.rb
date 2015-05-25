@@ -93,6 +93,7 @@ action :join do
         if node[:os_version] >= "6.2"
           cmd_text = "Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true -Restart"
           cmd_text << " -OUPath '#{ou_dn}'" if new_resource.ou
+          cmd_text << " -Options #{new_resource.options.keys.join(',')}" if new_resource.options
           code <<-EOH
             $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
             $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd)
