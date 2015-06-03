@@ -406,6 +406,8 @@ Resource/Provider
 Testing
 =======
 
+## RSpec
+
 The libraries provided with the cookbook can be tested using RSpec and the tests in `spec/`.
 ```bash
 rspec spec/
@@ -426,7 +428,7 @@ As of now there is no additional testing being done, i.e., if both machines conv
   * vagrant-chef-zero
   * vagrant-omnibus
   * vagrant-winrm
-  * vagrant-berkshelf
+* Berkshelf
 
 ### Usage
 
@@ -442,8 +444,13 @@ vagrant box add kensykora/windows_2012_r2_standard
 # export variable that will be used in Vagrantfile
 export VAGRANT_TEST_BOX='kensykora/windows_2012_r2_standard'
 
+# Bundle required cookbooks (this step needs to be repeated eveytime the cookbooks or a dependency changes)
+berks install
+berks vendor test/fixtures/cookbooks 
+
 # Spin up domain controller
-vagrant up test-dc
+vagrant up test-dc           # this will trigger a VM reboot
+vagrant provision test-dc    # this will run chef-client one more time to converge the VM
 
 # Spin up domain member
 vagrant up test-dm
