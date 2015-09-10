@@ -91,8 +91,9 @@ action :join do
     else
       powershell_script "join_#{new_resource.name}" do
         if node[:os_version] >= "6.2"
-          cmd_text = "Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true -Restart"
+          cmd_text = "Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true"
           cmd_text << " -OUPath '#{ou_dn}'" if new_resource.ou
+          cmd_text << " -Restart" if new_resource.restart
           code <<-EOH
             $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
             $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd)
@@ -101,7 +102,7 @@ action :join do
         else
           cmd_text = "netdom join #{node[:hostname]} /d #{new_resource.name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass}"
           cmd_text << " /ou:#{ou_dn}" if new_resource.ou
-          cmd_text << " /reboot"
+          cmd_text << " /reboot" if new_resource.restart
           code "#{cmd_text}"
         end
       end
@@ -116,10 +117,12 @@ end
 action :unjoin do
   if computer_exists?
     powershell_script "unjoin_#{new_resource.name}" do
+      cmd_text = "Remove-Computer -UnjoinDomainCredential $mycreds -Force:$true"
+      cmd_text << " -Restart" if new_resource.restart
       code <<-EOH
-      $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-      $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_user}', $secpasswd)
-      Remove-Computer -UnjoinDomainCredential $mycreds -Force:$true -Restart
+        $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
+        $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_user}', $secpasswd)
+        #{cmd_text}
       EOH
     end
 
