@@ -106,6 +106,14 @@ Resource/Provider
       domain_user "Administrator"
     end
 
+    # Join Contoso.com domain without restart
+    windows_ad_domain "contoso.com" do
+      action :join
+      domain_pass "Passw0rd"
+      domain_user "Administrator"
+      restart false
+    end
+
     # Join Contoso.com domain with OU
     windows_ad_domain "contoso.com" do
       action :join
@@ -119,6 +127,14 @@ Resource/Provider
       action :unjoin
       domain_pass "Passw0rd"
       domain_user "Administrator"
+    end
+
+    # Unjoin Contoso.com domain without restart
+    windows_ad_domain "contoso.com" do
+      action :unjoin
+      domain_pass "Passw0rd"
+      domain_user "Administrator"
+      restart false
     end
 
 `computer`
