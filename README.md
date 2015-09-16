@@ -422,9 +422,75 @@ Resource/Provider
 Testing
 =======
 
+## RSpec
+
 The libraries provided with the cookbook can be tested using RSpec and the tests in `spec/`.
 ```bash
 rspec spec/
+```
+
+## Vagrant
+
+The cookbook contains a Vagrantfile that can be used to spin up two VMs: (1) a domain controller; (2) a domain member.
+There is also a test cookbook with two recipes that map to the two VMs. This cookbook is called `test_windows_ad` and can be found under `test/fixtures/test_cookbooks`
+
+Each recipe will make use of a few of the providers that the cookbook exposes to converge the VMs into the desired state.
+As of now there is no additional testing being done, i.e., if both machines converge successfully, then the current test has passed.
+
+### Requirements
+* Vagrant
+* A windows vagrant box (that is prepared to regenerate SUID on first boot)
+* Vagrant plugins
+  * vagrant-chef-zero
+  * vagrant-omnibus
+  * vagrant-winrm
+* Berkshelf
+
+### Usage
+
+The vagrant box mentioned in the commands bellow is just meant as an example. It was obtained from https://vagrantcloud.com
+The virtualbox vagrant provider is also meant as an example, although changing that will require adaptations to the Vagrantfile as well. That is because the Vagrantfile contains configuration specific for that provider.
+
+#### Linux & MacOS X
+
+```bash
+# Install a vagrant box (only need to do that once)
+vagrant box add kensykora/windows_2012_r2_standard
+
+# export variable that will be used in Vagrantfile
+export VAGRANT_TEST_BOX='kensykora/windows_2012_r2_standard'
+
+# Bundle required cookbooks (this step needs to be repeated eveytime the cookbooks or a dependency changes)
+berks install
+berks vendor test/fixtures/cookbooks 
+
+# Spin up domain controller
+vagrant up test-dc           # this will trigger a VM reboot
+vagrant provision test-dc    # this will run chef-client one more time to converge the VM
+
+# Spin up domain member
+vagrant up test-dm
+```
+
+#### Windows
+
+TBD
+
+### Other vagrant actions
+
+List available VMs
+```bash
+vagrant status
+```
+
+Converge an already up (and possible converged VM)
+```bash
+vagrant provision <vm-name>
+```
+
+Destroy a VM
+```bash
+vagrant destroy <vm-name>
 ```
 
 Contributing
