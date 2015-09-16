@@ -96,7 +96,7 @@ action :join do
           cmd_text << " -Restart" if new_resource.restart
           code <<-EOH
             $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-            $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd)
+            $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.name}\\#{new_resource.domain_user}', $secpasswd)
             #{cmd_text}
           EOH
         else
@@ -121,7 +121,7 @@ action :unjoin do
       cmd_text << " -Restart" if new_resource.restart
       code <<-EOH
         $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-        $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_user}', $secpasswd)
+        $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.name}\\#{new_resource.domain_user}', $secpasswd)
         #{cmd_text}
       EOH
     end
@@ -134,7 +134,7 @@ action :unjoin do
 end
 
 def ou_dn
-  ou_name << new_resource.ou.split("/").reverse.map { |k| "OU=#{k}" }.join(",") << ","
+  ou_name = new_resource.ou.split("/").reverse.map { |k| "OU=#{k}" }.join(",") << ","
   ou_name << new_resource.name.split(".").map! { |k| "DC=#{k}" }.join(",")
 end
 
