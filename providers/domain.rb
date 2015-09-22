@@ -101,7 +101,7 @@ action :join do
           EOH
         else
           cmd_text = "netdom join #{node[:hostname]} /d #{new_resource.name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass}"
-          cmd_text << " /ou:#{ou_dn}" if new_resource.ou
+          cmd_text << " /ou:\"#{ou_dn}\"" if new_resource.ou
           cmd_text << " /reboot" if new_resource.restart
           code "#{cmd_text}"
         end
