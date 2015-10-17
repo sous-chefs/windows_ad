@@ -4,6 +4,7 @@
 .cache
 .bundle
 .swp
+.gitignore
 bin
 Berksfile.lock
 Gemfile.lock
@@ -11,4 +12,5 @@ options.txt
 recipes/contoso.rb
 Vagrantfile
 /.zero-knife.rb
-/test/fixtures/cookbooks/
+gemfile
+metadata.json
