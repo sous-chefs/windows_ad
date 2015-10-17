@@ -1,5 +1,13 @@
 # CHANGELOG for windows_ad
 
+## 0.4.4
+
+* Correct versioning for Supermarket, required unsharing, bumping version and then sharing once again.
+
+## 0.4.3
+
+* Community contributions - Add restart parameter, Testing with vagrant, Added domain prefix and updated ou_dn method, powershell requires quotes around OU
+
 ## 0.4.2
 
 * Community contributions - add_domain_join_ou
