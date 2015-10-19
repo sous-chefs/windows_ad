@@ -30,9 +30,9 @@ default_action :create
 
 attribute :name, :kind_of => String, :name_attribute => true
 attribute :domain_name, :kind_of => String
-attribute :ou, :kind_of => String
-attribute :options, :kind_of => Hash, :default => {}
-attribute :reverse, :kind_of => String
-attribute :cmd_user, :kind_of => String
-attribute :cmd_pass, :kind_of => String
 attribute :cmd_domain, :kind_of => String
+attribute :cmd_pass, :kind_of => String
+attribute :cmd_user, :kind_of => String
+attribute :options, :kind_of => Hash, :default => {}
+attribute :ou, :kind_of => String
+attribute :reverse, :kind_of => String
