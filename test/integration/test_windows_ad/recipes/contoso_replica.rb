@@ -1,7 +1,7 @@
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
-# Recipe:: contoso
+# Recipe:: contoso_replica
 # 
 # Copyright 2013, Texas A&M
 #
@@ -25,10 +25,24 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-windows_ad_domain "contoso.com" do
+# This is provided as a sample recipe to get you up and going with the windows_ad cookbook.
+
+include_recipe 'windows_ad::default'
+
+# Generate new SID for vagrant box
+execute 'sysprep' do
+  command 'c:\\windows\\system32\\sysprep\\sysprep.exe /oobe /generalize /reboot /quiet /unattend:files\\unattend.xml'
+end
+  
+windows_ad_domain 'contoso.com' do
   action :create
-  type "replica"
-  safe_mode_pass "Passw0rd"
-  domain_user "Administrator"
-  domain_pass "Passw0rd"
+  type 'replica'
+  safe_mode_pass 'Passw0rd'
+  domain_user 'Administrator'
+  domain_pass 'Passw0rd'
+end
+
+#set adminitrator password to Passw0rd
+execute 'Set Administrator Password' do
+  command 'net user Administrator Passw0rd'
 end
