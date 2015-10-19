@@ -1,7 +1,7 @@
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
-# Recipe:: contoso
+# Recipe:: join_domain
 # 
 # Copyright 2013, Texas A&M
 #
@@ -25,8 +25,24 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-windows_ad_domain "contoso.com" do
-  action :create
-  type "forest"
-  safe_mode_pass "Passw0rd"
+# This is provided as a sample recipe to get you up and going with the windows_ad cookbook.
+
+#Can only run once, assumes default cookbook vagrantfile is used
+if node['os_version'] >= "6.2"
+  powershell_script 'set DNS servers to resolve domain name' do
+    code "Set-DNSClientServerAddress -interfaceIndex 12 -ServerAddresses \"192.168.56.5\""
+  end
+else
+  service 'dnscache' do
+    action :start
+  end
+  execute 'set DNS server to resolve domain name' do
+    command 'netsh interface ip add dns name="Local Area Connection 2" "192.168.56.5" index=1'
+  end
+end
+
+windows_ad_computer 'contoso.com' do
+  action :join
+  domain_user 'Administrator'
+  domain_pass 'vagrant'
 end
