@@ -52,6 +52,7 @@ action :create do
 
     powershell_script "create_domain_#{new_resource.name}" do
       code cmd
+      returns [0, 1, 2, 3]
     end
 
     new_resource.updated_by_last_action(true)
