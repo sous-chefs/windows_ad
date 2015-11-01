@@ -13,7 +13,7 @@ end
 
 user = 'Administrator'
 pass = 'Password1234###!'
-domain = "#{node.hostname[0..3].downcase}.local"
+domain = "contoso.local"
 
 execute "net user \"#{user}\" \"#{pass}\""
 
