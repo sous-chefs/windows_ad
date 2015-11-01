@@ -1,0 +1,47 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: win2008r2
+    driver_config:
+      box_url: d:\cookbooks\packer-windows\windows_2008_r2_virtualbox.box
+      communicator: winrm
+    transport:
+      name: winrm
+#  - name: win2008r2core
+#    driver_config:
+#      box_url: d:\cookbooks\packer-windows\windows_2008_r2_core_virtualbox.box
+#      communicator: winrm
+#    transport:
+#      name: winrm
+#  - name: win2012
+#    driver_config:
+#      box_url: d:\cookbooks\packer-windows\windows_2012_virtualbox.box
+#      communicator: winrm
+#    transport:
+#      name: winrm
+  - name: win2012r2
+    driver_config:
+      box_url: d:\cookbooks\packer-windows\windows_2012_r2_virtualbox.box
+      communicator: winrm
+    transport:
+      name: winrm
+  - name: win2012r2core
+    driver_config:
+      box_url: d:\cookbooks\packer-windows\windows_2012_r2_core_virtualbox.box
+      communicator: winrm
+    transport:
+      name: winrm
+
+suites:
+  - name: default
+    run_list:
+
+      - recipe[test_windows_ad::setup_dc]
+      - recipe[test_windows_ad::ad_objects]
+
+    attributes:
