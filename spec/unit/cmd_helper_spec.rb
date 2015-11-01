@@ -10,7 +10,7 @@ describe 'cmd_helper' do
     end
 
     it 'adds a minus to the options and wrapps the vlaues in double quotes' do
-      result = CmdHelper.cmd_options({'opt1' => 'val1', 'opt2' => 'val2'})
+      result = CmdHelper.cmd_options('opt1' => 'val1', 'opt2' => 'val2')
 
       expect(result).to eq(' -opt1 "val1" -opt2 "val2"')
     end
