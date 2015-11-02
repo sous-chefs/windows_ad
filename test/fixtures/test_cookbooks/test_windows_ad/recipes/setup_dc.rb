@@ -1,19 +1,8 @@
-%w(AD-Domain-Services
-   RSAT-AD-PowerShell
-   RSAT-AD-Tools
-   RSAT-ADDS
-   RSAT-AD-AdminCenter
-).each do |feature|
-  windows_feature feature do
-    all true
-    provider Chef::Provider::WindowsFeaturePowershell
-    action :install
-  end
-end
+include_recipe 'windows_ad::default'
 
 user = 'Administrator'
 pass = 'Password1234###!'
-domain = "contoso.local"
+domain = 'contoso.local'
 
 execute "net user \"#{user}\" \"#{pass}\""
 
