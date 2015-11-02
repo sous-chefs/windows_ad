@@ -1,6 +1,7 @@
 Style/SingleSpaceBeforeFirstArg:
   Exclude:
-  - test/fixtures/test_cookbooks/test_windows_ad/metadata.rb
+  -  metadata.rb
+  -  test/fixtures/test_cookbooks/test_windows_ad/metadata.rb
 Metrics/AbcSize:
   Exclude:
   -  providers/contact.rb
@@ -28,9 +29,13 @@ Metrics/CyclomaticComplexity:
   -  providers/domain.rb
 Metrics/MethodLength:
   Exclude:
+  -  libraries/cmd_helper.rb
   -  providers/domain.rb
   -  providers/ou.rb
   -  providers/user.rb
 Metrics/PerceivedComplexity:
   Exclude:
   -  providers/domain.rb
+AllCops:
+  Exclude:
+  -  vagrantfile

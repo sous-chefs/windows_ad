@@ -1,5 +1,10 @@
 # CHANGELOG for windows_ad
 
+## 0.4.5
+
+* Rubocop and foodcritic
+* Add success return codes for installing DC.
+
 ## 0.4.4
 
 * Correct versioning for Supermarket, required unsharing, bumping version and then sharing once again.
