@@ -90,7 +90,7 @@ action :join do
       new_resource.updated_by_last_action(false)
     else
       powershell_script 'join_#{new_resource.name}' do
-        if node[:os_version] >= '6.2'
+        if node['os_version'] >= '6.2'
           cmd_text = 'Add-Computer -DomainName #{new_resource.name} -Credential
                      $mycreds -Force:$true'
           cmd_text << ' -OUPath \"#{ou_dn}\"' if new_resource.ou
@@ -109,7 +109,7 @@ action :join do
                      /pd:#{new_resource.domain_pass}'
           cmd_text << ' /ou:\"#{ou_dn}\"' if new_resource.ou
           cmd_text << ' /reboot' if new_resource.restart
-          code "#{cmd_text}"
+          code cmd_text
         end
       end
 
@@ -170,7 +170,7 @@ def last_dc?
 end
 
 def create_command
-  if node[:os_version] > '6.2'
+  if node['os_version'] > '6.2'
     cmd = ''
     if new_resource.type != 'forest'
       cmd << '$secpasswd = ConvertTo-SecureString \'#{new_resource.domain_pass}\'
