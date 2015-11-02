@@ -1,7 +1,6 @@
 require 'mixlib/shellout'
-
+# Provides formatting options for cmd
 class CmdHelper
-
   def self.cmd_options(options)
     cmd = ''
     options.each do |option, value|
@@ -11,8 +10,8 @@ class CmdHelper
   end
 
   def self.dn(name, ou, domain)
-    containers = [ 'users', 'builtin', 'computers', 'foreignsecurityprincipals', 'managed service accounts' ]
-
+    containers = ['users', 'builtin', 'computers', 'foreignsecurityprincipals',
+                  'managed service accounts']
     dn = "CN=#{name},"
     unless ou.nil?
       if containers.include? ou.downcase
@@ -29,7 +28,7 @@ class CmdHelper
   end
 
   def self.dc_partial_dn(domain)
-    (domain || '').split(".").map! { |k| "DC=#{k}" }.join(',')
+    (domain || '').split('.').map! { |k| "DC=#{k}" }.join(',')
   end
 
   def self.ou_leaf(ou)
@@ -37,12 +36,13 @@ class CmdHelper
   end
 
   def self.shell_out(cmd, user, pass, domain)
-    shellout = Mixlib::ShellOut.new(cmd, user: user, password: pass, domain: domain)
+    shellout = Mixlib::ShellOut.new(cmd, user: user, password: pass,
+                                         domain: domain)
     shellout.run_command
     if shellout.exitstatus != 0
-      raise "Failed to execute command.\nSTDOUT: #{shellout.stdout}\nSTDERR: #{shellout.stderr}"
+      fail "Failed to execute command.\nSTDOUT: #{shellout.stdout}\nSTDERR:
+             #{shellout.stderr}"
     end
     shellout
   end
-
 end

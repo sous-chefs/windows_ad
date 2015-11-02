@@ -2,7 +2,7 @@
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook Name:: windows_ad
 # Recipe:: contoso
-# 
+#
 # Copyright 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -25,10 +25,10 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-windows_ad_domain "contoso.com" do
+windows_ad_domain 'contoso.com' do
   action :create
-  type "replica"
-  safe_mode_pass "Passw0rd"
-  domain_user "Administrator"
-  domain_pass "Passw0rd"
+  type 'replica'
+  safe_mode_pass 'Passw0rd'
+  domain_user 'Administrator'
+  domain_pass 'Passw0rd'
 end
