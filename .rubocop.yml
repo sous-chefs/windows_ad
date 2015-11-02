@@ -1,0 +1,41 @@
+Style/SingleSpaceBeforeFirstArg:
+  Exclude:
+  -  metadata.rb
+  -  test/fixtures/test_cookbooks/test_windows_ad/metadata.rb
+Metrics/AbcSize:
+  Exclude:
+  -  providers/contact.rb
+  -  providers/domain.rb  
+  -  providers/ou.rb
+  -  providers/user.rb
+Metrics/LineLength:
+  Exclude:
+  -  providers/domain.rb
+  -  providers/user.rb  
+Lint/ElseLayout:
+  Exclude:
+  -  providers/domain.rb
+Lint/Void:
+  Exclude:
+  -  providers/domain.rb
+Style/IndentationConsistency:
+  Exclude:
+  -  providers/domain.rb
+Metrics/BlockNesting:
+  Exclude:
+  -  providers/domain.rb
+Metrics/CyclomaticComplexity:
+  Exclude:
+  -  providers/domain.rb
+Metrics/MethodLength:
+  Exclude:
+  -  libraries/cmd_helper.rb
+  -  providers/domain.rb
+  -  providers/ou.rb
+  -  providers/user.rb
+Metrics/PerceivedComplexity:
+  Exclude:
+  -  providers/domain.rb
+AllCops:
+  Exclude:
+  -  vagrantfile
