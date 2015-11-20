@@ -107,11 +107,8 @@ action :join do
           code "#{cmd_text}"
         end
       end
-
-    new_resource.updated_by_last_action(false)
+      new_resource.updated_by_last_action(true)
     end
-
-    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -148,7 +145,7 @@ end
 def computer_exists?
   comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
   stdout = comp.stdout.downcase
-  stdout.include?(new_resource.name.downcase) or stdout.include?(new_resource.name.downcase)
+  stdout.include?(new_resource.name.downcase) 
 end
 
 def last_dc?
