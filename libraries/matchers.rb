@@ -7,10 +7,6 @@ if defined?(ChefSpec)
   ChefSpec.define_matcher :windows_ad_ou
   ChefSpec.define_matcher :windows_ad_user
 
-    def create_windows_ad_ou(resource_name)
-      ChefSpec::Matchers::ResourceMatcher.new(:windows_ad_ou, :create, resource_name)
-    end
-
   def create_windows_ad_computer(resource_name)
     ChefSpec::Matchers::ResourceMatcher.new(:windows_ad_computer, :create, resource_name)
   end
