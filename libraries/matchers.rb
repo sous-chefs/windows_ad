@@ -91,8 +91,12 @@ if defined?(ChefSpec)
     ChefSpec::Matchers::ResourceMatcher.new(:windows_ad_user, :move, resource_name)
   end
 
+  def create_windows_ad_ou(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:windows_ad_ou, :create, resource_name)
+  end
+
   def delete_windows_ad_user(resource_name)
     ChefSpec::Matchers::ResourceMatcher.new(:windows_ad_user, :delete, resource_name)
   end
-  
+
 end
