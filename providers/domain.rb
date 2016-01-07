@@ -39,6 +39,7 @@ action :create do
       cmd << " -DomainName #{new_resource.name}"
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << " -Force:$true"
+      cmd << format_options(new_resource.options)
     else node[:os_version] <= "6.1"
       cmd = "dcpromo -unattend"
       cmd << " -newDomain:#{new_resource.type}"
@@ -46,9 +47,8 @@ action :create do
       cmd << " -RebootOnCompletion:Yes"
       cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
+      cmd << format_options_old(new_resource.options)
     end
-
-    cmd << format_options(new_resource.options)
 
     powershell_script "create_domain_#{new_resource.name}" do
       code cmd
@@ -82,7 +82,7 @@ action :delete do
 end
 
 action :join do
-  if exists?
+  unless exists?
     Chef::Log.error("The domain does not exist or was not reachable, please check your network settings")
     new_resource.updated_by_last_action(false)
   else
@@ -180,6 +180,18 @@ def create_command
         "domain"
       when "replica"
         "replica"
+    end
+  end
+end
+
+def format_options_old(options)
+  options.reduce('') do |cmd, (option, value)|
+    if value.nil?
+      cmd << " -#{option}"
+    elsif ENUM_NAMES.include?(value) || value.is_a?(Numeric)
+      cmd << " -#{option}:#{value}"
+    else
+      cmd << " -#{option}:'#{value}'"
     end
   end
 end
