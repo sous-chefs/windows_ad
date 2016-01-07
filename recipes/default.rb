@@ -50,6 +50,7 @@ else
       action :install
     end
   end
-  Chef::Log.error('This version of Windows Server is currently unsupported
-                  beyond installing the required roles and features')
+  Chef::Log.warn('This version of Windows Server is currently unsupported
+                  beyond installing the required roles and features. Help us
+                  out by submitting a pull request.')
 end

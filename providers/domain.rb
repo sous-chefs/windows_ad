@@ -51,7 +51,7 @@ action :create do
 
     powershell_script "create_domain_#{new_resource.name}" do
       code cmd
-      returns [0, 1, 2, 3]
+      returns [0, 1, 2, 3, 4]
     end
 
     new_resource.updated_by_last_action(true)
@@ -59,6 +59,9 @@ action :create do
 end
 
 action :delete do
+  Chef::Log.warn('This version of Windows Server is currently unsupported
+                  beyond installing the required roles and features. Help us
+                  out by submitting a pull request.') if ['os_version'] <= '6.1'
   if exists?
     cmd = 'Uninstall-ADDSDomainController'
     cmd << " -LocalAdministratorPassword (ConverTTo-SecureString '#{new_resource.local_pass}' -AsPlainText -Force)"
