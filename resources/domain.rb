@@ -31,7 +31,8 @@ default_action :create
 attribute :name, :kind_of => String, :name_attribute => true
 attribute :domain_user, :kind_of => String, :required => true
 attribute :domain_pass, :kind_of => String, :required => true
-attribute :restart, :kind_of => [TrueClass, FalseClass], :required => true, :default => true
+attribute :restart, :kind_of => [TrueClass, FalseClass], :required => false, :default => true
+attribute :restart_now, :kind_of => [TrueClass, FalseClass], :required => false, :default => true
 attribute :type, :kind_of => String, :default => "forest"
 attribute :safe_mode_pass, :kind_of => String, :required => true
 attribute :options, :kind_of => Hash, :default => {}

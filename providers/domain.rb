@@ -44,7 +44,7 @@ action :create do
       cmd = "dcpromo -unattend"
       cmd << " -newDomain:#{new_resource.type}"
       cmd << " -NewDomainDNSName:#{new_resource.name}"
-      cmd << " -RebootOnCompletion:Yes"
+      cmd << " -RebootOnCompletion:No"
       cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
       cmd << format_options_old(new_resource.options)
@@ -53,6 +53,13 @@ action :create do
     powershell_script "create_domain_#{new_resource.name}" do
       code cmd
       returns [0, 1, 2, 3]
+    end
+
+    # Reboot computer immediately or at end of chef run if restart is true
+    reboot 'Complete domain create' do
+      reason "Reboot after domain create by Chef."
+      action new_resource.restart_now ? :reboot_now : :request_reboot
+      only_if { new_resource.restart }
     end
 
     new_resource.updated_by_last_action(true)
@@ -94,7 +101,6 @@ action :join do
         if node[:os_version] >= "6.2"
           cmd_text = "Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true"
           cmd_text << " -OUPath '#{ou_dn}'" if new_resource.ou
-          cmd_text << " -Restart" if new_resource.restart
           code <<-EOH
             $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
             $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.name}\\#{new_resource.domain_user}', $secpasswd)
@@ -103,10 +109,17 @@ action :join do
         else
           cmd_text = "netdom join #{node[:hostname]} /d #{new_resource.name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass}"
           cmd_text << " /ou:\"#{ou_dn}\"" if new_resource.ou
-          cmd_text << " /reboot" if new_resource.restart
           code "#{cmd_text}"
         end
       end
+
+      # Reboot computer immediately or at end of chef run if restart is true
+      reboot 'Complete domain join' do
+        reason "Reboot after domain join by Chef."
+        action new_resource.restart_now ? :reboot_now : :request_reboot
+        only_if { new_resource.restart }
+      end
+
       new_resource.updated_by_last_action(true)
     end
   end
@@ -145,7 +158,7 @@ end
 def computer_exists?
   comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
   stdout = comp.stdout.downcase
-  stdout.include?(new_resource.name.downcase) 
+  stdout.include?(new_resource.name.downcase)
 end
 
 def last_dc?
