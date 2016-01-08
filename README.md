@@ -10,7 +10,8 @@ Requirements
 Platform
 --------
 
-* Windows Server 2008 R2
+* Windows workstations (join and unjoin)
+* Windows Server 2008 R2 Family
 * Windows Server 2012 Family
 
 Cookbooks
@@ -35,14 +36,153 @@ The windows_ad::default recipe installs the required roles and features to suppo
 Resource/Provider
 =================
 
+`computer`
+--------
+
+### Actions
+- :create: Adds a computer object to Active Directory
+- :delete: Remove a computer object from Active Directory.
+- :join: Joins computer to domain.
+- :modify: Modifies an existing computer object.
+- :move: Rename a computer object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+- :unjoin: Removes computer from domain.
+
+### Attribute Parameters
+
+- name: name attribute.  Name of the computer object.
+- domain_name: FQDN
+- domain_pass: domain password
+- domain_user: domain user
+- ou: Organization Unit path where object is to be located.
+- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754539.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
+- restart: allows preventing reboot after join or unjoin action. Default true to reboot.
+
+### Examples
+
+    # Create computer "workstation1" in the Computers OU
+    windows_ad_computer "workstation1" do
+      action :create
+      domain_name "contoso.com"
+      ou "computers"
+    end
+
+    # Create computer "workstation1" in the Computers OU with description of "Computer"
+    windows_ad_computer "workstation1" do
+      action :create
+      domain_name "contoso.com"
+      ou "computers"
+      options ({ "desc" => "computer" })
+    end
+
+    # Create computer "workstation1" in the Computers OU using domain admin account
+    windows_ad_computer "workstation1" do
+      action :create
+      domain_name "contoso.com"
+      ou "computers"
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
+    
+    # Join Contoso.com domain
+    windows_ad_computer 'Workstation' do
+      action :join
+      domain_pass 'Passw0rd'
+      domain_user 'Administrator'
+      domain_name 'contoso.com'
+    end
+
+    # Join Contoso.com domain without restart
+    windows_ad_computer "contoso.com" do
+      action :join
+      domain_pass 'Passw0rd'
+      domain_user 'Administrator'
+      domain_name 'contoso.com'
+      restart false
+    end
+
+    # Join Contoso.com domain with OU
+    windows_ad_computer "contoso.com" do
+      action :join
+      domain_pass 'Passw0rd'
+      domain_user 'Administrator'
+      domain_name 'contoso.com'
+      ou "Servers/Web"
+    end
+
+    # Unjoin Contoso.com domain
+    windows_ad_computer "contoso.com" do
+      action :unjoin
+      domain_pass 'Passw0rd'
+      domain_user 'Administrator'
+      domain_name 'contoso.com'
+    end
+
+    # Unjoin Contoso.com domain without restart
+    windows_ad_computer "contoso.com" do
+      action :unjoin
+      domain_pass 'Passw0rd'
+      domain_user 'Administrator'
+      domain_name 'contoso.com'
+      restart false
+    end
+
+`contact`
+---------
+
+### Actions
+- :create: Adds a contact object to Active Directory
+- :delete:  Remove a contact object from Active Directory.
+- :modify: Modifies an existing contact object.
+- :move:  Rename a contact object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+
+### Attribute Parameters
+
+- name: name attribute.  Name of the contact object.
+- domain_name: FQDN
+- ou: Organization Unit path where object is to be located.
+- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc771883.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
+
+
+### Examples
+
+    # Create contact "Bob Smith" in the Users OU with firstname "Bob" and lastname "Smith"
+    windows_ad_contact "Bob Smith" do
+      action :create
+      domain_name "contoso.com"
+      ou "users"
+      options ({ "fn" => "Bob",
+                 "ln" => "Smith"
+               })
+    end
+
+    # Create contact "Bob Smith" in the Users OU with firstname "Bob" and lastname "Smith"
+    # using domain admin account
+    windows_ad_contact "Bob Smith" do
+      action :create
+      domain_name "contoso.com"
+      ou "users"
+      options ({ "fn" => "Bob",
+                 "ln" => "Smith"
+               })
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
+
+
 `domain`
 --------
 
 ### Actions
 - :create: Installs a forest, domain, or domain controller
 - :delete: Removes a domain controller from domain
-- :join: Joins computer to domain and restarts the machine.
-- :unjoin: Removes computer from domain and restarts the machine.
 
 ### Attribute Parameters
 
@@ -53,7 +193,6 @@ Resource/Provider
 - domain_pass: User password to join the domain or to create a domain controller. **Required**: for `:create` except on `type` `forest` on windows 2012 and above.
 - local_pass: Local Administrator Password for removing domain controller.
 - replica_type: For Windows Server 2008, specifies installing new or additional domain controller.  Valid values: domain, replica.
-- ou: When joining to a domain, specify the OU to place the computer in. *Optional*
 - options: additional options as needed by AD DS Deployment http://technet.microsoft.com/en-us/library/cc732887.aspx for Windows Server 2008 and http://technet.microsoft.com/en-us/library/hh974719.aspx for Windows Server 2012.  Single parameters use nil for key value, see example below.
 
 ### Examples
@@ -99,137 +238,6 @@ Resource/Provider
     windows_ad_domain "contoso.com" do
       action :delete
       local_pass "Passw0rd"
-    end
-
-    # Join Contoso.com domain
-    windows_ad_domain "contoso.com" do
-      action :join
-      domain_pass "Passw0rd"
-      domain_user "Administrator"
-    end
-
-    # Join Contoso.com domain without restart
-    windows_ad_domain "contoso.com" do
-      action :join
-      domain_pass "Passw0rd"
-      domain_user "Administrator"
-      restart false
-    end
-
-    # Join Contoso.com domain with OU
-    windows_ad_domain "contoso.com" do
-      action :join
-      domain_pass "Passw0rd"
-      domain_user "Administrator"
-      ou "Servers/Web"
-    end
-
-    # Unjoin Contoso.com domain
-    windows_ad_domain "contoso.com" do
-      action :unjoin
-      domain_pass "Passw0rd"
-      domain_user "Administrator"
-    end
-
-    # Unjoin Contoso.com domain without restart
-    windows_ad_domain "contoso.com" do
-      action :unjoin
-      domain_pass "Passw0rd"
-      domain_user "Administrator"
-      restart false
-    end
-
-`computer`
---------
-
-### Actions
-- :create: Adds a computer object to Active Directory
-- :modify: Modifies an existing computer object.
-- :move:  Rename a computer object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :delete:  Remove a computer object from Active Directory.
-
-### Attribute Parameters
-
-- name: name attribute.  Name of the computer object.
-- domain_name: FQDN
-- ou: Organization Unit path where object is to be located.
-- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754539.aspx
-- cmd_user: user under which the interaction with AD should happen
-- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
-- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
-
-
-### Examples
-
-    # Create computer "workstation1" in the Computers OU
-    windows_ad_computer "workstation1" do
-      action :create
-      domain_name "contoso.com"
-      ou "computers"
-    end
-
-    # Create computer "workstation1" in the Computers OU with description of "Computer"
-    windows_ad_computer "workstation1" do
-      action :create
-      domain_name "contoso.com"
-      ou "computers"
-      options ({ "desc" => "computer" })
-    end
-
-    # Create computer "workstation1" in the Computers OU using domain admin account
-    windows_ad_computer "workstation1" do
-      action :create
-      domain_name "contoso.com"
-      ou "computers"
-      cmd_user "Administrator"
-      cmd_pass "password"
-      cmd_domain "contoso.com"
-    end
-
-`contact`
----------
-
-### Actions
-- :create: Adds a contact object to Active Directory
-- :modify: Modifies an existing contact object.
-- :move:  Rename a contact object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-- :delete:  Remove a contact object from Active Directory.
-
-### Attribute Parameters
-
-- name: name attribute.  Name of the contact object.
-- domain_name: FQDN
-- ou: Organization Unit path where object is to be located.
-- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc771883.aspx
-- cmd_user: user under which the interaction with AD should happen
-- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
-- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
-
-
-### Examples
-
-    # Create contact "Bob Smith" in the Users OU with firstname "Bob" and lastname "Smith"
-    windows_ad_contact "Bob Smith" do
-      action :create
-      domain_name "contoso.com"
-      ou "users"
-      options ({ "fn" => "Bob",
-                 "ln" => "Smith"
-               })
-    end
-
-    # Create contact "Bob Smith" in the Users OU with firstname "Bob" and lastname "Smith"
-    # using domain admin account
-    windows_ad_contact "Bob Smith" do
-      action :create
-      domain_name "contoso.com"
-      ou "users"
-      options ({ "fn" => "Bob",
-                 "ln" => "Smith"
-               })
-      cmd_user "Administrator"
-      cmd_pass "password"
-      cmd_domain "contoso.com"
     end
 
 `group`
@@ -511,5 +519,5 @@ License and Authors
 Authors:: Derek Groh (<dgroh@arch.tamu.edu>)
           Richard Guin
           Miroslav Kyurchev (<mkyurchev@gmail.com>)
-		  Matt Wrock (<matt@mattwrock.com>)
-		  Miguel Ferreira (<miguelferreira@me.com>)
+          Matt Wrock (<matt@mattwrock.com>)
+          Miguel Ferreira (<miguelferreira@me.com>)

@@ -29,11 +29,11 @@ require 'mixlib/shellout'
 
 action :create do
   if exists?
-    Chef::Log.debug("The object already exists")
+    Chef::Log.debug('The object already exists')
     new_resource.updated_by_last_action(false)
   else
-    cmd = "dsadd"
-    cmd << " computer "
+    cmd = 'dsadd'
+    cmd << ' computer '
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
     cmd << CmdHelper.cmd_options(new_resource.options)
@@ -45,10 +45,63 @@ action :create do
   end
 end
 
+action :join do
+  Chef::Log.debug("exists? value is #{exists?}")
+  unless exists?
+    Chef::Log.error('The domain does not exist or was not reachable, please check your network settings')
+    new_resource.updated_by_last_action(false)
+  else
+    Chef::Log.debug("computer_exists? value is #{computer_exists?}")
+    if computer_exists?
+      Chef::Log.error('The computer is already joined to the domain')
+      new_resource.updated_by_last_action(false)
+    else
+      powershell_script "join_#{new_resource.name}" do
+        if node['os_version'] >= '6.2'
+          cmd_text = "Add-Computer -DomainName #{new_resource.domain_name} -Credential $mycreds -Force:$true"
+          cmd_text << " -OUPath '#{ou_dn}'" if new_resource.ou
+          cmd_text << ' -Restart' if new_resource.restart
+          code <<-EOH
+            $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
+            $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_name}\\#{new_resource.domain_user}', $secpasswd)
+            #{cmd_text}
+          EOH
+        else
+          cmd_text = "netdom join #{node['hostname']} /d #{new_resource.domain_name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass}"
+          cmd_text << " /ou:\"#{ou_dn}\"" if new_resource.ou
+          cmd_text << ' /reboot' if new_resource.restart
+          code cmd_text
+        end
+      end
+      new_resource.updated_by_last_action(true)
+    end
+  end
+end
+
+action :unjoin do
+  Chef::Log.debug("computer_exists? value is #{computer_exists?}")
+  if computer_exists?
+    powershell_script "unjoin_#{new_resource.domain_name}" do
+      cmd_text = 'Remove-Computer -UnjoinDomainCredential $mycreds -Force:$true'
+      cmd_text << ' -Restart' if new_resource.restart
+      code <<-EOH
+        $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
+        $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_name}\\#{new_resource.domain_user}', $secpasswd)
+        #{cmd_text}
+      EOH
+    end
+
+    new_resource.updated_by_last_action(true)
+  else
+    Chef::Log.debug('The computer is not a member of the domain, unable to unjoin.')
+    new_resource.updated_by_last_action(false)
+  end
+end
+
 action :modify do
   if exists?
-    cmd = "dsmod"
-    cmd << " computer "
+    cmd = 'dsmod'
+    cmd << ' computer '
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
     cmd << CmdHelper.cmd_options(new_resource.options)
@@ -58,14 +111,14 @@ action :modify do
 
     new_resource.updated_by_last_action(true)
   else
-    Chef::Log.error("The object does not exist")
+    Chef::Log.error('The object does not exist')
     new_resource.updated_by_last_action(false)
   end
 end
 
 action :move do
   if exists?
-    cmd = "dsmove "
+    cmd = 'dsmove '
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
 
     cmd << CmdHelper.cmd_options(new_resource.options)
@@ -75,16 +128,16 @@ action :move do
 
     new_resource.updated_by_last_action(true)
   else
-    Chef::Log.error("The object does not exist")
+    Chef::Log.error('The object does not exist')
     new_resource.updated_by_last_action(false)
   end
 end
 
 action :delete do
   if exists?
-    cmd = "dsrm "
+    cmd = 'dsrm '
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-    cmd << " -noprompt"
+    cmd << ' -noprompt'
 
     cmd << CmdHelper.cmd_options(new_resource.options)
 
@@ -93,15 +146,33 @@ action :delete do
 
     new_resource.updated_by_last_action(true)
   else
-    Chef::Log.debug("The object has already been removed")
+    Chef::Log.debug('The object has already been removed')
     new_resource.updated_by_last_action(false)
   end
 end
 
+def computer_exists?
+  comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
+  stdout = comp.stdout.downcase
+  Chef::Log.debug("computer_exists? is #{stdout.downcase}")
+  stdout.include?(new_resource.domain_name.downcase)
+end
+
 def exists?
-  check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"",
-                              new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-  check.stdout.downcase.include? "dc"
+  # Supports workstation and server platforms, Windows Server 2008 R2 and Windows 7 share the same version number, Win7 doesnot include netdom command without RSAT.
+  if ['os_version'] == '6.1.7600'
+    Chef::Log.warn('Unable to determine specific OS version. Windows 7 does not have the native tools to query if the domain exists. Assuming domain exists.')
+    return true
+  end
+  check = Mixlib::ShellOut.new("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc").run_command
+  Chef::Log.debug("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc")
+  Chef::Log.debug("check.stdout.include is #{check.stdout}")
+  check.stdout.include? 'The command completed successfully.'
+end
+
+def ou_dn
+  ou_name = new_resource.ou.split('/').reverse.map { |k| "OU=#{k}" }.join(',') << ','
+  ou_name << new_resource.name.split('.').map! { |k| "DC=#{k}" }.join(',')
 end
 
 def print_msg(action)

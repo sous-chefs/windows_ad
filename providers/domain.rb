@@ -33,13 +33,13 @@ action :create do
   if exists?
     new_resource.updated_by_last_action(false)
   else
-    if node[:os_version] >= '6.2'
+    if node['os_version'] >= '6.2'
       cmd = create_command
       cmd << " -DomainName #{new_resource.name}"
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << ' -Force:$true'
       cmd << format_options(new_resource.options)
-    else node[:os_version] <= '6.1'
+    elsif node['os_version'] <= '6.1'
       cmd = 'dcpromo -unattend'
       cmd << " -newDomain:#{new_resource.type}"
       cmd << " -NewDomainDNSName:#{new_resource.name}"
@@ -47,9 +47,6 @@ action :create do
       cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
       cmd << format_options(new_resource.options)
-
-      cmd << format_options_old(new_resource.options)
-
     end
 
     powershell_script "create_domain_#{new_resource.name}" do
@@ -83,71 +80,10 @@ action :delete do
   end
 end
 
-action :join do
-  unless exists?
-    Chef::Log.error('The domain does not exist or was not reachable, please check your network settings')
-    new_resource.updated_by_last_action(false)
-  else
-    if computer_exists?
-      Chef::Log.debug('The computer is already joined to the domain')
-      new_resource.updated_by_last_action(false)
-    else
-      powershell_script "join_#{new_resource.name}" do
-        if node[:os_version] >= '6.2'
-          cmd_text = "Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true"
-          cmd_text << " -OUPath '#{ou_dn}'" if new_resource.ou
-          cmd_text << ' -Restart' if new_resource.restart
-          code <<-EOH
-            $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-            $mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.name}\\#{new_resource.domain_user}', $secpasswd)
-            #{cmd_text}
-          EOH
-        else
-          cmd_text = "netdom join #{node[:hostname]} /d #{new_resource.name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass}"
-          cmd_text << " /ou:\"#{ou_dn}\"" if new_resource.ou
-          cmd_text << ' /reboot' if new_resource.restart
-          code "#{cmd_text}"
-        end
-      end
-      new_resource.updated_by_last_action(true)
-    end
-  end
-end
-
-action :unjoin do
-  if computer_exists?
-    powershell_script "unjoin_#{new_resource.name}" do
-      cmd_text = 'Remove-Computer -UnjoinDomainCredential $mycreds -Force:$true'
-      cmd_text << ' -Restart' if new_resource.restart
-      code <<-EOH
-        $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-        $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.name}\\#{new_resource.domain_user}', $secpasswd)
-        #{cmd_text}
-      EOH
-    end
-
-    new_resource.updated_by_last_action(true)
-  else
-    Chef::Log.debug('The computer is already a member of a workgroup')
-    new_resource.updated_by_last_action(false)
-  end
-end
-
-def ou_dn
-  ou_name = new_resource.ou.split('/').reverse.map { |k| "OU=#{k}" }.join(',') << ','
-  ou_name << new_resource.name.split('.').map! { |k| "DC=#{k}" }.join(',')
-end
-
 def exists?
   ldap_path = new_resource.name.split('.').map! { |k| "dc=#{k}" }.join(',')
   check = Mixlib::ShellOut.new("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')").run_command
   check.stdout.match('True')
-end
-
-def computer_exists?
-  comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
-  stdout = comp.stdout.downcase
-  stdout.include?(new_resource.name.downcase)
 end
 
 def last_dc?
@@ -156,7 +92,7 @@ def last_dc?
 end
 
 def create_command
-  if node[:os_version] > '6.2'
+  if node['os_version'] > '6.2'
     cmd = ''
     if new_resource.type != 'forest'
       cmd << "$secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force;"
@@ -203,13 +139,13 @@ def format_options(options)
     if value.nil?
       cmd << " -#{option}"
     elsif ENUM_NAMES.include?(value) || value.is_a?(Numeric)
-      if node[:os_version] >= '6.2'
+      if node['os_version'] >= '6.2'
         cmd << " -#{option} #{value}"
       else
         cmd << " -#{option}:#{value}"
       end
     else
-      if node[:os_version] >= '6.2'
+      if node['os_version'] >= '6.2'
         cmd << " -#{option} '#{value}'"
       else
         cmd << " -#{option}:'#{value}'"
