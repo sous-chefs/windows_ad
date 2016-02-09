@@ -7,3 +7,4 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '0.4.5'
 supports         'windows', '>= 6.1'
 depends          'windows'
+

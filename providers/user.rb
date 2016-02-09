@@ -51,7 +51,7 @@ action :modify do
     cmd = 'dsmod'
     cmd << ' user '
     cmd << dn
-
+    cmd << "\""
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))

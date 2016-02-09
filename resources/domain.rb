@@ -25,7 +25,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-actions :create, :delete, :join, :unjoin
+actions :create, :delete
 default_action :create
 
 attribute :name, kind_of: String, name_attribute: true
