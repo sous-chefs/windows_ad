@@ -413,7 +413,7 @@ Resource/Provider
       group_name  'Admins'
       domain_name 'contoso.com'
       user_ou 'users'
-      grou_ou 'AD/Groups'
+      group_ou 'AD/Groups'
     end
 
     # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups" using domain admin account

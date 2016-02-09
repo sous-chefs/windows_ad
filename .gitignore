@@ -14,3 +14,5 @@ Vagrantfile
 /.zero-knife.rb
 gemfile
 metadata.json
+.idea
+*.iml

@@ -38,7 +38,7 @@ action :create do
       cmd << " -DomainName #{new_resource.name}"
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << ' -Force:$true'
-    elsif node['os_version'] <= '6.1'
+    else node[:os_version] <= '6.1'
       cmd = 'dcpromo -unattend'
       cmd << " -newDomain:#{new_resource.type}"
       cmd << " -NewDomainDNSName:#{new_resource.name}"
