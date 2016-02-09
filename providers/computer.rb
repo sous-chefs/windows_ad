@@ -46,12 +46,10 @@ action :create do
 end
 
 action :join do
-  Chef::Log.debug("exists? value is #{exists?}")
   unless exists?
     Chef::Log.error('The domain does not exist or was not reachable, please check your network settings')
     new_resource.updated_by_last_action(false)
   else
-    Chef::Log.debug("computer_exists? value is #{computer_exists?}")
     if computer_exists?
       Chef::Log.error('The computer is already joined to the domain')
       new_resource.updated_by_last_action(false)
@@ -79,7 +77,6 @@ action :join do
 end
 
 action :unjoin do
-  Chef::Log.debug("computer_exists? value is #{computer_exists?}")
   if computer_exists?
     Chef::Log.debug("Removing computer from the domain")
     powershell_script "unjoin_#{new_resource.domain_name}" do
@@ -91,7 +88,6 @@ action :unjoin do
         $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
         $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_name}\\#{new_resource.domain_user}', $secpasswd)
         #{cmd_text}
-        cmd_text
       EOH
     else
       cmd_text = "netdom remove #{new_resource.name}"
@@ -101,12 +97,11 @@ action :unjoin do
       cmd_text << ' /reboot' if new_resource.restart
       code cmd_text
     end
-      Chef::Log.debug("***** cmd_text ***** #{cmd_text}")
-    end
+  end
 
     new_resource.updated_by_last_action(true)
   else
-    Chef::Log.debug('The computer is not a member of the domain, unable to unjoin.')
+    Chef::Log.error('The computer is not a member of the domain, unable to unjoin.')
     new_resource.updated_by_last_action(false)
   end
 end
