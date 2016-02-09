@@ -81,14 +81,27 @@ end
 action :unjoin do
   Chef::Log.debug("computer_exists? value is #{computer_exists?}")
   if computer_exists?
+    Chef::Log.debug("Removing computer from the domain")
     powershell_script "unjoin_#{new_resource.domain_name}" do
-      cmd_text = 'Remove-Computer -UnjoinDomainCredential $mycreds -Force:$true'
-      cmd_text << ' -Restart' if new_resource.restart
+      if node['os_version'] >= '6.2'
+        cmd_text = 'Remove-Computer -UnjoinDomainCredential $mycreds -Force:$true'
+        cmd_text << " -ComputerName #{new_resource.name}"
+        cmd_text << ' -Restart' if new_resource.restart
       code <<-EOH
         $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
         $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_name}\\#{new_resource.domain_user}', $secpasswd)
         #{cmd_text}
+        cmd_text
       EOH
+    else
+      cmd_text = "netdom remove #{new_resource.name}"
+      cmd_text << " /d:#{new_resource.domain_name}"
+      cmd_text << " /ud:#{new_resource.domain_name}\\#{new_resource.domain_user}"
+      cmd_text << " /pd:#{new_resource.domain_pass}"
+      cmd_text << ' /reboot' if new_resource.restart
+      code cmd_text
+    end
+      Chef::Log.debug("***** cmd_text ***** #{cmd_text}")
     end
 
     new_resource.updated_by_last_action(true)
