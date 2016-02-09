@@ -5,11 +5,12 @@ win_2008_r2_box          = 'opentable/win-2008r2-standard-amd64-nocm'
 win_20008_r2_box_url     = 'https://atlas.hashicorp.com/opentable/boxes/win-2008r2-standard-amd64-nocm'
 # win_2008_r2_box        = 'opentable/win-2008r2-enterprise-amd64-nocm'
 # win_20008_r2_box_url   = 'https://atlas.hashicorp.com/opentable/boxes/win-2008r2-enterprise-amd64-nocm'
-win_2012_box             = 'opentable/win-2012-standard-amd64-nocm'
-win_2012_box_url         = 'https://atlas.hashicorp.com/opentable/boxes/win-2012-standard-amd64-nocm'
+win_2012_box             = 'kensykora/windows_2012_r2_standard'
+win_2012_box_url         = 'https://atlas.hashicorp.com/kensykora/boxes/windows_2012_r2_standard'
 win_2012_r2_box          = 'opentable/win-2012r2-standard-amd64-nocm'
 win_2012_r2_box_url      = 'https://atlas.hashicorp.com/opentable/boxes/win-2012r2-standard-amd64-nocm'
-win_2012_r2_core_box     = 'windows_2012_r2_core'
+win_2012_r2_core_box     = 'kensykora/windows_2012_r2_standard_core'
+win_2012_r2_core_box_url = 'https://atlas.hashicorp.com/kensykora/boxes/windows_2012_r2_standard_core'
 win_7_box                = 'opentable/win-7-enterprise-amd64-nocm'
 win_7_box_url            = 'https://atlas.hashicorp.com/opentable/boxes/win-7-enterprise-amd64-nocm'
 #win_7_box               = 'opentable/win-7-professional-amd64-nocm'
@@ -18,6 +19,17 @@ win_8_box                = 'opentable/win-8.1-enterprise-amd64-nocm'
 win_8_box_url            = 'https://atlas.hashicorp.com/opentable/boxes/win-8.1-enterprise-amd64-nocm'
 
 machines = {
+  'win2012r2core' => {
+    'hostname'   => 'win2012r2core',
+    'box'        => win_2012_r2_core_box,
+    'ip'         => '192.168.1.13',
+  	'http_port'  => '8095',
+  	'rdp_port'   => '8096',
+  	'winrm_port' => '8097',
+    'run_list'   => [
+      'recipe[test_windows_ad::setup_dc]'
+    ]
+  },
   'win2008r2' => {
     'hostname'   => 'win2008r2',
     'box'        => win_2008_r2_box,
@@ -25,7 +37,11 @@ machines = {
   	'http_port'  => '8080',
   	'rdp_port'   => '8081',
   	'winrm_port' => '8082',
-    'run_list'   => ['recipe[test_windows_ad::setup_dc]']
+    'run_list'   => [
+#      'recipe[test_windows_ad::setup_dc]'
+      'recipe[test_windows_ad::join_domain]',
+      'recipe[test_windows_ad::unjoin_domain]'
+    ]
   },
   'win2012' => {
     'hostname'   => 'win2012',
@@ -34,7 +50,11 @@ machines = {
   	'http_port'  => '8085',
   	'rdp_port'   => '8086',
   	'winrm_port' => '8087',
-    'run_list'   => ['recipe[test_windows_ad::setup_dc]']
+    'run_list'   => [
+#      'recipe[test_windows_ad::setup_dc]'
+      'recipe[test_windows_ad::join_domain]',
+      'recipe[test_windows_ad::unjoin_domain]'
+    ]
   },
   'win2012r2' => {
     'hostname'   => 'win2012r2',
@@ -43,17 +63,12 @@ machines = {
   	'http_port'  => '8090',
   	'rdp_port'   => '8091',
   	'winrm_port' => '8092',
-    'run_list'   => ['recipe[test_windows_ad::setup_dc]']
-  },
-  'win2012r2core' => {
-    'hostname'   => 'win2012r2core',
-    'box'        => win_2012_r2_core_box,
-    'ip'         => '192.168.56.13',
-  	'http_port'  => '8095',
-  	'rdp_port'   => '8096',
-  	'winrm_port' => '8097',
-    'run_list'   => ['recipe[test_windows_ad::setup_dc]']
-  },    
+    'run_list'   => [
+#      'recipe[test_windows_ad::setup_dc]'
+      'recipe[test_windows_ad::join_domain]',
+      'recipe[test_windows_ad::unjoin_domain]'
+    ]
+  }   
 }
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
@@ -96,7 +111,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |global_config|
 
 #       config.vm.provision 'chef_client', run: 'always' do |chef|
 	  config.vm.provision 'chef_solo', run: 'always' do |chef|
-        chef.log_level  = 'info'
+        chef.log_level  = 'debug'
         chef.cookbooks_path = "../../cookbooks" 
 #        chef.custom_config_path = 'Vagrantfile.chef'
         chef.file_cache_path    = 'c:/var/chef/cache'
