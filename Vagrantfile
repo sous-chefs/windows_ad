@@ -13,8 +13,8 @@ win_2012_r2_core_box     = 'kensykora/windows_2012_r2_standard_core'
 win_2012_r2_core_box_url = 'https://atlas.hashicorp.com/kensykora/boxes/windows_2012_r2_standard_core'
 win_7_box                = 'opentable/win-7-enterprise-amd64-nocm'
 win_7_box_url            = 'https://atlas.hashicorp.com/opentable/boxes/win-7-enterprise-amd64-nocm'
-#win_7_box               = 'opentable/win-7-professional-amd64-nocm'
-#win_7_box_url           = 'https://atlas.hashicorp.com/opentable/boxes/win-7-professional-amd64-nocm'
+# win_7_box               = 'opentable/win-7-professional-amd64-nocm'
+# win_7_box_url           = 'https://atlas.hashicorp.com/opentable/boxes/win-7-professional-amd64-nocm'
 win_8_box                = 'opentable/win-8.1-enterprise-amd64-nocm'
 win_8_box_url            = 'https://atlas.hashicorp.com/opentable/boxes/win-8.1-enterprise-amd64-nocm'
 
@@ -68,7 +68,7 @@ machines = {
       'recipe[test_windows_ad::join_domain]',
       'recipe[test_windows_ad::unjoin_domain]'
     ]
-  }   
+  }
 }
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
@@ -81,8 +81,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |global_config|
       # Every Vagrant virtual environment requires a box to build off of.
       config.vm.box                        = options['box']
       config.vm.box_url                    = options['box_url']
-	  config.vm.hostname                   = options['hostname']
-	  
+      config.vm.hostname                   = options['hostname']
+
       config.vm.communicator = 'winrm'
       config.vm.guest = :windows
 
@@ -91,23 +91,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |global_config|
       # while port_5985 == port_80 do
       #   port_5985 = 1024 + rand(1024)
       # end
-	  
-	  config.vm.network :forwarded_port, guest: 80, host: options['http_port'], id: "http", auto_correct: true
-      config.vm.network :forwarded_port, guest: 3389, host: options['rdp_port'], id: "rdp", auto_correct: true
-	  config.vm.network :forwarded_port, guest: 5985, host: options['winrm_port'], id: "winrm", auto_correct: true
-	  
+    
+      config.vm.network :forwarded_port, guest: 80, host: options['http_port'], id: 'http', auto_correct: true
+      config.vm.network :forwarded_port, guest: 3389, host: options['rdp_port'], id: 'rdp', auto_correct: true
+      config.vm.network :forwarded_port, guest: 5985, host: options['winrm_port'], id: 'winrm', auto_correct: true
+
       config.vm.network 'private_network', ip: options['ip'], virtualbox__intnet: 'windows_ad'
       config.vm.provider 'virtualbox' do |vb|
-      #  vb.gui = true
-        vb.customize ['modifyvm', :id, "--nicpromisc1", "allow-all" ]
-        vb.customize ['modifyvm', :id, "--nicpromisc2", "allow-all" ]
-	  #  vb.customize ['modifyvm', :id, "--natdnshostresolver1", "on" ]
-	  #  vb.customize ['modifyvm', :id, "--natdnsproxy1", "on" ]
-	  end
+        # vb.gui = true
+        vb.customize ['modifyvm', :id, "--nicpromisc1", "allow-all"]
+        vb.customize ['modifyvm', :id, "--nicpromisc2", "allow-all"]
+        # vb.customize ['modifyvm', :id, "--natdnshostresolver1", "on"]
+        # vb.customize ['modifyvm', :id, "--natdnsproxy1", "on"]
+      end
 
       config.omnibus.chef_version = :latest
-#	  config.omnibus.chef_version = '11.18.12'
-#      config.chef_zero.cookbooks    = [ 'test/fixtures/cookbooks', 'test/fixtures/test_cookbooks' ]
+#       config.omnibus.chef_version = '11.18.12'
+#       config.chef_zero.cookbooks    = [ 'test/fixtures/cookbooks', 'test/fixtures/test_cookbooks' ]
+
 
 #       config.vm.provision 'chef_client', run: 'always' do |chef|
 	  config.vm.provision 'chef_solo', run: 'always' do |chef|
@@ -118,8 +119,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |global_config|
 
         chef.run_list = options['run_list']
 
-        # You may also specify custom JSON attributes:
-        chef.json = { }
+        #  You may also specify custom JSON attributes:
+        chef.json = {}
       end
     end
   end

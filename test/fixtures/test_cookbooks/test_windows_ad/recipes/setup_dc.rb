@@ -7,7 +7,7 @@ domain = "contoso.local"
 execute "net user \"#{user}\" \"#{pass}\""
 
 windows_ad_domain domain do
-  type           'forest'
+  type 'forest'
   safe_mode_pass pass
   domain_pass    pass
   domain_user    user
