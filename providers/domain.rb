@@ -139,8 +139,6 @@ def exists?
   ldap_path = new_resource.name.split('.').map! { |k| "dc=#{k}" }.join(',')
   check = Mixlib::ShellOut.new("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')").run_command
   check.stdout.match('True')
-<<<<<<< HEAD
-=======
 end
 
 def computer_exists?

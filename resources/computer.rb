@@ -35,4 +35,3 @@ attribute :options, kind_of: Hash, default: {}
 attribute :cmd_user, kind_of: String
 attribute :cmd_pass, kind_of: String
 attribute :cmd_domain, kind_of: String
->>>>>>> 9993229719b84492e7cda9b022e2328a8995c130
