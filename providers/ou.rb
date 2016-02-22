@@ -27,13 +27,12 @@
 
 action :create do
   if parent?
-  # indent all
     if exists?
-      Chef::Log.debug("The object already exists")
+      Chef::Log.debug('The object already exists')
       new_resource.updated_by_last_action(false)
     else
-      cmd = "dsadd"
-      cmd << " ou "
+      cmd = 'dsadd'
+      cmd << ' ou '
       cmd << "\""
       cmd << dn
       cmd << "\""
@@ -41,65 +40,69 @@ action :create do
       cmd << cmd_options(new_resource.options)
 
       Chef::Log.info(print_msg("create #{new_resource.name}"))
-      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+                          new_resource.cmd_domain)
 
       new_resource.updated_by_last_action(true)
     end
   else
-    Chef::Log.error("The parent OU does not exist")
+    Chef::Log.error('The parent OU does not exist')
     new_resource.updated_by_last_action(false)
   end
 end
 
 action :modify do
   if exists?
-    cmd = "dsmod"
-    cmd << " ou "
+    cmd = 'dsmod'
+    cmd << ' ou '
     cmd << dn
 
     cmd << cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+                        new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
-    Chef::Log.error("The object does not exist")
+    Chef::Log.error('The object does not exist')
     new_resource.updated_by_last_action(false)
   end
 end
 
 action :move do
   if exists?
-    cmd = "dsmove "
+    cmd = 'dsmove '
     cmd << dn
 
     cmd << cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+                        new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
-    Chef::Log.error("The object does not exist")
+    Chef::Log.error('The object does not exist')
     new_resource.updated_by_last_action(false)
   end
 end
 
 action :delete do
   if exists?
-    cmd = "dsrm "
+    cmd = 'dsrm '
     cmd << dn
-    cmd << " -noprompt"
+    cmd << ' -noprompt'
 
     cmd << cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+                        new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
-    Chef::Log.debug("The object has already been removed")
+    Chef::Log.debug('The object has already been removed')
     new_resource.updated_by_last_action(false)
   end
 end
@@ -108,7 +111,8 @@ def cmd_options(options)
   cmd = ''
   options.each do |option, value|
     cmd << " -#{option} \"#{value}\""
-    # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName] [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
+    # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName]
+    # [-p {Password | *}][-c][-q][{-uc | -uco | -uci}]
   end
   cmd
 end
@@ -128,7 +132,8 @@ def parent?
     ldap = CmdHelper.dc_partial_dn(new_resource.domain_name)
     parent_ou_name = CmdHelper.ou_leaf(new_resource.ou)
     parent = CmdHelper.shell_out("dsquery ou -name \"#{parent_ou_name}\"",
-                                 new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+                                 new_resource.cmd_user, new_resource.cmd_pass,
+                                 new_resource.cmd_domain)
     path = CmdHelper.ou_partial_dn(new_resource.ou) << ','
     path << ldap
     parent.stdout.downcase.include? path.downcase
@@ -144,7 +149,8 @@ def exists?
     ldap << dc_partial_dn
   end
   check = CmdHelper.shell_out("dsquery ou -name \"#{new_resource.name}\"",
-                              new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+                              new_resource.cmd_user, new_resource.cmd_pass,
+                              new_resource.cmd_domain)
   path = "OU=#{new_resource.name},"
   path << ldap
   check.stdout.downcase.include? path.downcase
