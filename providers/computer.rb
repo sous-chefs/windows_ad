@@ -172,7 +172,6 @@ def computer_exists?
 end
 
 def exists?
-<<<<<<< HEAD
   # Supports workstation and server platforms, Windows Server 2008 R2 and Windows 7 share the same version number, Win7 doesnot include netdom command without RSAT.
   if ['os_version'] == '6.1.7600'
     Chef::Log.warn('Unable to determine specific OS version. Windows 7 does not have the native tools to query if the domain exists. Assuming domain exists.')
