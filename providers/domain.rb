@@ -41,6 +41,7 @@ action :create do
     else node[:os_version] <= '6.1'
       cmd = 'dcpromo -unattend'
       cmd << " -newDomain:#{new_resource.type}"
+      cmd << " -NewDomainDNSName:#{new_resource.name}"
       cmd << ' -RebootOnCompletion:Yes'
       cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
