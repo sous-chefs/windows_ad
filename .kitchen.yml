@@ -3,12 +3,12 @@ driver:
   name: vagrant
 
 provisioner:
-  name: chef_solo
+  name: chef_zero
 
 platforms:
   - name: win2008r2
     driver_config:
-      box_url: d:\cookbooks\packer-windows\windows_2008_r2_virtualbox.box
+      box: windows-2008r2
       communicator: winrm
     transport:
       name: winrm
@@ -26,7 +26,7 @@ platforms:
 #      name: winrm
   - name: win2012r2
     driver_config:
-      box_url: d:\cookbooks\packer-windows\windows_2012_r2_virtualbox.box
+      box: windows-2012r2
       communicator: winrm
     transport:
       name: winrm
@@ -41,7 +41,6 @@ suites:
   - name: default
     run_list:
 
-      - recipe[test_windows_ad::setup_dc]
-      - recipe[test_windows_ad::ad_objects]
+      - recipe[test_windows_ad::setup_forest]
 
     attributes:
