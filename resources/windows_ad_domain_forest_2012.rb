@@ -15,7 +15,7 @@ action :create do
   if exists?
     new_resource.updated_by_last_action(false)
   else
-    cmd << 'Install-ADDSForest'
+    cmd = 'Install-ADDSForest'
     cmd << " -DomainName #{new_resource.name}"
     cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
     cmd << ' -Force:$true'
