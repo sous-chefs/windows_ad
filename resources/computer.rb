@@ -37,4 +37,4 @@ attribute :options, kind_of: Hash, default: {}
 attribute :cmd_user, kind_of: String
 attribute :cmd_pass, kind_of: String
 attribute :cmd_domain, kind_of: String
-attribute :restart, kind_of: String, default: true
+attribute :restart, kind_of: [TrueClass, FalseClass], required: true
