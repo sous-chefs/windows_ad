@@ -1,5 +1,9 @@
 # CHANGELOG for windows_ad
 
+## 0.5.1
+
+* Quality of life edits
+
 ## 0.5.0
 
 * Join and unjoin actions from domain provider moved to computer provider - https://github.com/TAMUArch/cookbook.windows_ad/pull/77
