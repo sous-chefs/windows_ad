@@ -5,8 +5,8 @@ win_2008_r2_box          = 'opentable/win-2008r2-standard-amd64-nocm'
 win_20008_r2_box_url     = 'https://atlas.hashicorp.com/opentable/boxes/win-2008r2-standard-amd64-nocm'
 # win_2008_r2_box        = 'opentable/win-2008r2-enterprise-amd64-nocm'
 # win_20008_r2_box_url   = 'https://atlas.hashicorp.com/opentable/boxes/win-2008r2-enterprise-amd64-nocm'
-win_2012_box             = 'kensykora/windows_2012_r2_standard'
-win_2012_box_url         = 'https://atlas.hashicorp.com/kensykora/boxes/windows_2012_r2_standard'
+win_2012_box             = 'kensykora/windows_2012_standard'
+win_2012_box_url         = 'https://atlas.hashicorp.com/kensykora/boxes/windows_2012_standard'
 win_2012_r2_box          = 'opentable/win-2012r2-standard-amd64-nocm'
 win_2012_r2_box_url      = 'https://atlas.hashicorp.com/opentable/boxes/win-2012r2-standard-amd64-nocm'
 win_2012_r2_core_box     = 'kensykora/windows_2012_r2_standard_core'
@@ -38,9 +38,7 @@ machines = {
   	'rdp_port'   => '8081',
   	'winrm_port' => '8082',
     'run_list'   => [
-#      'recipe[test_windows_ad::setup_dc]'
-      'recipe[test_windows_ad::join_domain]',
-      'recipe[test_windows_ad::unjoin_domain]'
+
     ]
   },
   'win2012' => {
@@ -51,9 +49,9 @@ machines = {
   	'rdp_port'   => '8086',
   	'winrm_port' => '8087',
     'run_list'   => [
-#      'recipe[test_windows_ad::setup_dc]'
-      'recipe[test_windows_ad::join_domain]',
-      'recipe[test_windows_ad::unjoin_domain]'
+      'recipe[test_windows_ad::setup_forest]'
+#      'recipe[test_windows_ad::join_domain]',
+#      'recipe[test_windows_ad::unjoin_domain]'
     ]
   },
   'win2012r2' => {
@@ -64,9 +62,9 @@ machines = {
   	'rdp_port'   => '8091',
   	'winrm_port' => '8092',
     'run_list'   => [
-#      'recipe[test_windows_ad::setup_dc]'
-      'recipe[test_windows_ad::join_domain]',
-      'recipe[test_windows_ad::unjoin_domain]'
+      'recipe[test_windows_ad::setup_forest]'
+#      'recipe[test_windows_ad::join_domain]',
+#      'recipe[test_windows_ad::unjoin_domain]'
     ]
   }
 }
