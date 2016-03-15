@@ -38,6 +38,8 @@ machines = {
   	'rdp_port'   => '8081',
   	'winrm_port' => '8082',
     'run_list'   => [
+      'recipe[test_windows_ad::setup_forest]',    
+      'recipe[test_windows_ad::ou]'
 
     ]
   },
@@ -62,9 +64,10 @@ machines = {
   	'rdp_port'   => '8091',
   	'winrm_port' => '8092',
     'run_list'   => [
-      'recipe[test_windows_ad::setup_forest]'
+      'recipe[test_windows_ad::setup_forest]',
 #      'recipe[test_windows_ad::join_domain]',
 #      'recipe[test_windows_ad::unjoin_domain]'
+      'recipe[test_windows_ad::ou]'
     ]
   }
 }
@@ -110,7 +113,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |global_config|
 
 #       config.vm.provision 'chef_client', run: 'always' do |chef|
 	  config.vm.provision 'chef_solo', run: 'always' do |chef|
-        chef.log_level  = 'debug'
+        chef.log_level  = 'info'
         chef.cookbooks_path = "../../cookbooks" 
 #        chef.custom_config_path = 'Vagrantfile.chef'
         chef.file_cache_path    = 'c:/var/chef/cache'
