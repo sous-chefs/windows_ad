@@ -1,5 +1,9 @@
 # CHANGELOG for windows_ad
 
+## 0.5.2
+
+* Issue 85 - https://github.com/TAMUArch/cookbook.windows_ad/issues/85 revert Robocop edits on dsquery
+
 ## 0.5.1
 
 * Quality of life edits
