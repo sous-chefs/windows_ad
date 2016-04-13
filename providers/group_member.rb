@@ -80,9 +80,7 @@ def dsmod_group_cmd(group_dn, user_dn, option)
 end
 
 def member_of?(user_dn, group_dn)
-  check = CmdHelper.shell_out("dsget group  \"#{group_dn}\"  -members",
-                              new_resource.cmd_user, new_resource.cmd_pass,
-                              new_resource.cmd_domain)
+  check = CmdHelper.shell_out("dsget group  \"#{group_dn}\"  -members", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   check.stdout.downcase.include?(user_dn.downcase)
 end
 
