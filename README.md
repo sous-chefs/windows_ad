@@ -288,8 +288,52 @@ Resource/Provider
       cmd_domain "contoso.com"
     end
 
+`group_member`
+-------
+
+### Actions
+- :add: Adds a user to a group.
+- :remove: Removes a user from a group.
+
+### Attribute Parameters
+
+- user_name: user name attribute. Name of the user object.
+- group_name: group name attribute. Name of the group object.
+- domain_name: FQDN.
+- user_ou: Organization Unit path where user object is located.
+- group_ou: Organization Unit path where group object is located.
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
+
+### Examples
+
+    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups"
+    windows_ad_group_member 'Joe Smith' do
+      action :add
+      group_name  'Admins'
+      domain_name 'contoso.com'
+      user_ou 'users'
+      group_ou 'AD/Groups'
+    end
+
+    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups" using domain admin account
+    windows_ad_group_member 'Joe Smith' do
+      action :add
+      group_name  'Admins'
+      domain_name 'contoso.com'
+      user_ou 'users'
+      group_ou 'AD/Groups'
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
+
 `ou`
 ----
+Note: Chef 12 Custom Resource WIP.
+ou provider will call `ou_2008` or `ou_2012` based on OS version.
+Warning: Data bags can be used, however OU names must be unique (restriction of data bags) 
 
 ### Actions
 - :create: Adds organizational units to Active Directory.
@@ -331,6 +375,46 @@ Resource/Provider
       cmd_pass "password"
       cmd_domain "contoso.com"
     end
+
+'ou_2008'
+-------
+
+### Actions
+- :create: Adds organizational units to Active Directory.
+WIP:
+- :modify: Modifies an organizational unit.
+- :move:  Rename an organizational unit object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+- :delete:  Remove an organizational unit object from Active Directory.
+
+### Attribute Parameters
+
+- name: name attribute.  Name of the Organization Unit object.
+- domain_name: FQDN
+- ou: Organization Unit path where object is to be located.
+- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
+
+'ou_2012'
+-------
+
+### Actions
+- :create: Adds organizational units to Active Directory.
+WIP:
+- :modify: Modifies an organizational unit.
+- :move:  Rename an organizational unit object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+- :delete:  Remove an organizational unit object from Active Directory.
+
+### Attribute Parameters
+
+- name: name attribute.  Name of the Organization Unit object.
+- domain_name: FQDN
+- path: Organization Unit path where object is to be located.
+- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 `users`
 -------
@@ -386,48 +470,6 @@ Resource/Provider
       cmd_pass "password"
       cmd_domain "contoso.com"
     end
-
-`group_member`
--------
-
-### Actions
-- :add: Adds a user to a group.
-- :remove: Removes a user from a group.
-
-### Attribute Parameters
-
-- user_name: user name attribute. Name of the user object.
-- group_name: group name attribute. Name of the group object.
-- domain_name: FQDN.
-- user_ou: Organization Unit path where user object is located.
-- group_ou: Organization Unit path where group object is located.
-- cmd_user: user under which the interaction with AD should happen
-- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
-- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
-
-### Examples
-
-    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups"
-    windows_ad_group_member 'Joe Smith' do
-      action :add
-      group_name  'Admins'
-      domain_name 'contoso.com'
-      user_ou 'users'
-      group_ou 'AD/Groups'
-    end
-
-    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups" using domain admin account
-    windows_ad_group_member 'Joe Smith' do
-      action :add
-      group_name  'Admins'
-      domain_name 'contoso.com'
-      user_ou 'users'
-      group_ou 'AD/Groups'
-      cmd_user "Administrator"
-      cmd_pass "password"
-      cmd_domain "contoso.com"
-    end
-
 
 Testing
 =======

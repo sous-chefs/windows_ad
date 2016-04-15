@@ -117,18 +117,13 @@ def exists?
   cmd_domain = new_resource.cmd_domain
   if new_resource.reverse == 'true'
     reverse_name = new_resource.name.split(' ').reverse.map! { |k| k }.join(', ')
-    contact = CmdHelper.shell_out("dsquery contact -name \"#{reverse_name}\"",
-                                  cmd_user, cmd_pass, cmd_domain)
-    user = CmdHelper.shell_out("dsquery user -name \"#{reverse_name}\"",
-                               cmd_user, cmd_pass, cmd_domain)
+    contact = CmdHelper.shell_out("dsquery contact -name \"#{reverse_name}\"", cmd_user, cmd_pass, cmd_domain)
+    user = CmdHelper.shell_out("dsquery user -name \"#{reverse_name}\"", cmd_user, cmd_pass, cmd_domain)
     contact.stdout.downcase.include?('dc') ||
       user.stdout.downcase.include?('dc')
   else
-    contact = CmdHelper.shell_out("dsquery contact -name
-                                  \"#{new_resource.name}\"", cmd_user,
-                                  cmd_pass, cmd_domain)
-    user = CmdHelper.shell_out("dsquery user -name \"#{new_resource.name}\"",
-                               cmd_user, cmd_pass, cmd_domain)
+    contact = CmdHelper.shell_out("dsquery contact -name \"#{new_resource.name}\"", cmd_user, cmd_pass, cmd_domain)
+    user = CmdHelper.shell_out("dsquery user -name \"#{new_resource.name}\"", cmd_user, cmd_pass, cmd_domain)
     contact.stdout.downcase.include?('dc') ||
       user.stdout.downcase.include?('dc')
   end

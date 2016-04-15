@@ -186,9 +186,7 @@ end
 def ou_dn
   ou_name = new_resource.ou.split('/').reverse.map { |k| "OU=#{k}" }.join(',') << ','
   ou_name << new_resource.name.split('.').map! { |k| "DC=#{k}" }.join(',')
-  check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"",
-                              new_resource.cmd_user, new_resource.cmd_pass,
-                              new_resource.cmd_domain)
+  check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   check.stdout.downcase.include?('dc')
 end
 
