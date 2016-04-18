@@ -50,6 +50,7 @@ action :modify do
   if exists?
     cmd = 'dsmod'
     cmd << ' user '
+    cmd << "\""    
     cmd << dn
     cmd << "\""
     cmd << CmdHelper.cmd_options(new_resource.options)
