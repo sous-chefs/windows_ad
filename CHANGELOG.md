@@ -1,5 +1,9 @@
 # CHANGELOG for windows_ad
 
+## 0.5.3
+
+* Issue 87 - https://github.com/TAMUArch/cookbook.windows_ad/issues/87 revert Robocop edits on providers
+
 ## 0.5.2
 
 * Issue 85 - https://github.com/TAMUArch/cookbook.windows_ad/issues/85 revert Robocop edits on dsquery
