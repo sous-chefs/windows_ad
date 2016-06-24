@@ -86,7 +86,7 @@ Resource/Provider
       cmd_pass "password"
       cmd_domain "contoso.com"
     end
-    
+
     # Join Contoso.com domain
     windows_ad_computer 'Workstation' do
       action :join
@@ -193,6 +193,7 @@ Resource/Provider
 - domain_pass: User password to join the domain or to create a domain controller. **Required**: for `:create` except on `type` `forest` on windows 2012 and above.
 - local_pass: Local Administrator Password for removing domain controller.
 - replica_type: For Windows Server 2008, specifies installing new or additional domain controller.  Valid values: domain, replica.
+- restart: when creating domain, will prevent Windows from automatically restarting. If not specified, defaults to true (which queues the restart). Valid values: true, false.
 - options: additional options as needed by AD DS Deployment http://technet.microsoft.com/en-us/library/cc732887.aspx for Windows Server 2008 and http://technet.microsoft.com/en-us/library/hh974719.aspx for Windows Server 2012.  Single parameters use nil for key value, see example below.
 
 ### Examples
@@ -202,6 +203,14 @@ Resource/Provider
       action :create
       type "forest"
       safe_mode_pass "Passw0rd"
+    end
+
+    # Create Contoso.com forest and don't restart Windows
+    windows_ad_domain "contoso.com" do
+      action :create
+      type "forest"
+      safe_mode_pass "Passw0rd"
+      restart false
     end
 
     # Create Contoso.com replica
@@ -333,7 +342,7 @@ Resource/Provider
 ----
 Note: Chef 12 Custom Resource WIP.
 ou provider will call `ou_2008` or `ou_2012` based on OS version.
-Warning: Data bags can be used, however OU names must be unique (restriction of data bags) 
+Warning: Data bags can be used, however OU names must be unique (restriction of data bags)
 
 ### Actions
 - :create: Adds organizational units to Active Directory.
@@ -514,7 +523,7 @@ export VAGRANT_TEST_BOX='kensykora/windows_2012_r2_standard'
 
 # Bundle required cookbooks (this step needs to be repeated eveytime the cookbooks or a dependency changes)
 berks install
-berks vendor test/fixtures/cookbooks 
+berks vendor test/fixtures/cookbooks
 
 # Spin up domain controller
 vagrant up test-dc           # this will trigger a VM reboot
