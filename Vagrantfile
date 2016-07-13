@@ -1,22 +1,22 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-win_2008_r2_box          = 'opentable/win-2008r2-standard-amd64-nocm'
-win_20008_r2_box_url     = 'https://atlas.hashicorp.com/opentable/boxes/win-2008r2-standard-amd64-nocm'
+win_2008_r2_box          = 'windows-2008r2'
+#win_20008_r2_box_url     = 'https://atlas.hashicorp.com/opentable/boxes/win-2008r2-standard-amd64-nocm'
 # win_2008_r2_box        = 'opentable/win-2008r2-enterprise-amd64-nocm'
 # win_20008_r2_box_url   = 'https://atlas.hashicorp.com/opentable/boxes/win-2008r2-enterprise-amd64-nocm'
-win_2012_box             = 'kensykora/windows_2012_r2_standard'
-win_2012_box_url         = 'https://atlas.hashicorp.com/kensykora/boxes/windows_2012_r2_standard'
-win_2012_r2_box          = 'opentable/win-2012r2-standard-amd64-nocm'
-win_2012_r2_box_url      = 'https://atlas.hashicorp.com/opentable/boxes/win-2012r2-standard-amd64-nocm'
-win_2012_r2_core_box     = 'kensykora/windows_2012_r2_standard_core'
-win_2012_r2_core_box_url = 'https://atlas.hashicorp.com/kensykora/boxes/windows_2012_r2_standard_core'
+win_2012_box             = 'windows-2012'
+#win_2012_box_url         = 'https://atlas.hashicorp.com/kensykora/boxes/windows_2012_standard'
+win_2012_r2_box          = 'windows-2012r2'
+#win_2012_r2_box_url      = 'https://atlas.hashicorp.com/opentable/boxes/win-2012r2-standard-amd64-nocm'
+win_2012_r2_core_box     = 'windows-2012r2-core'
+#win_2012_r2_core_box_url = 'https://atlas.hashicorp.com/kensykora/boxes/windows_2012_r2_standard_core'
 win_7_box                = 'opentable/win-7-enterprise-amd64-nocm'
-win_7_box_url            = 'https://atlas.hashicorp.com/opentable/boxes/win-7-enterprise-amd64-nocm'
-# win_7_box               = 'opentable/win-7-professional-amd64-nocm'
+#win_7_box_url            = 'https://atlas.hashicorp.com/opentable/boxes/win-7-enterprise-amd64-nocm'
+# win_7_box               = 'windows-7'
 # win_7_box_url           = 'https://atlas.hashicorp.com/opentable/boxes/win-7-professional-amd64-nocm'
-win_8_box                = 'opentable/win-8.1-enterprise-amd64-nocm'
-win_8_box_url            = 'https://atlas.hashicorp.com/opentable/boxes/win-8.1-enterprise-amd64-nocm'
+win_8_box                = 'windows-81'
+#win_8_box_url            = 'https://atlas.hashicorp.com/opentable/boxes/win-8.1-enterprise-amd64-nocm'
 
 machines = {
   'win2012r2core' => {
@@ -38,9 +38,10 @@ machines = {
   	'rdp_port'   => '8081',
   	'winrm_port' => '8082',
     'run_list'   => [
-#      'recipe[test_windows_ad::setup_dc]'
-      'recipe[test_windows_ad::join_domain]',
-      'recipe[test_windows_ad::unjoin_domain]'
+      'recipe[test_windows_ad::setup_forest]',    
+      'recipe[test_windows_ad::ou]',
+	  'recipe[test_windows_ad::group]'
+
     ]
   },
   'win2012' => {
@@ -51,9 +52,9 @@ machines = {
   	'rdp_port'   => '8086',
   	'winrm_port' => '8087',
     'run_list'   => [
-#      'recipe[test_windows_ad::setup_dc]'
-      'recipe[test_windows_ad::join_domain]',
-      'recipe[test_windows_ad::unjoin_domain]'
+      'recipe[test_windows_ad::setup_forest]'
+#      'recipe[test_windows_ad::join_domain]',
+#      'recipe[test_windows_ad::unjoin_domain]'
     ]
   },
   'win2012r2' => {
@@ -64,9 +65,12 @@ machines = {
   	'rdp_port'   => '8091',
   	'winrm_port' => '8092',
     'run_list'   => [
-#      'recipe[test_windows_ad::setup_dc]'
-      'recipe[test_windows_ad::join_domain]',
-      'recipe[test_windows_ad::unjoin_domain]'
+      'recipe[test_windows_ad::setup_forest]',
+#      'recipe[test_windows_ad::join_domain]',
+#      'recipe[test_windows_ad::unjoin_domain]'
+      'recipe[test_windows_ad::ou]',
+      'recipe[test_windows_ad::user]',
+	    'recipe[test_windows_ad::group]'
     ]
   }
 }
@@ -112,7 +116,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |global_config|
 
 #       config.vm.provision 'chef_client', run: 'always' do |chef|
 	  config.vm.provision 'chef_solo', run: 'always' do |chef|
-        chef.log_level  = 'debug'
+        chef.log_level  = 'info'
         chef.cookbooks_path = "../../cookbooks" 
 #        chef.custom_config_path = 'Vagrantfile.chef'
         chef.file_cache_path    = 'c:/var/chef/cache'

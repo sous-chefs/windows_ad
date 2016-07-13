@@ -172,7 +172,6 @@ def computer_exists?
 end
 
 def exists?
-<<<<<<< HEAD
   # Supports workstation and server platforms, Windows Server 2008 R2 and Windows 7 share the same version number, Win7 doesnot include netdom command without RSAT.
   if ['os_version'] == '6.1.7600'
     Chef::Log.warn('Unable to determine specific OS version. Windows 7 does not have the native tools to query if the domain exists. Assuming domain exists.')
@@ -187,9 +186,7 @@ end
 def ou_dn
   ou_name = new_resource.ou.split('/').reverse.map { |k| "OU=#{k}" }.join(',') << ','
   ou_name << new_resource.name.split('.').map! { |k| "DC=#{k}" }.join(',')
-  check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"",
-                              new_resource.cmd_user, new_resource.cmd_pass,
-                              new_resource.cmd_domain)
+  check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   check.stdout.downcase.include?('dc')
 end
 

@@ -4,7 +4,7 @@
 include_recipe 'windows_ad::default'
 
 user = 'Administrator'
-pass = 'Password1234###!'
+pass = 'Passw0rd'
 domain = 'www.contoso.local'
 
 execute "net user \"#{user}\" \"#{pass}\""
