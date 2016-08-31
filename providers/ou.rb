@@ -24,21 +24,24 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-action :create do
-  if node['os_version'] < '6.1'
-    windows_ad_ou_2008 "#{new_resource.name}" do
+
+action :create do # ~FC017
+  require 'chef/win32/version'
+  win_ver = Chef::ReservedNames::Win32::Version.new
+  if win_ver.windows_server_2008? || win_ver.windows_server_2008_r2?
+    windows_ad_ou_2008 new_resource.name do
       action :create
-      ou "#{new_resource.ou}"
-      domain_name "#{new_resource.domain_name}"    
+      ou new_resource.ou unless new_resource.ou.nil?
+      domain_name new_resource.domain_name
     end
   elsif node['os_version'] >= '6.2'
-    windows_ad_ou_2012 "#{new_resource.name}" do
+    windows_ad_ou_2012 new_resource.name do
       action :create
-      path "#{new_resource.ou}" unless new_resource.ou.nil?
-      domain_name "#{new_resource.domain_name}"
+      path new_resource.ou unless new_resource.ou.nil?
+      domain_name new_resource.domain_name
     end
   else
-    Chef::Log.error("This version of Windows is not supported")
+    Chef::Log.error('This version of Windows is not supported')
   end
 end
 
