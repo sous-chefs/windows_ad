@@ -38,17 +38,22 @@ action :create do
       cmd << " -DomainName #{new_resource.name}"
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << ' -Force:$true'
+      cmd << ' -NoRebootOnCompletion' if !new_resource.restart
     else node[:os_version] <= '6.1'
       cmd = 'dcpromo -unattend'
       cmd << " -newDomain:#{new_resource.type}"
       cmd << " -NewDomainDNSName:#{new_resource.name}"
-      cmd << ' -RebootOnCompletion:Yes'
+      if !new_resource.restart
+        cmd << ' -RebootOnCompletion:No'
+      else
+        cmd << ' -RebootOnCompletion:Yes'
+      end
       cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
     end
 
 	cmd << format_options(new_resource.options)
-	
+
     powershell_script "create_domain_#{new_resource.name}" do
       code cmd
       returns [0, 1, 2, 3, 4]
@@ -139,8 +144,6 @@ def exists?
   ldap_path = new_resource.name.split('.').map! { |k| "dc=#{k}" }.join(',')
   check = Mixlib::ShellOut.new("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')").run_command
   check.stdout.match('True')
-<<<<<<< HEAD
-=======
 end
 
 def computer_exists?

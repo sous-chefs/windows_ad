@@ -2,7 +2,7 @@ windows_ad Cookbook
 =================
 
 [![Join the chat at https://gitter.im/TAMUArch/cookbook.windows_ad](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/TAMUArch/cookbook.windows_ad?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-This cookbook installs Active Directory Domain Services on Windows Server 2012 including all necessary roles and features.
+This cookbook installs Active Directory Domain Services on Windows Server including all necessary roles and features.
 
 Requirements
 ============
@@ -86,7 +86,7 @@ Resource/Provider
       cmd_pass "password"
       cmd_domain "contoso.com"
     end
-    
+
     # Join Contoso.com domain
     windows_ad_computer 'Workstation' do
       action :join
@@ -193,6 +193,7 @@ Resource/Provider
 - domain_pass: User password to join the domain or to create a domain controller. **Required**: for `:create` except on `type` `forest` on windows 2012 and above.
 - local_pass: Local Administrator Password for removing domain controller.
 - replica_type: For Windows Server 2008, specifies installing new or additional domain controller.  Valid values: domain, replica.
+- restart: when creating domain, will prevent Windows from automatically restarting. If not specified, defaults to true (which queues the restart). Valid values: true, false.
 - options: additional options as needed by AD DS Deployment http://technet.microsoft.com/en-us/library/cc732887.aspx for Windows Server 2008 and http://technet.microsoft.com/en-us/library/hh974719.aspx for Windows Server 2012.  Single parameters use nil for key value, see example below.
 
 ### Examples
@@ -202,6 +203,14 @@ Resource/Provider
       action :create
       type "forest"
       safe_mode_pass "Passw0rd"
+    end
+
+    # Create Contoso.com forest and don't restart Windows
+    windows_ad_domain "contoso.com" do
+      action :create
+      type "forest"
+      safe_mode_pass "Passw0rd"
+      restart false
     end
 
     # Create Contoso.com replica
@@ -288,8 +297,52 @@ Resource/Provider
       cmd_domain "contoso.com"
     end
 
+`group_member`
+-------
+
+### Actions
+- :add: Adds a user to a group.
+- :remove: Removes a user from a group.
+
+### Attribute Parameters
+
+- user_name: user name attribute. Name of the user object.
+- group_name: group name attribute. Name of the group object.
+- domain_name: FQDN.
+- user_ou: Organization Unit path where user object is located.
+- group_ou: Organization Unit path where group object is located.
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
+
+### Examples
+
+    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups"
+    windows_ad_group_member 'Joe Smith' do
+      action :add
+      group_name  'Admins'
+      domain_name 'contoso.com'
+      user_ou 'users'
+      group_ou 'AD/Groups'
+    end
+
+    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups" using domain admin account
+    windows_ad_group_member 'Joe Smith' do
+      action :add
+      group_name  'Admins'
+      domain_name 'contoso.com'
+      user_ou 'users'
+      group_ou 'AD/Groups'
+      cmd_user "Administrator"
+      cmd_pass "password"
+      cmd_domain "contoso.com"
+    end
+
 `ou`
 ----
+Note: Chef 12 Custom Resource WIP.
+ou provider will call `ou_2008` or `ou_2012` based on OS version.
+Warning: Data bags can be used, however OU names must be unique (restriction of data bags)
 
 ### Actions
 - :create: Adds organizational units to Active Directory.
@@ -331,6 +384,46 @@ Resource/Provider
       cmd_pass "password"
       cmd_domain "contoso.com"
     end
+
+'ou_2008'
+-------
+
+### Actions
+- :create: Adds organizational units to Active Directory.
+WIP:
+- :modify: Modifies an organizational unit.
+- :move:  Rename an organizational unit object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+- :delete:  Remove an organizational unit object from Active Directory.
+
+### Attribute Parameters
+
+- name: name attribute.  Name of the Organization Unit object.
+- domain_name: FQDN
+- ou: Organization Unit path where object is to be located.
+- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
+
+'ou_2012'
+-------
+
+### Actions
+- :create: Adds organizational units to Active Directory.
+WIP:
+- :modify: Modifies an organizational unit.
+- :move:  Rename an organizational unit object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
+- :delete:  Remove an organizational unit object from Active Directory.
+
+### Attribute Parameters
+
+- name: name attribute.  Name of the Organization Unit object.
+- domain_name: FQDN
+- path: Organization Unit path where object is to be located.
+- options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
+- cmd_user: user under which the interaction with AD should happen
+- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
+- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 `users`
 -------
@@ -387,48 +480,6 @@ Resource/Provider
       cmd_domain "contoso.com"
     end
 
-`group_member`
--------
-
-### Actions
-- :add: Adds a user to a group.
-- :remove: Removes a user from a group.
-
-### Attribute Parameters
-
-- user_name: user name attribute. Name of the user object.
-- group_name: group name attribute. Name of the group object.
-- domain_name: FQDN.
-- user_ou: Organization Unit path where user object is located.
-- group_ou: Organization Unit path where group object is located.
-- cmd_user: user under which the interaction with AD should happen
-- cmd_pass: password for user specified in cmd_user (only needed if user requires password)
-- cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
-
-### Examples
-
-    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups"
-    windows_ad_group_member 'Joe Smith' do
-      action :add
-      group_name  'Admins'
-      domain_name 'contoso.com'
-      user_ou 'users'
-      group_ou 'AD/Groups'
-    end
-
-    # Add user "Joe Smith" in the Users OU to group "Admins" in OU "AD/Groups" using domain admin account
-    windows_ad_group_member 'Joe Smith' do
-      action :add
-      group_name  'Admins'
-      domain_name 'contoso.com'
-      user_ou 'users'
-      group_ou 'AD/Groups'
-      cmd_user "Administrator"
-      cmd_pass "password"
-      cmd_domain "contoso.com"
-    end
-
-
 Testing
 =======
 
@@ -472,7 +523,7 @@ export VAGRANT_TEST_BOX='kensykora/windows_2012_r2_standard'
 
 # Bundle required cookbooks (this step needs to be repeated eveytime the cookbooks or a dependency changes)
 berks install
-berks vendor test/fixtures/cookbooks 
+berks vendor test/fixtures/cookbooks
 
 # Spin up domain controller
 vagrant up test-dc           # this will trigger a VM reboot

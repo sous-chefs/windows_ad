@@ -25,29 +25,23 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-action :create do
-  if parent?
-    if exists?
-      Chef::Log.debug('The object already exists')
-      new_resource.updated_by_last_action(false)
-    else
-      cmd = 'dsadd'
-      cmd << ' ou '
-      cmd << "\""
-      cmd << dn
-      cmd << "\""
-
-      cmd << cmd_options(new_resource.options)
-
-      Chef::Log.info(print_msg("create #{new_resource.name}"))
-      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
-                          new_resource.cmd_domain)
-
-      new_resource.updated_by_last_action(true)
+action :create do # ~FC017
+  require 'chef/win32/version'
+  win_ver = Chef::ReservedNames::Win32::Version.new
+  if win_ver.windows_server_2008? || win_ver.windows_server_2008_r2?
+    windows_ad_ou_2008 new_resource.name do
+      action :create
+      ou new_resource.ou unless new_resource.ou.nil?
+      domain_name new_resource.domain_name
+    end
+  elsif node['os_version'] >= '6.2'
+    windows_ad_ou_2012 new_resource.name do
+      action :create
+      path new_resource.ou unless new_resource.ou.nil?
+      domain_name new_resource.domain_name
     end
   else
-    Chef::Log.error('The parent OU does not exist')
-    new_resource.updated_by_last_action(false)
+    Chef::Log.error('This version of Windows is not supported')
   end
 end
 
@@ -148,9 +142,7 @@ def exists?
     ldap = CmdHelper.ou_partial_dn(new_resource.ou) << ','
     ldap << dc_partial_dn
   end
-  check = CmdHelper.shell_out("dsquery ou -name \"#{new_resource.name}\"",
-                              new_resource.cmd_user, new_resource.cmd_pass,
-                              new_resource.cmd_domain)
+  check = CmdHelper.shell_out("dsquery ou -name \"#{new_resource.name}\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   path = "OU=#{new_resource.name},"
   path << ldap
   check.stdout.downcase.include? path.downcase

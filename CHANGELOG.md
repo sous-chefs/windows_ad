@@ -1,9 +1,29 @@
 # CHANGELOG for windows_ad
 
+## 0.5.3
+
+* Issue 87 - https://github.com/TAMUArch/cookbook.windows_ad/issues/87 revert Robocop edits on providers
+
+## 0.5.2
+
+* Issue 85 - https://github.com/TAMUArch/cookbook.windows_ad/issues/85 revert Robocop edits on dsquery
+
+## 0.5.1
+
+* Quality of life edits
+
+## 0.5.0
+
+* Join and unjoin actions from domain provider moved to computer provider - https://github.com/TAMUArch/cookbook.windows_ad/pull/77
+* Correct user action to address dsmod error - https://github.com/TAMUArch/cookbook.windows_ad/issues/71
+* Fixed bug in join ou that always reported that the resource was updated
+* Gitter badger added - https://github.com/TAMUArch/cookbook.windows_ad/pull/66
+* Proper formattign for pre-win2012 systems - https://github.com/TAMUArch/cookbook.windows_ad/pull/70 and https://github.com/TAMUArch/cookbook.windows_ad/pull/74
+
 ## 0.4.5
 
-* Rubocop and foodcritic
-* Add success return codes for installing DC.
+* Rubocop and foodcritic - https://github.com/TAMUArch/cookbook.windows_ad/issues/2
+* Add success return codes for installing DC. - https://github.com/TAMUArch/cookbook.windows_ad/issues/1
 
 ## 0.4.4
 
