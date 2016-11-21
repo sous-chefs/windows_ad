@@ -58,7 +58,7 @@ Resource/Provider
 - cmd_user: user under which the interaction with AD should happen
 - cmd_pass: password for user specified in cmd_user (only needed if user requires password)
 - cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
-- restart: allows preventing reboot after join or unjoin action. Default true to reboot.
+- restart: allows preventing reboot after join or unjoin action. Default true to reboot.  **Required**
 
 ### Examples
 
