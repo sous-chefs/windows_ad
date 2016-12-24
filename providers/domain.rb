@@ -35,7 +35,6 @@ action :create do
   else
     if node['os_version'] >= '6.2'
       cmd = create_command
-      cmd << " -DomainName #{new_resource.name}"
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << ' -Force:$true'
       cmd << ' -NoRebootOnCompletion' if !new_resource.restart
@@ -167,13 +166,23 @@ def create_command
     case new_resource.type
     when 'forest'
       cmd << 'Install-ADDSForest'
+      cmd << " -DomainName #{new_resource.name}"
     when 'domain'
       cmd << 'Install-ADDSDomain -Credential $mycreds'
+      case new_resource.domain_type
+      when 'child' || 'ChildDomain' || 'childdomain'
+        cmd << " -NewDomainName #{new_resource.new_domain} -ParentDomainName #{new_resource.parent} -DomainType child"
+      when 'tree' || 'TreeDomain' || 'treedomain'
+        cmd << " -NewDomainName #{new_resource.new_domain} -DomainType tree"
+      end
     when 'replica'
       cmd << 'Install-ADDSDomainController -Credential $mycreds'
+      cmd << " -DomainName #{new_resource.name}"
     when 'read-only'
       cmd << 'Add-ADDSReadOnlyDomainControllerAccount -Credential $mycreds'
+      cmd << " -DomainName #{new_resource.name}"
     end
+
   else
     case new_resource.type
     when 'forest'
