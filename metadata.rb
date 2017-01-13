@@ -4,7 +4,6 @@ maintainer_email 'dgroh@arch.tamu.edu'
 license          'MIT'
 description      'Installs/Configures windows active directory'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.5.3'
+version          '0.5.3001'
 supports         'windows', '>= 6.1'
 depends          'windows'
-
