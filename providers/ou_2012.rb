@@ -13,7 +13,7 @@ action :create do
     cmd = 'New-ADOrganizationalUnit'
     cmd << " -Name \"#{new_resource.name}\""
     cmd << " -Path \"#{dn}\"" unless new_resource.path.nil?
-  
+
     powershell_script "create_ou_2012_#{new_resource.name}" do
       code cmd
     end
@@ -34,7 +34,7 @@ def exists?
   dc_partial_dn = CmdHelper.dc_partial_dn(new_resource.domain_name)
   if new_resource.path.nil?
     ldap = dc_partial_dn
-  else    
+  else
     ldap = CmdHelper.ou_partial_dn(new_resource.path) << ','
     ldap << dc_partial_dn
   end
@@ -45,4 +45,3 @@ def exists?
   check = CmdHelper.shell_out("powershell.exe \"[adsi]::Exists('LDAP://#{path}')\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   check.stdout.downcase.include?("true")
 end
-  
