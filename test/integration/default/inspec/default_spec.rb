@@ -1,48 +1,52 @@
-require_relative '../../spec_helper'
+# Tests for Windows Server all Families
+if os[:family] == 'windows'
+  describe os[:family] do
+    it { should eq 'windows' }
+  end
 
-describe 'windows_ad::default' do
-  describe windows_feature('Microsoft-Windows-GroupPolicy-ServerAdminTools-Update') do
+  describe windows_feature('GPMC') do
     it { should be_installed }
   end
 
-  describe windows_feature('DirectoryServices-DomainController') do
+  describe windows_feature('AD-Domain-Services') do
     it { should be_installed }
   end
-  if node[:os_version] < '6.2'
+
+  # Tests for Windows Server 2008 Family
+  if os[:release] < '6.2'
+    describe os[:release] do
+      it { should be < '6.2' }
+    end
     describe windows_feature('NetFx3') do
       it { should be_installed }
     end
-  elsif node[:os_version] >= '6.2'
-    describe windows_feature('ServerManager-Core-RSAT') do
-      it { should be_installed }
-    end
+  end
 
-    describe windows_feature('ServerManager-Core-RSAT-Role-Tools') do
+  # Tests for Windows Server 2012 Family
+  if os[:release] >= '6.2'
+    describe os[:release] do
+      it { should be >= '6.2' }
+    end
+    describe windows_feature('RSAT') do
       it { should be_installed }
     end
-
-    describe windows_feature('RSAT-AD-Tools-Feature') do
+    describe windows_feature('RSAT-Role-Tools') do
       it { should be_installed }
     end
-
-    describe windows_feature('RSAT-ADDS-Tools-Feature') do
+    describe windows_feature('RSAT-AD-Tools') do
       it { should be_installed }
     end
-
-    describe windows_feature('ActiveDirectory-Powershell') do
+    describe windows_feature('RSAT-ADDS-Tools') do
       it { should be_installed }
     end
-
-    describe windows_feature('DirectoryServices-DomainController-Tools') do
+    describe windows_feature('RSAT-AD-PowerShell') do
       it { should be_installed }
     end
-
-    describe windows_feature('DirectoryServices-AdministrativeCenter') do
+    describe windows_feature('RSAT-ADDS') do
       it { should be_installed }
     end
-  else
-    it 'does not have a test' do
-      skip 'replace this with server 2016 tests'
+    describe windows_feature('RSAT-AD-AdminCenter') do
+      it { should be_installed }
     end
   end
 end
