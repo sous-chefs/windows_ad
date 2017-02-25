@@ -1,4 +1,4 @@
-Style/SingleSpaceBeforeFirstArg:
+Style/SpaceBeforeFirstArg:
   Exclude:
   -  metadata.rb
   -  test/fixtures/test_cookbooks/test_windows_ad/metadata.rb
