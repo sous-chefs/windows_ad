@@ -1,5 +1,9 @@
 # CHANGELOG for windows_ad
 
+## 0.5.5
+
+* Hotfix for locking the version of the windows cookbook as it has recently been rewritten.  A refactor is required to use the latest version.
+
 ## 0.5.4
 
 * Issue 100 - https://github.com/TAMUArch/cookbook.windows_ad/issues/100 initial support for Windows 2016.

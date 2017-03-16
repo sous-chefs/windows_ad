@@ -13,6 +13,7 @@ Platform
 * Windows workstations (join and unjoin)
 * Windows Server 2008 R2 Family
 * Windows Server 2012 Family
+* Windows Server 2016 Family
 
 Cookbooks
 ---------
