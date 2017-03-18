@@ -3,48 +3,73 @@ driver:
   name: vagrant
 
 provisioner:
-  name: chef_solo
+  name: chef_zero
+#  name: nodes
+#  Feature request to use kitchen-nodes(https://github.com/mwrock/kitchen-nodes) to handle inter-box networking, but does not seem to be fully supported on windows workstations.
 
 verifier:
   name: inspec
 
 platforms:
-  - name: windows-2008r2
+  - name: windows-2008-r2
     driver_config:
       box_url: d:/cookbooks/packer-windows/windows_2008_r2_virtualbox.box
-      communicator: winrm
-    transport:
-      name: winrm
-#  - name: win2008r2core
+      network:
+      - ["forwarded_port", {guest: 3389, host: 53389, auto_correct: true, id: 'rdp'}]
+      - ["private_network", {ip: '192.168.10.10', virtualbox_intnet: 'windows_ad', auto_correct: true }]
+#  - name: windows-2008-r2-core
 #    driver_config:
 #      box_url: d:\cookbooks\packer-windows\windows_2008_r2_core_virtualbox.box
-#      communicator: winrm
-#    transport:
-#      name: winrm
-#  - name: win2012
+#      network:
+#      - ["forwarded_port", {guest: 3389, host: 53389, auto_correct: true, id: 'rdp'}]
+#      - ["private_network", {ip: '192.168.10.10', virtualbox_intnet: 'windows_ad', auto_correct: true }]
+#  - name: windows-2012
 #    driver_config:
-#      box_url: d:\cookbooks\packer-windows\windows_2012_virtualbox.box
-#      communicator: winrm
-#    transport:
-#      name: winrm
-  - name: windows-2012r2
+#      box_url: d:\cookbooks\packer-windows\windows_2008_r2_core_virtualbox.box
+#      network:
+#      - ["forwarded_port", {guest: 3389, host: 53389, auto_correct: true, id: 'rdp'}]
+#      - ["private_network", {ip: '192.168.10.10', virtualbox_intnet: 'windows_ad', auto_correct: true }]
+  - name: windows-2012-r2
     driver_config:
       box_url: d:/cookbooks/packer-windows/windows_2012_r2_virtualbox.box
-#      communicator: winrm
-#    transport:
-#      name: winrm
-#  - name: win2012r2core
+      network:
+      - ["forwarded_port", {guest: 3389, host: 53389, auto_correct: true, id: 'rdp'}]
+#      - ["private_network", {ip: '192.168.10.10', virtualbox_intnet: 'windows_ad', auto_correct: true }]
+#  - name: windows-2012-r2-core
 #    driver_config:
 #      box_url: d:\cookbooks\packer-windows\windows_2012_r2_core_virtualbox.box
-#      communicator: winrm
-#    transport:
-#      name: winrm
-
+#      network:
+#      - ["forwarded_port", {guest: 3389, host: 53389, auto_correct: true, id: 'rdp'}]
+#      - ["private_network", {ip: '192.168.10.10', virtualbox_intnet: 'windows_ad', auto_correct: true }]
+#  - name: windows-2016
+#    driver_config:
+#      box_url: d:\cookbooks\packer-windows\windows_2016_virtualbox.box
+#      network:
+#      - ["forwarded_port", {guest: 3389, host: 53389, auto_correct: true, id: 'rdp'}]
+#      - ["private_network", {ip: '192.168.10.10', virtualbox_intnet: 'windows_ad', auto_correct: true }]
 suites:
   - name: default
     run_list:
       - recipe[windows_ad::default]
     attributes:
+    driver:
+      vm_hostname: 'default'
+  - name: forest
+    run_list:
+      - recipe[windows_ad::contoso]
+    attributes:
+    driver:
+      vm_hostname: 'forest'
 #    verifier:
 #      inspec_tests:
+#        - test/integration/forest/
+  - name: replica
+    run_list:
+      - recipe[windows_ad::contoso_replica]
+    attributes:
+    driver:
+      vm_hostname: 'replica'
+#    verifier:
+#      inspec_tests:
+#        - test/integration/
         
