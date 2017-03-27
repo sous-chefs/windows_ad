@@ -5,7 +5,6 @@
 #
 # Copyright 2013, Texas A&M
 
-if node['os_version'] >= '6.2'
   [
     'Microsoft-Windows-GroupPolicy-ServerAdmintools-Update',
     'ServerManager-Core-RSAT',

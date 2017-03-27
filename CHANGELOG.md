@@ -1,5 +1,10 @@
 # CHANGELOG for windows_ad
 
+## 0.5.4
+
+* Issue 100 - https://github.com/TAMUArch/cookbook.windows_ad/issues/100 initial support for Windows 2016.
+* Quality changes - chefignore, default recipe uses float to compare os_version.
+
 ## 0.5.3
 
 * Issue 87 - https://github.com/TAMUArch/cookbook.windows_ad/issues/87 revert Robocop edits on providers
