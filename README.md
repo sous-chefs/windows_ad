@@ -195,6 +195,9 @@ Resource/Provider
 - local_pass: Local Administrator Password for removing domain controller.
 - replica_type: For Windows Server 2008, specifies installing new or additional domain controller.  Valid values: domain, replica.
 - restart: when creating domain, will prevent Windows from automatically restarting. If not specified, defaults to true (which queues the restart). Valid values: true, false.
+- domain_type: Indicates the type of domain that you want to create: a new domain tree in an existing forest (supported values are "TreeDomain" or "tree"), a child of an existing domain (supported values are "ChildDomain" or "child"). The default is ChildDomain.
+- parent: When type is `domain`, specifies the fully qualified domain name (FQDN) of an existing parent domain.
+- new_domain: When type is `domain`, this parameter can be used to specify the fully qualified domain name when `tree` and the single label domain name for the child domain when `child`.
 - options: additional options as needed by AD DS Deployment http://technet.microsoft.com/en-us/library/cc732887.aspx for Windows Server 2008 and http://technet.microsoft.com/en-us/library/hh974719.aspx for Windows Server 2012.  Single parameters use nil for key value, see example below.
 
 ### Examples

@@ -38,4 +38,7 @@ attribute :safe_mode_pass, kind_of: String, required: true
 attribute :options, kind_of: Hash, default: {}
 attribute :local_pass, kind_of: String
 attribute :replica_type, kind_of: String, default: 'domain'
+attribute :domain_type, kind_of: String, default: 'childdomain'
+attribute :new_domain, kind_of: String
+attribute :parent, kind_of: String
 attribute :ou, kind_of: String
