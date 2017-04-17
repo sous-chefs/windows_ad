@@ -39,7 +39,7 @@ action :create do
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << ' -Force:$true'
       cmd << ' -NoRebootOnCompletion' unless new_resource.restart
-    else node[:os_version] <= '6.1'
+    else node['os_version'] <= '6.1'
          cmd = 'dcpromo -unattend'
          cmd << " -newDomain:#{new_resource.type}"
          cmd << " -NewDomainDNSName:#{new_resource.name}"
@@ -92,7 +92,7 @@ action :join do
       new_resource.updated_by_last_action(false)
     else
       powershell_script "join_#{new_resource.name}" do
-        if node[:os_version] >= '6.2'
+        if node['os_version'] >= '6.2'
           cmd_text = "Add-Computer -DomainName #{new_resource.name} -Credential $mycreds -Force:$true"
           cmd_text << " -OUPath '#{ou_dn}'" if new_resource.ou
           cmd_text << ' -Restart' if new_resource.restart
@@ -102,7 +102,7 @@ action :join do
             #{cmd_text}
           EOH
         else
-          cmd_text = "netdom join #{node[:hostname]} /d #{new_resource.name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass}"
+          cmd_text = "netdom join #{node['hostname']} /d #{new_resource.name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass}"
           cmd_text << " /ou:\"#{ou_dn}\"" if new_resource.ou
           cmd_text << ' /reboot' if new_resource.restart
           code cmd_text.to_s
