@@ -24,7 +24,7 @@ end
 
 def dn
   unless new_resource.path.nil?
-    dn = ""
+    dn = ''
     dn << CmdHelper.ou_partial_dn(new_resource.path) << ','
   end
   dn << CmdHelper.dc_partial_dn(new_resource.domain_name)
@@ -39,9 +39,9 @@ def exists?
     ldap << dc_partial_dn
   end
   path = "OU=#{new_resource.name},"
-  path = path.gsub('/','\/') if path.include?('/')
+  path = path.gsub('/', '\/') if path.include?('/')
   path << ldap
   Chef::Log.info("path is #{path}")
   check = CmdHelper.shell_out("powershell.exe \"[adsi]::Exists('LDAP://#{path}')\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-  check.stdout.downcase.include?("true")
+  check.stdout.downcase.include?('true')
 end

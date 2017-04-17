@@ -34,9 +34,9 @@ action :create do
   else
     cmd = 'dsadd'
     cmd << ' contact '
-    cmd << "\""
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-    cmd << "\""
+    cmd << '"'
 
     cmd << CmdHelper.cmd_options(new_resource.options)
 

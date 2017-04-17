@@ -27,7 +27,7 @@
 
 require 'mixlib/shellout'
 
-ENUM_NAMES = %w{(Win2003) (Win2008) (Win2008R2) (Win2012) (Win2012R2) (Default)}
+ENUM_NAMES = [%w{(Win2003) (Win2008) (Win2008R2) (Win2012) (Win2012R2) (Default)}].freeze
 
 action :create do
   if exists?
@@ -38,21 +38,21 @@ action :create do
       cmd << " -DomainName #{new_resource.name}"
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << ' -Force:$true'
-      cmd << ' -NoRebootOnCompletion' if !new_resource.restart
+      cmd << ' -NoRebootOnCompletion' unless new_resource.restart
     else node[:os_version] <= '6.1'
-      cmd = 'dcpromo -unattend'
-      cmd << " -newDomain:#{new_resource.type}"
-      cmd << " -NewDomainDNSName:#{new_resource.name}"
-      if !new_resource.restart
-        cmd << ' -RebootOnCompletion:No'
-      else
-        cmd << ' -RebootOnCompletion:Yes'
-      end
-      cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
-      cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
+         cmd = 'dcpromo -unattend'
+         cmd << " -newDomain:#{new_resource.type}"
+         cmd << " -NewDomainDNSName:#{new_resource.name}"
+         cmd << if !new_resource.restart
+                  ' -RebootOnCompletion:No'
+                else
+                  ' -RebootOnCompletion:Yes'
+                end
+         cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
+         cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
     end
 
-	cmd << format_options(new_resource.options)
+    cmd << format_options(new_resource.options)
 
     powershell_script "create_domain_#{new_resource.name}" do
       code cmd
@@ -86,10 +86,7 @@ action :delete do
 end
 
 action :join do
-  unless exists?
-    Chef::Log.error('The domain does not exist or was not reachable, please check your network settings')
-    new_resource.updated_by_last_action(false)
-  else
+  if exists?
     if computer_exists?
       Chef::Log.debug('The computer is already joined to the domain')
       new_resource.updated_by_last_action(false)
@@ -108,11 +105,14 @@ action :join do
           cmd_text = "netdom join #{node[:hostname]} /d #{new_resource.name} /ud:#{new_resource.domain_user} /pd:#{new_resource.domain_pass}"
           cmd_text << " /ou:\"#{ou_dn}\"" if new_resource.ou
           cmd_text << ' /reboot' if new_resource.restart
-          code "#{cmd_text}"
+          code cmd_text.to_s
         end
       end
       new_resource.updated_by_last_action(true)
     end
+  else
+    Chef::Log.error('The domain does not exist or was not reachable, please check your network settings')
+    new_resource.updated_by_last_action(false)
   end
 end
 
@@ -147,7 +147,7 @@ def exists?
 end
 
 def computer_exists?
-  comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
+  comp = Mixlib::ShellOut.new('powershell.exe -command "get-wmiobject -class win32_computersystem -computername . | select domain"').run_command
   stdout = comp.stdout.downcase
   stdout.include?(new_resource.name.downcase)
 end
@@ -190,20 +190,20 @@ end
 
 def format_options(options)
   options.reduce('') do |cmd, (option, value)|
-    if value.nil?
-      cmd << " -#{option}"
-    elsif ENUM_NAMES.include?(value) || value.is_a?(Numeric)
-      if node['os_version'] >= '6.2'
-        cmd << " -#{option} #{value}"
-      else
-        cmd << " -#{option}:#{value}"
-      end
-    else
-      if node['os_version'] >= '6.2'
-        cmd << " -#{option} '#{value}'"
-      else
-        cmd << " -#{option}:'#{value}'"
-      end
-    end
+    cmd << if value.nil?
+             " -#{option}"
+           elsif ENUM_NAMES.include?(value) || value.is_a?(Numeric)
+             if node['os_version'] >= '6.2'
+               " -#{option} #{value}"
+             else
+               " -#{option}:#{value}"
+                    end
+           else
+             if node['os_version'] >= '6.2'
+               " -#{option} '#{value}'"
+             else
+               " -#{option}:'#{value}'"
+                    end
+           end
   end
 end

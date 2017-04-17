@@ -34,7 +34,7 @@ if node['os_version'].to_f >= 6.2
     'ActiveDirectory-Powershell',
     'DirectoryServices-DomainController-Tools',
     'DirectoryServices-AdministrativeCenter',
-    'DirectoryServices-DomainController'
+    'DirectoryServices-DomainController',
   ].each do |feature|
     windows_feature feature do
       action :install
@@ -44,7 +44,7 @@ else
   [
     'NetFx3',
     'Microsoft-Windows-GroupPolicy-ServerAdminTools-Update',
-    'DirectoryServices-DomainController'
+    'DirectoryServices-DomainController',
   ].each do |feature|
     windows_feature feature do
       action :install

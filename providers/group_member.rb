@@ -63,13 +63,13 @@ end
 def dsmod_group_cmd(group_dn, user_dn, option)
   cmd = 'dsmod'
   cmd << ' group '
-  cmd << "\""
+  cmd << '"'
   cmd << group_dn
-  cmd << "\""
+  cmd << '"'
   cmd << " #{option} "
-  cmd << "\""
+  cmd << '"'
   cmd << user_dn
-  cmd << "\""
+  cmd << '"'
 end
 
 def member_of?(user_dn, group_dn)

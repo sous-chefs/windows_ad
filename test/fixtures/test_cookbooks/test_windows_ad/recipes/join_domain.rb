@@ -1,6 +1,6 @@
 user = 'Administrator'
 pass = 'Passw0rd'
-domain = "contoso.local"
+domain = 'contoso.local'
 
 powershell_script 'Set DNS Server' do
   case node['os_version']
@@ -14,8 +14,8 @@ end
 execute "net user \"#{user}\" \"#{pass}\""
 
 windows_ad_computer 'localhost' do
- action :join
- domain_name domain
- domain_user user
- domain_pass pass
+  action :join
+  domain_name domain
+  domain_user user
+  domain_pass pass
 end
