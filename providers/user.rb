@@ -33,11 +33,10 @@ action :create do
     Chef::Log.info("dn is #{dn}")
     cmd = 'dsadd'
     cmd << ' user '
-    cmd << "\""
+    cmd << '"'
     cmd << dn
-    cmd << "\""
+    cmd << '"'
 
-    
     Chef::Log.info(print_msg("create #{new_resource.name}"))
     cmd << CmdHelper.cmd_options(new_resource.options)
 
@@ -51,9 +50,9 @@ action :modify do
   if exists?
     cmd = 'dsmod'
     cmd << ' user '
-    cmd << "\""    
+    cmd << '"'
     cmd << dn
-    cmd << "\""
+    cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
@@ -102,11 +101,11 @@ action :delete do
 end
 
 def dn
-  if new_resource.reverse == 'true'
-    name = new_resource.name.split(' ').reverse.map! { |k| k }.join('\\, ')
-  else
-    name = new_resource.name
-  end
+  name = if new_resource.reverse == 'true'
+           new_resource.name.split(' ').reverse.map! { |k| k }.join('\\, ')
+         else
+           new_resource.name
+         end
   CmdHelper.dn(name, new_resource.ou, new_resource.domain_name)
 end
 

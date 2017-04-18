@@ -13,9 +13,9 @@ action :create do
     else
       cmd = 'dsadd'
       cmd << ' ou '
-      cmd << "\""
+      cmd << '"'
       cmd << dn
-      cmd << "\""
+      cmd << '"'
 
       cmd << cmd_options(new_resource.options)
 
