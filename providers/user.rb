@@ -101,11 +101,11 @@ action :delete do
 end
 
 def dn
-  name = if new_resource.reverse == 'true'
-           new_resource.name.split(' ').reverse.map! { |k| k }.join('\\, ')
-         else
-           new_resource.name
-         end
+  if new_resource.reverse == 'true'
+    name = new_resource.name.split(' ').reverse.map! { |k| k }.join('\\, ')
+  else
+    name = new_resource.name
+  end
   CmdHelper.dn(name, new_resource.ou, new_resource.domain_name)
 end
 

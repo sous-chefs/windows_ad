@@ -34,3 +34,6 @@ Style/IdenticalConditionalBranches:
 Style/IfInsideElse:
   Exclude:
     - 'providers/domain.rb'
+
+Metrics/LineLength:
+  Max: 1555
