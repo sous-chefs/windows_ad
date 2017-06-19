@@ -24,7 +24,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-if node['os_version'] >= '6.2'
+if node['os_version'].to_f >= 6.2
   [
     'Microsoft-Windows-GroupPolicy-ServerAdmintools-Update',
     'ServerManager-Core-RSAT',
@@ -34,7 +34,7 @@ if node['os_version'] >= '6.2'
     'ActiveDirectory-Powershell',
     'DirectoryServices-DomainController-Tools',
     'DirectoryServices-AdministrativeCenter',
-    'DirectoryServices-DomainController'
+    'DirectoryServices-DomainController',
   ].each do |feature|
     windows_feature feature do
       action :install
@@ -44,7 +44,7 @@ else
   [
     'NetFx3',
     'Microsoft-Windows-GroupPolicy-ServerAdminTools-Update',
-    'DirectoryServices-DomainController'
+    'DirectoryServices-DomainController',
   ].each do |feature|
     windows_feature feature do
       action :install

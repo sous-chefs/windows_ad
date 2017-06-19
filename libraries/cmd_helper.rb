@@ -38,7 +38,7 @@ class CmdHelper
     shellout = Mixlib::ShellOut.new(cmd, user: user, password: pass, domain: domain)
     shellout.run_command
     if shellout.exitstatus != 0
-      fail "Failed to execute command.\nSTDOUT: #{shellout.stdout}\nSTDERR: #{shellout.stderr}"
+      raise "Failed to execute command.\nSTDOUT: #{shellout.stdout}\nSTDERR: #{shellout.stderr}"
     end
     shellout
   end
