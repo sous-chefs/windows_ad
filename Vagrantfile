@@ -52,6 +52,8 @@ machines = {
     'winrm_port' => '8087',
     'run_list'   => [
       'recipe[test_windows_ad::setup_forest]'
+      #      'recipe[test_windows_ad::join_domain]',
+      #      'recipe[test_windows_ad::unjoin_domain]'
     ]
   },
   'win2012r2' => {
@@ -65,7 +67,7 @@ machines = {
       'recipe[test_windows_ad::setup_forest]',
       'recipe[test_windows_ad::ou]',
       'recipe[test_windows_ad::user]',
-      'recipe[test_windows_ad::group]'
+      'recipe[test_windows_ad::group]',
     ]
   }
 }
@@ -81,7 +83,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |global_config|
       config.vm.box                        = options['box']
       config.vm.box_url                    = options['box_url']
       config.vm.hostname                   = options['hostname']
-
       config.vm.communicator = 'winrm'
       config.vm.guest = :windows
 
@@ -94,7 +95,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |global_config|
       config.vm.network :forwarded_port, guest: 80, host: options['http_port'], id: 'http', auto_correct: true
       config.vm.network :forwarded_port, guest: 3389, host: options['rdp_port'], id: 'rdp', auto_correct: true
       config.vm.network :forwarded_port, guest: 5985, host: options['winrm_port'], id: 'winrm', auto_correct: true
-
       config.vm.network 'private_network', ip: options['ip'], virtualbox__intnet: 'windows_ad'
       config.vm.provider 'virtualbox' do |vb|
         # vb.gui = true
