@@ -47,13 +47,16 @@ action :create do
 end
 
 action :join do
-  if exists?
+  unless exists?
+    Chef::Log.error('The domain does not exist or was not reachable, please check your network settings')
+    new_resource.updated_by_last_action(false)
+  else
     if computer_exists?
       Chef::Log.error('The computer is already joined to the domain')
       new_resource.updated_by_last_action(false)
     else
       powershell_script "join_#{new_resource.name}" do
-        if node['os_version'] >= '6.2'
+        if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
           cmd_text = "Add-Computer -DomainName #{new_resource.domain_name} -Credential $mycreds -Force:$true"
           cmd_text << " -OUPath '#{ou_dn}'" if new_resource.ou
           cmd_text << ' -Restart' if new_resource.restart
@@ -71,9 +74,6 @@ action :join do
       end
       new_resource.updated_by_last_action(true)
     end
-  else
-    Chef::Log.error('The domain does not exist or was not reachable, please check your network settings')
-    new_resource.updated_by_last_action(false)
   end
 end
 
@@ -81,15 +81,15 @@ action :unjoin do
   if computer_exists?
     Chef::Log.debug('Removing computer from the domain')
     powershell_script "unjoin_#{new_resource.domain_name}" do
-      if node['os_version'] >= '6.2'
+      if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
         cmd_text = 'Remove-Computer -UnjoinDomainCredential $mycreds -Force:$true'
         cmd_text << " -ComputerName #{new_resource.name}"
         cmd_text << ' -Restart' if new_resource.restart
         code <<-EOH
-        $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
-        $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_name}\\#{new_resource.domain_user}', $secpasswd)
-        #{cmd_text}
-      EOH
+          $secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force
+          $mycreds = New-Object System.Management.Automation.PSCredential ('#{new_resource.domain_name}\\#{new_resource.domain_user}', $secpasswd)
+          #{cmd_text}
+        EOH
       else
         cmd_text = "netdom remove #{new_resource.name}"
         cmd_text << " /d:#{new_resource.domain_name}"
@@ -97,9 +97,8 @@ action :unjoin do
         cmd_text << " /pd:#{new_resource.domain_pass}"
         cmd_text << ' /reboot' if new_resource.restart
         code cmd_text
+      end
     end
-    end
-
     new_resource.updated_by_last_action(true)
   else
     Chef::Log.error('The computer is not a member of the domain, unable to unjoin.')
@@ -165,7 +164,7 @@ action :delete do
 end
 
 def computer_exists?
-  comp = Mixlib::ShellOut.new('powershell.exe -command "get-wmiobject -class win32_computersystem -computername . | select domain"').run_command
+  comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
   stdout = comp.stdout.downcase
   Chef::Log.debug("computer_exists? is #{stdout.downcase}")
   stdout.include?(new_resource.domain_name.downcase)

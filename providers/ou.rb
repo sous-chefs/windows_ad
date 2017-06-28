@@ -34,7 +34,7 @@ action :create do # ~FC017
       ou new_resource.ou unless new_resource.ou.nil?
       domain_name new_resource.domain_name
     end
-  elsif node['os_version'] >= '6.2' || win_ver.windows_server_2016?
+  elsif Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
     windows_ad_ou_2012 new_resource.name do
       action :create
       path new_resource.ou unless new_resource.ou.nil?

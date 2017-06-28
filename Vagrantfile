@@ -65,8 +65,6 @@ machines = {
     'winrm_port' => '8092',
     'run_list'   => [
       'recipe[test_windows_ad::setup_forest]',
-      #      'recipe[test_windows_ad::join_domain]',
-      #      'recipe[test_windows_ad::unjoin_domain]'
       'recipe[test_windows_ad::ou]',
       'recipe[test_windows_ad::user]',
       'recipe[test_windows_ad::group]',

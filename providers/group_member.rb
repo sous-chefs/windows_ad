@@ -65,9 +65,9 @@ def dsmod_group_cmd(group_dn, user_dn, option)
   cmd << ' group '
   cmd << '"'
   cmd << group_dn
-  cmd << '"'
-  cmd << " #{option} "
-  cmd << '"'
+  cmd << '" '
+  cmd << option
+  cmd << ' "'
   cmd << user_dn
   cmd << '"'
 end
