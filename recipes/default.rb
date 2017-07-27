@@ -38,6 +38,7 @@ if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
   ].each do |feature|
     windows_feature feature do
       action :install
+      all true
     end
   end
 else
