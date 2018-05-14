@@ -101,7 +101,11 @@ action :delete do
 end
 
 def exists?
-  check = Mixlib::ShellOut.new("dsquery group -name \"#{new_resource.name}\"").run_command
+  cmd_user   = new_resource.cmd_user
+  cmd_pass   = new_resource.cmd_pass
+  cmd_domain = new_resource.cmd_domain
+  check = CmdHelper.shell_out("dsquery group -name \"#{new_resource.name}\"", cmd_user, cmd_pass, cmd_domain)
+  #check = Mixlib::ShellOut.new("dsquery group -name \"#{new_resource.name}\"").run_command
   check.stdout.downcase.include?('dc')
 end
 
