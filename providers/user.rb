@@ -85,17 +85,18 @@ end
 action :delete do
   if exists?
     cmd = 'dsrm '
-    cmd << dn
+    cmd << "\"#{dn}\""
     cmd << ' -noprompt'
 
     cmd << CmdHelper.cmd_options(new_resource.options)
-
+    Chef::Log.info("*****#{dn}******")
+    Chef::Log.info("*****#{cmd}******")
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
     new_resource.updated_by_last_action(true)
   else
-    Chef::Log.debug('The object has already been removed')
+    Chef::Log.info('The object has already been removed')
     new_resource.updated_by_last_action(false)
   end
 end

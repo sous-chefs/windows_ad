@@ -49,7 +49,7 @@ action :modify do
   if exists?
     cmd = 'dsmod'
     cmd << ' ou '
-    cmd << dn
+    cmd << "\"#{dn}\""
 
     cmd << cmd_options(new_resource.options)
 
