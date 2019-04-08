@@ -30,7 +30,7 @@ action :create do
     Chef::Log.debug('The object already exists')
     new_resource.updated_by_last_action(false)
   else
-    Chef::Log.info("dn is #{dn}")
+    Chef::Log.debug("dn is #{dn}")
     cmd = 'dsadd'
     cmd << ' user '
     cmd << '"'
@@ -91,8 +91,7 @@ action :delete do
     cmd << '"'     
     cmd << ' -noprompt'
     cmd << CmdHelper.cmd_options(new_resource.options)
-    Chef::Log.info("*****#{dn}******")
-    Chef::Log.info("*****#{cmd}******")
+
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 

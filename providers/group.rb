@@ -93,8 +93,6 @@ action :delete do
 
     cmd << CmdHelper.cmd_options(new_resource.options)
     
-    Chef::Log.info("*****#{dn}******")
-    Chef::Log.info("*****#{cmd}******")
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
