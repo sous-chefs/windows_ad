@@ -34,7 +34,7 @@ action :create do
     cmd = 'dsadd'
     cmd << ' user '
     cmd << '"'
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << '"'
 
     Chef::Log.info(print_msg("create #{new_resource.name}"))
@@ -51,7 +51,7 @@ action :modify do
     cmd = 'dsmod'
     cmd << ' user '
     cmd << '"'
-    cmd << dn
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
@@ -68,8 +68,9 @@ end
 action :move do
   if exists?
     cmd = 'dsmove '
-    cmd << dn
-
+    cmd << '"'    
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
+    cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
@@ -85,9 +86,10 @@ end
 action :delete do
   if exists?
     cmd = 'dsrm '
-    cmd << "\"#{dn}\""
+    cmd << '"'     
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
+    cmd << '"'     
     cmd << ' -noprompt'
-
     cmd << CmdHelper.cmd_options(new_resource.options)
     Chef::Log.info("*****#{dn}******")
     Chef::Log.info("*****#{cmd}******")

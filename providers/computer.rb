@@ -34,8 +34,10 @@ action :create do
   else
     cmd = 'dsadd'
     cmd << ' computer '
+    cmd << '"'    
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
+    cmd << '"'                        
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("create #{new_resource.name}"))
@@ -110,8 +112,10 @@ action :modify do
   if exists?
     cmd = 'dsmod'
     cmd << ' computer '
+    cmd << '"'       
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
+    cmd << '"'                           
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
@@ -128,8 +132,10 @@ end
 action :move do
   if exists?
     cmd = 'dsmove '
+    cmd << '"'       
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
+    cmd << '"'                           
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
@@ -146,8 +152,10 @@ end
 action :delete do
   if exists?
     cmd = 'dsrm '
+    cmd << '"'       
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
+    cmd << '"'                           
     cmd << ' -noprompt'
 
     cmd << CmdHelper.cmd_options(new_resource.options)

@@ -37,7 +37,6 @@ action :create do
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << '"'
-
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("create #{new_resource.name}"))
@@ -51,8 +50,9 @@ action :modify do
   if exists?
     cmd = 'dsmod'
     cmd << ' group '
+    cmd << '"'    
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-
+    cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
@@ -68,8 +68,9 @@ end
 action :move do
   if exists?
     cmd = 'dsmove '
+    cmd << '"'     
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-
+    cmd << '"' 
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
@@ -85,11 +86,15 @@ end
 action :delete do
   if exists?
     cmd = 'dsrm '
+    cmd << '"'    
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
+    cmd << '"'    
     cmd << ' -noprompt'
 
     cmd << CmdHelper.cmd_options(new_resource.options)
-
+    
+    Chef::Log.info("*****#{dn}******")
+    Chef::Log.info("*****#{cmd}******")
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
@@ -98,6 +103,11 @@ action :delete do
     Chef::Log.debug('The object has already been removed')
     new_resource.updated_by_last_action(false)
   end
+end
+
+def dn
+  name = new_resource.name
+  CmdHelper.dn(name, new_resource.ou, new_resource.domain_name)
 end
 
 def exists?
