@@ -4,28 +4,40 @@ driver:
 
 provisioner:
   name: chef_solo
-  require_chef_omnibus: 12.21.1
+  product_name: chef
+  product_version: '12.22.5' # <%= ENV['CHEF_VERSION'] || 'latest' %>
+  install_strategy: once
+  retry_on_exit_code:
+    - 0
+    - 1 # Exit, success: You still must reboot, this just notes that the automatic restart flag was removed
+    - 2 # Exit, success, need to reboot
+    - 3 # Exit, success, with a non-critical failure: Typically seen when returning the DNS Delegation warning.
+    - 4 # Exit, success, with a non-critical failure, need to reboot: Typically seen when returning the DNS Delegation warning.
+    - 35 # 35 is the exit code signaling that the node is rebooting
+    - 1190 #1190 is the exit code signaling that a reboot is scheduled
+  wait_for_retry: 90
+  max_retries: 5
 
 platforms:
-  - name: windows-2008-r2
+#  - name: windows-2008-r2
 #     driver_config:
 #       box_url:
   - name: windows-2008-r2-core
 #    driver_config:
 #      box_url:
-  - name: windows-2012
+#  - name: windows-2012
 #    driver_config:
 #      box_url:
   - name: windows-2012-r2
 #    driver_config:
 #      box_url:
-  - name: windows-2012-r2-core
+#  - name: windows-2012-r2-core
 #    driver_config:
 #      box_url:
   - name: windows-2016
 #    driver_config:
 #      box_url:
-  - name: windows-2016-core
+#  - name: windows-2016-core
 #    driver_config:
 #      box_url:
 
@@ -34,8 +46,9 @@ suites:
     run_list:
       - recipe[windows_ad::default]
     attributes:
+
   - name: forest
     run_list:
-      - recipe[windows_ad::default]
-      - recipe[windows_ad::contoso]
+      - recipe[test_windows_ad::setup_forest]
+      - recipe[test_windows_ad::user]
     attributes:

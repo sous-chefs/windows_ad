@@ -2,9 +2,9 @@ user = 'Administrator'
 pass = 'Passw0rd'
 domain = 'contoso.local'
 
-windows_ad_group 'Group-temp' do
+windows_ad_group 'Group temp' do
   action :create
-  ou 'Hardware'
+  ou 'Hardware/Sub OU'
   domain_name domain
 end
 
@@ -14,9 +14,9 @@ windows_ad_group 'Group1' do
   domain_name domain
 end
 
-windows_ad_group 'Group-temp' do
+windows_ad_group 'Group temp' do
   action :delete
-  ou 'Hardware'
+  ou 'Hardware/Sub OU'
   domain_name domain
 end
 
