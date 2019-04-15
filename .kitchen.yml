@@ -22,7 +22,7 @@ platforms:
 #  - name: windows-2008-r2
 #     driver_config:
 #       box_url:
-#  - name: windows-2008-r2-core
+  - name: windows-2008-r2-core
 #    driver_config:
 #      box_url:
 #  - name: windows-2012
@@ -34,7 +34,7 @@ platforms:
 #  - name: windows-2012-r2-core
 #    driver_config:
 #      box_url:
-#  - name: windows-2016
+  - name: windows-2016
 #    driver_config:
 #      box_url:
 #  - name: windows-2016-core
@@ -42,17 +42,13 @@ platforms:
 #      box_url:
 
 suites:
-  #- name: default
-  #  run_list:
- #     - recipe[windows_ad::default]
-#    attributes:
-#  - name: forest
-#    run_list:
-#      - recipe[test_windows_ad::setup_forest]
-#      - recipe[test_windows_ad::user]
-#    attributes:
-  - name: test
+  - name: default
+    run_list:
+      - recipe[windows_ad::default]
+    attributes:
+
+  - name: forest
     run_list:
       - recipe[test_windows_ad::setup_forest]
-      - recipe[test_windows_ad::ou]
-      - recipe[test_windows_ad::group]
+      - recipe[test_windows_ad::user]
+    attributes:
