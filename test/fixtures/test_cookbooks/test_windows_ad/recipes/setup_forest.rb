@@ -21,4 +21,12 @@ windows_ad_domain domain do
     options ({ 'InstallDNS' => nil })
   end
   action :create
+  restart false
+  notifies :reboot_now, 'reboot[now]', :immediately
+end
+
+reboot 'now' do
+  action :nothing
+  reason 'Cannot continue Chef run without a reboot.'
+  delay_mins 1
 end
