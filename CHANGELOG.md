@@ -1,5 +1,21 @@
 # CHANGELOG for windows_ad
 
+## 0.6.3
+
+* Issue 121 - https://github.com/TAMUArch/cookbook.windows_ad/issues/121 allow use of spaces in Distinguished Name.
+
+## 0.6.2
+
+* Group resource not using library CmdHelper not checking user with domain.
+
+## 0.6.1
+
+* Install dependency windows features.
+
+## 0.6.0
+
+* Allow compatibility with windows cookbook 3.0.0 changes.
+
 ## 0.5.5
 
 * Hotfix for locking the version of the windows cookbook as it has recently been rewritten.  A refactor is required to use the latest version.
