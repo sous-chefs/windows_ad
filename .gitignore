@@ -1,4 +1,3 @@
-.vagrant
 .kitchen
 .kitchen.local.yml
 .cache
@@ -10,7 +9,6 @@ Berksfile.lock
 Gemfile.lock
 options.txt
 recipes/contoso.rb
-Vagrantfile
 /.zero-knife.rb
 gemfile
 metadata.json
