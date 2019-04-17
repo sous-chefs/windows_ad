@@ -1,10 +1,12 @@
+inherit_from: .rubocop_todo.yml
+
 # cookstyle todo
 
 Lint/ElseLayout:
   Exclude:
     - 'providers/domain.rb'
 
-Lint/EndAlignment:
+Layout/EndAlignment:
   Exclude:
     - 'providers/computer.rb'
     - 'providers/domain.rb'
@@ -37,3 +39,6 @@ Style/IfInsideElse:
 
 Metrics/LineLength:
   Max: 1555
+
+Layout/EndOfLine:
+  EnforcedStyle: lf

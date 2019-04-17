@@ -48,9 +48,9 @@ action :modify do
   if exists?
     cmd = 'dsmod'
     cmd << ' contact '
-    cmd << '"'       
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-    cmd << '"'   
+    cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
@@ -63,11 +63,11 @@ end
 action :move do
   if exists?
     cmd = 'dsmove '
-    cmd << '"'   
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-    cmd << '"'   
+    cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
-    
+
     Chef::Log.info(print_msg("move #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
@@ -79,9 +79,9 @@ end
 action :delete do
   if exists?
     cmd = 'dsrm '
-    cmd << '"'       
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-    cmd << '"'       
+    cmd << '"'
     cmd << ' -noprompt'
 
     cmd << CmdHelper.cmd_options(new_resource.options)

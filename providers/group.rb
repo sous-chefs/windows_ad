@@ -47,7 +47,7 @@ action :modify do
   if exists?
     cmd = 'dsmod'
     cmd << ' group '
-    cmd << '"'    
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
@@ -62,9 +62,9 @@ end
 action :move do
   if exists?
     cmd = 'dsmove '
-    cmd << '"'     
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-    cmd << '"' 
+    cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
@@ -77,13 +77,13 @@ end
 action :delete do
   if exists?
     cmd = 'dsrm '
-    cmd << '"'    
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-    cmd << '"'    
+    cmd << '"'
     cmd << ' -noprompt'
 
     cmd << CmdHelper.cmd_options(new_resource.options)
-    
+
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
   else
@@ -101,7 +101,7 @@ def exists?
   cmd_pass   = new_resource.cmd_pass
   cmd_domain = new_resource.cmd_domain
   check = CmdHelper.shell_out("dsquery group -name \"#{new_resource.name}\"", cmd_user, cmd_pass, cmd_domain)
-  #check = Mixlib::ShellOut.new("dsquery group -name \"#{new_resource.name}\"").run_command
+  # check = Mixlib::ShellOut.new("dsquery group -name \"#{new_resource.name}\"").run_command
   check.stdout.downcase.include?('dc')
 end
 

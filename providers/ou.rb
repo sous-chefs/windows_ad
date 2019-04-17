@@ -65,9 +65,9 @@ end
 action :move do
   if exists?
     cmd = 'dsmove '
-    cmd << '"'    
+    cmd << '"'
     cmd << "#{dn}"
-    cmd << '"'   
+    cmd << '"'
     cmd << cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
@@ -81,9 +81,9 @@ end
 action :delete do
   if exists?
     cmd = 'dsrm '
-    cmd << '"'    
+    cmd << '"'
     cmd << "#{dn}"
-    cmd << '"' 
+    cmd << '"'
     cmd << ' -noprompt'
 
     cmd << cmd_options(new_resource.options)

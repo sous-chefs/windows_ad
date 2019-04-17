@@ -62,7 +62,7 @@ end
 action :move do
   if exists?
     cmd = 'dsmove '
-    cmd << '"'    
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
@@ -77,9 +77,9 @@ end
 action :delete do
   if exists?
     cmd = 'dsrm '
-    cmd << '"'     
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-    cmd << '"'     
+    cmd << '"'
     cmd << ' -noprompt'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
