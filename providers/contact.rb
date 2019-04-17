@@ -30,7 +30,6 @@ require 'mixlib/shellout'
 action :create do
   if exists?
     Chef::Log.debug('The object already exists')
-    new_resource.updated_by_last_action(false)
   else
     cmd = 'dsadd'
     cmd << ' contact '
@@ -42,8 +41,6 @@ action :create do
 
     Chef::Log.info(print_msg("create #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -51,56 +48,48 @@ action :modify do
   if exists?
     cmd = 'dsmod'
     cmd << ' contact '
-    cmd << '"'       
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-    cmd << '"'   
+    cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.error('The object does not exist')
-    new_resource.updated_by_last_action(false)
   end
 end
 
 action :move do
   if exists?
     cmd = 'dsmove '
-    cmd << '"'   
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-    cmd << '"'   
+    cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
-    
+
     Chef::Log.info(print_msg("move #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
 
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.error('The object does not exist')
-    new_resource.updated_by_last_action(false)
   end
 end
 
 action :delete do
   if exists?
     cmd = 'dsrm '
-    cmd << '"'       
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
-    cmd << '"'       
+    cmd << '"'
     cmd << ' -noprompt'
 
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.debug('The object has already been removed')
-    new_resource.updated_by_last_action(false)
   end
 end
 

@@ -8,7 +8,6 @@
 action :create do
   if exists?
     Chef::Log.info('The object already exists')
-    new_resource.updated_by_last_action(false)
   else
     cmd = 'New-ADOrganizationalUnit'
     cmd << " -Name \"#{new_resource.name}\""
@@ -18,7 +17,6 @@ action :create do
       code cmd
     end
     Chef::Log.info('The object has been created')
-    new_resource.updated_by_last_action(true)
   end
 end
 

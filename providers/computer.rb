@@ -30,32 +30,27 @@ require 'mixlib/shellout'
 action :create do
   if exists?
     Chef::Log.debug('The object already exists')
-    new_resource.updated_by_last_action(false)
   else
     cmd = 'dsadd'
     cmd << ' computer '
-    cmd << '"'    
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
-    cmd << '"'                        
+    cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("create #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   end
 end
 
 action :join do
   unless exists?
     Chef::Log.error('The domain does not exist or was not reachable, please check your network settings')
-    new_resource.updated_by_last_action(false)
   else
     if computer_exists?
       Chef::Log.error('The computer is already joined to the domain')
-      new_resource.updated_by_last_action(false)
     else
       powershell_script "join_#{new_resource.name}" do
         if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
@@ -74,7 +69,6 @@ action :join do
           code cmd_text
         end
       end
-      new_resource.updated_by_last_action(true)
     end
   end
 end
@@ -101,10 +95,8 @@ action :unjoin do
         code cmd_text
       end
     end
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.error('The computer is not a member of the domain, unable to unjoin.')
-    new_resource.updated_by_last_action(false)
   end
 end
 
@@ -112,50 +104,44 @@ action :modify do
   if exists?
     cmd = 'dsmod'
     cmd << ' computer '
-    cmd << '"'       
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
-    cmd << '"'                           
+    cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.error('The object does not exist')
-    new_resource.updated_by_last_action(false)
   end
 end
 
 action :move do
   if exists?
     cmd = 'dsmove '
-    cmd << '"'       
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
-    cmd << '"'                           
+    cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.error('The object does not exist')
-    new_resource.updated_by_last_action(false)
   end
 end
 
 action :delete do
   if exists?
     cmd = 'dsrm '
-    cmd << '"'       
+    cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
-    cmd << '"'                           
+    cmd << '"'
     cmd << ' -noprompt'
 
     cmd << CmdHelper.cmd_options(new_resource.options)
@@ -164,10 +150,8 @@ action :delete do
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
 
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.debug('The object has already been removed')
-    new_resource.updated_by_last_action(false)
   end
 end
 
