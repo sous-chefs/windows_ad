@@ -31,15 +31,12 @@ action :add do
 
   if member_of?(user_dn, group_dn)
     Chef::Log.debug('The user is already member of the group')
-    new_resource.updated_by_last_action(false)
   else
     cmd = dsmod_group_cmd(group_dn, user_dn, '-addmbr')
 
     Chef::Log.info(print_msg("add #{new_resource.user_name}
                              to #{new_resource.group_name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -52,11 +49,8 @@ action :remove do
 
     Chef::Log.info(print_msg("remove #{new_resource.user_name} from #{new_resource.group_name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.error('User is not a member of the group')
-    new_resource.updated_by_last_action(false)
   end
 end
 

@@ -31,7 +31,6 @@ ENUM_NAMES = %w{(Win2003) (Win2008) (Win2008R2) (Win2012) (Win2012R2) (Default)}
 
 action :create do
   if exists?
-    new_resource.updated_by_last_action(false)
   else
     if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
       cmd = create_command
@@ -58,8 +57,6 @@ action :create do
       code cmd
       returns [0, 1, 2, 3, 4]
     end
-
-    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -78,21 +75,15 @@ action :delete do
     powershell_script "remove_domain_#{new_resource.name}" do
       code cmd
     end
-
-    new_resource.updated_by_last_action(true)
-  else
-    new_resource.updated_by_last_action(false)
   end
 end
 
 action :join do
   unless exists?
     Chef::Log.error('The domain does not exist or was not reachable, please check your network settings')
-    new_resource.updated_by_last_action(false)
   else
     if computer_exists?
       Chef::Log.debug('The computer is already joined to the domain')
-      new_resource.updated_by_last_action(false)
     else
       powershell_script "join_#{new_resource.name}" do
         if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
@@ -111,7 +102,6 @@ action :join do
           code cmd_text.to_s
         end
       end
-      new_resource.updated_by_last_action(true)
     end
   end
 end
@@ -127,11 +117,8 @@ action :unjoin do
         #{cmd_text}
       EOH
     end
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.debug('The computer is already a member of a workgroup')
-    new_resource.updated_by_last_action(false)
   end
 end
 

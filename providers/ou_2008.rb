@@ -9,7 +9,6 @@ action :create do
   if parent?
     if exists?
       Chef::Log.debug('The object already exists')
-      new_resource.updated_by_last_action(false)
     else
       cmd = 'dsadd'
       cmd << ' ou '
@@ -22,12 +21,9 @@ action :create do
       Chef::Log.info(print_msg("create #{new_resource.name}"))
       CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                           new_resource.cmd_domain)
-
-      new_resource.updated_by_last_action(true)
     end
   else
     Chef::Log.error('The parent OU does not exist')
-    new_resource.updated_by_last_action(false)
   end
 end
 

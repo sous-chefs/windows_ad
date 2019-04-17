@@ -30,7 +30,6 @@ require 'mixlib/shellout'
 action :create do
   if exists?
     Chef::Log.debug('The object already exists')
-    new_resource.updated_by_last_action(false)
   else
     cmd = 'dsadd'
     cmd << ' group '
@@ -41,8 +40,6 @@ action :create do
 
     Chef::Log.info(print_msg("create #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -57,11 +54,8 @@ action :modify do
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.error('The object does not exist')
-    new_resource.updated_by_last_action(false)
   end
 end
 
@@ -75,11 +69,8 @@ action :move do
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.error('The object does not exist')
-    new_resource.updated_by_last_action(false)
   end
 end
 
@@ -95,11 +86,8 @@ action :delete do
     
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.debug('The object has already been removed')
-    new_resource.updated_by_last_action(false)
   end
 end
 
