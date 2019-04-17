@@ -50,7 +50,7 @@ action :modify do
     cmd = 'dsmod'
     cmd << ' ou '
     cmd << '"'
-    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
+    cmd << "#{dn}"
     cmd << '"'
     cmd << cmd_options(new_resource.options)
 
@@ -66,7 +66,7 @@ action :move do
   if exists?
     cmd = 'dsmove '
     cmd << '"'    
-    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
+    cmd << "#{dn}"
     cmd << '"'   
     cmd << cmd_options(new_resource.options)
 
@@ -82,7 +82,7 @@ action :delete do
   if exists?
     cmd = 'dsrm '
     cmd << '"'    
-    cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
+    cmd << "#{dn}"
     cmd << '"' 
     cmd << ' -noprompt'
 
