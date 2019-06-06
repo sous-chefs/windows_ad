@@ -4,14 +4,13 @@
 include_recipe 'windows_ad::default'
 
 user = 'Administrator'
-pass = 'Passw0rd'
+safe_pass = 'Passw0rd'
+pass = 'vagrant'
 domain = 'contoso.local'
-
-execute "net user \"#{user}\" \"#{pass}\""
 
 windows_ad_domain domain do
   type 'forest'
-  safe_mode_pass pass
+  safe_mode_pass safe_pass
   domain_pass pass
   domain_user user
   case node['os_version']
@@ -22,7 +21,7 @@ windows_ad_domain domain do
   end
   action :create
   restart false
-  notifies :reboot_now, 'reboot[now]', :immediately
+  notifies :reboot_now, 'reboot[now]', :immediate
 end
 
 reboot 'now' do
