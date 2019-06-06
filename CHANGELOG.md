@@ -1,5 +1,9 @@
 # CHANGELOG for windows_ad
 
+## 0.6.4
+
+* Corrects .kitchen file to allow Converge, verify, and test to complete successfully with additional recipes after system reboot.
+
 ## 0.6.3
 
 * Issue 121 - https://github.com/TAMUArch/cookbook.windows_ad/issues/121 allow use of spaces in Distinguished Name.
