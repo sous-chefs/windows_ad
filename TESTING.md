@@ -1,72 +1,20 @@
-# Cookbook TESTING doc
+# TESTING #
 
-This document describes the process for testing Chef community cookbooks using ChefDK. Cookbooks can be tested using the test dependencies defined in cookbook Gemfiles alone, but that process will not be covered in this document in order to maintain simplicity.
+The [ChefDK](https://docs.chef.io/about_chefdk.html) contains all the tools required to test and develop for this cookbook. A `project.toml` file is provided so that all testing commands can be run using the `delivery local` cli that comes with ChefDK.
 
-## Testing Prerequisites
+### Style Testing ###
+Run `delivery local lint` to run cookstyle and `delivery local syntax` to run foodcritic.
 
-A working ChefDK installation set as your system's default ruby. ChefDK can be downloaded at <https://downloads.chef.io/chef-dk/>
+### Spec Testing ###
+Run `delivery local unit` to run [ChefSpec](https://github.com/chefspec/chefspec) tests.
 
-Hashicorp's [Vagrant](https://www.vagrantup.com/downloads.html) and Oracle's [Virtualbox](https://www.virtualbox.org/wiki/Downloads) for integration testing.
+### Combined Style + Spec Testing ###
+All cookstyle, foodcritic and Chefspec tests can be run in a single command using `delivery local verify`
 
-## Installing dependencies
+### Integration Testing ###
+Integration testing with [Test Kitchen](https://docs.chef.io/kitchen.html) can also be done using the delivery cli. To execute all stages of testing with test kitchen you can run either `delivery local acceptance` or `kitchen test`
 
-Cookbooks may require additional testing dependencies that do not ship with ChefDK directly. These can be installed into the ChefDK ruby environment with the following commands
-
-Install dependencies:
-
-```shell
-chef exec bundle install
-```
-
-Update any installed dependencies to the latest versions:
-
-```shell
-chef exec bundle update
-```
-
-## Style Testing
-
-Ruby style tests can be performed by Rubocop by issuing either
-
-```shell
-chef exec rubocop --auto-gen-config
-```
-
-Chef style/correctness tests can be performed with Foodcritic by issuing either
-
-```shell
-chef exec foodcritic .
-```
-
-## Spec Testing
-
-Unit testing is done by running Rspec examples. Rspec will test any libraries, then test recipes using ChefSpec. This works by compiling a recipe (but not converging it), and allowing the user to make assertions about the resource_collection.
-
-## Integration Testing
-
-Integration testing is performed by Test Kitchen. After a successful converge, tests are uploaded and ran out of band of Chef. Tests should be designed to ensure that a recipe has accomplished its goal.
-
-To see a list of available test instances run:
-
-```shell
-kitchen list
-```
-
-To test specific instance run:
-
-```shell
-kitchen test INSTANCE_NAME
-```
-
-## Integration Testing using Vagrant
-
-Integration tests can be performed on a local workstation using either Virtualbox or VMWare as the virtualization hypervisor. To run tests against all available instances run:
-
-To test specific instance run:
-
-```shell
-vagrant up INSTANCE_NAME
-```
+Test Kitchen is configured to use vagrant by default and uses [inspec](https://www.inspec.io/) to verify.
 
 ## Private Images
 
@@ -77,12 +25,11 @@ Images include:
 - Windows Server 2008
 - Windows Server 2012
 - Windows Server 2016
+- Windows Server 2019
 - Windows 7 Professional
 - Windows 8.1 Professional
 - Mac OS X 10.7-10.12
 - SLES 12 / 12SP1
 - Solaris 10.11
-
-Otherwise if you are not a Chef employee, in order to test these operating systems you will need to obtain the appropriate licenses and images as needed.
 
 Windows Images: https://atlas.hashicorp.com/boxes/search?order=desc&page=1&provider=virtualbox&q=windows&sort=updated&utf8=%E2%9C%93

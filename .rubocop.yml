@@ -1,41 +1,45 @@
-Style/SpaceBeforeFirstArg:
-  Exclude:
-  -  metadata.rb
-  -  test/fixtures/test_cookbooks/test_windows_ad/metadata.rb
-Metrics/AbcSize:
-  Exclude:
-  -  providers/contact.rb
-  -  providers/domain.rb  
-  -  providers/ou.rb
-  -  providers/user.rb
-Metrics/LineLength:
-  Exclude:
-  -  providers/domain.rb
-  -  providers/user.rb  
+inherit_from: .rubocop_todo.yml
+
+Layout/EndOfLine:
+  Enabled: false
+
 Lint/ElseLayout:
   Exclude:
-  -  providers/domain.rb
+    - 'providers/domain.rb'
+
+Layout/EndAlignment:
+  Exclude:
+    - 'providers/computer.rb'
+    - 'providers/domain.rb'
+
+Lint/ParenthesesAsGroupedExpression:
+  Exclude:
+    - 'test/fixtures/test_cookbooks/test_windows_ad/recipes/setup_forest.rb'
+
+Lint/UselessAssignment:
+  Exclude:
+    - 'Vagrantfile'
+    - 'test/fixtures/test_cookbooks/test_windows_ad/recipes/group.rb'
+    - 'test/fixtures/test_cookbooks/test_windows_ad/recipes/ou.rb'
+    - 'test/fixtures/test_cookbooks/test_windows_ad/recipes/user.rb'
+
 Lint/Void:
   Exclude:
-  -  providers/domain.rb
-Style/IndentationConsistency:
-  Exclude:
-  -  providers/domain.rb
+    - 'providers/domain.rb'
+
 Metrics/BlockNesting:
+  Max: 4
+
+Style/IdenticalConditionalBranches:
   Exclude:
-  -  providers/domain.rb
-Metrics/CyclomaticComplexity:
+    - 'providers/user.rb'
+
+Style/IfInsideElse:
   Exclude:
-  -  providers/domain.rb
-Metrics/MethodLength:
-  Exclude:
-  -  libraries/cmd_helper.rb
-  -  providers/domain.rb
-  -  providers/ou.rb
-  -  providers/user.rb
-Metrics/PerceivedComplexity:
-  Exclude:
-  -  providers/domain.rb
-AllCops:
-  Exclude:
-  -  vagrantfile
+    - 'providers/domain.rb'
+
+Metrics/LineLength:
+  Max: 1555
+
+Layout/EndOfLine:
+  EnforcedStyle: lf

@@ -1,12 +1,12 @@
 source 'https://supermarket.getchef.com'
 
+metadata
+
 group :deps do
   cookbook 'windows'
 end
 
 group :integration do
-  cookbook 'test',
-           path: 'test/fixtures/cookbooks/test'
+  cookbook 'windows_ad_test',
+           path: 'test/cookbooks/windows_ad_test'
 end
-
-metadata

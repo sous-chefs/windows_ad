@@ -1,6 +1,4 @@
-user = 'Administrator'
-pass = 'Passw0rd'
-domain = "contoso.local"
+domain = 'contoso.local'
 
 windows_ad_ou 'Hardware' do
   action :create

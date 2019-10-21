@@ -1,3 +1,11 @@
+#
+# Cookbook:: windows_ad
+# Spec:: default
+#
+
+# The following are only examples, check out https://github.com/chef/inspec/tree/master/docs
+# for everything you can do
+
 # Tests for Windows Server all Families
 if os[:family] == 'windows'
   describe os[:family] do
@@ -22,7 +30,7 @@ if os[:family] == 'windows'
     end
   end
 
-  # Tests for Windows Server 2012 Family
+  # Tests for Windows Server 2012 and above Family
   if os[:release] >= '6.2'
     describe os[:release] do
       it { should be >= '6.2' }

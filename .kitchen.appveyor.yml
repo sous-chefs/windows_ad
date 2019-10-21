@@ -1,15 +1,17 @@
 ---
 driver:
-  name: vagrant
+  name: proxy
+  host: localhost
+  reset_command: "exit 0"
+  port: 5985
+  username: <%= ENV["machine_user"] %>
+  password: <%= ENV["machine_pass"] %>
 
 provisioner:
   name: chef_zero
   client_rb:
-    chef_license: accept  
-#  product_name: chef
-#  product_version: <%= ENV['CHEF_VERSION'] || 'latest' %>
-#  install_strategy: once
-  retry_on_exit_code:
+    chef_license: accept
+retry_on_exit_code:
     - 0
     - 1 # Exit, success: You still must reboot, this just notes that the automatic restart flag was removed
     - 2 # Exit, success, need to reboot
@@ -23,24 +25,20 @@ provisioner:
 verifier:
   name: inspec
 
-#transport:
-#  name: winrm
-#  elevated: true  # Required to get Windows Update to run
-#  winrm_transport: plaintext  # When set to plaintext the winrm will run in one converge
-
 platforms:
-  - name: windows-2008-r2
+  - name: windows-2012r2
     driver:
-      box: tas50/windows_2008r2
-  - name: windows-2012-r2
-    driver:
-      box: tas50/windows_2012r2
+      box: tas50/windows_2012r2  
   - name: windows-2016
     driver:
       box: tas50/windows_2016
+      customize:
+        memory: 3072
   - name: windows-2019
     driver:
-      box: tas50/windows_2019
+      box: tas50/windows_2016
+      customize:
+        memory: 3072
 
 suites:
   - name: default
@@ -48,7 +46,7 @@ suites:
       - recipe[windows_ad::default]
     verifier:
       inspec_tests:
-        - test/integration/default      
+        - test/integration/default
     attributes:
 
   - name: forest
@@ -56,5 +54,5 @@ suites:
       - recipe[windows_ad_test::setup_forest]
     verifier:
       inspec_tests:
-        - test/integration/forest      
+        - test/integration/forest    
     attributes:

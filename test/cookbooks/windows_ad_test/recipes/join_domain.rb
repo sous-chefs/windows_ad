@@ -1,6 +1,6 @@
 user = 'Administrator'
 pass = 'Passw0rd'
-domain = "contoso.local"
+domain = 'contoso.local'
 
 powershell_script 'Set DNS Server' do
   case node['os_version']

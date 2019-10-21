@@ -14,7 +14,7 @@ action :create do # ~FC017
       ou new_resource.ou unless new_resource.ou.nil?
       domain_name new_resource.domain_name
     end
-  elsif node['os_version'] >= '6.2' || win_ver.windows_server_2016?
+  elsif Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
     windows_ad_ou_2012 new_resource.name do
       action :create
       path new_resource.ou unless new_resource.ou.nil?
@@ -29,43 +29,41 @@ action :modify do
   if exists?
     cmd = 'dsmod'
     cmd << ' ou '
-    cmd << dn
-
+    cmd << '"'
+    cmd << "#{dn}"
+    cmd << '"'
     cmd << cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.error('The object does not exist')
-    new_resource.updated_by_last_action(false)
   end
 end
 
 action :move do
   if exists?
     cmd = 'dsmove '
-    cmd << dn
-
+    cmd << '"'
+    cmd << "#{dn}"
+    cmd << '"'
     cmd << cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.error('The object does not exist')
-    new_resource.updated_by_last_action(false)
   end
 end
 
 action :delete do
   if exists?
     cmd = 'dsrm '
-    cmd << dn
+    cmd << '"'
+    cmd << "#{dn}"
+    cmd << '"'
     cmd << ' -noprompt'
 
     cmd << cmd_options(new_resource.options)
@@ -73,11 +71,8 @@ action :delete do
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
     CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
-
-    new_resource.updated_by_last_action(true)
   else
     Chef::Log.debug('The object has already been removed')
-    new_resource.updated_by_last_action(false)
   end
 end
 
