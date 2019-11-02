@@ -1,9 +1,9 @@
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
-# Cookbook Name:: windows_ad
+# Cookbook:: windows_ad
 # Recipe:: default
 #
-# Copyright 2013, Texas A&M
+# Copyright:: 2013, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -25,28 +25,28 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
-  [
-    'Microsoft-Windows-GroupPolicy-ServerAdmintools-Update',
-    'ServerManager-Core-RSAT',
-    'ServerManager-Core-RSAT-Role-Tools',
-    'RSAT-AD-Tools-Feature',
-    'RSAT-ADDS-Tools-Feature',
-    'ActiveDirectory-Powershell',
-    'DirectoryServices-DomainController-Tools',
-    'DirectoryServices-AdministrativeCenter',
-    'DirectoryServices-DomainController',
-  ].each do |feature|
+  %w(
+    Microsoft-Windows-GroupPolicy-ServerAdmintools-Update
+    ServerManager-Core-RSAT
+    ServerManager-Core-RSAT-Role-Tools
+    RSAT-AD-Tools-Feature
+    RSAT-ADDS-Tools-Feature
+    ActiveDirectory-Powershell
+    DirectoryServices-DomainController-Tools
+    DirectoryServices-AdministrativeCenter
+    DirectoryServices-DomainController
+  ).each do |feature|
     windows_feature feature do
       action :install
       all true
     end
   end
 else
-  [
-    'NetFx3',
-    'Microsoft-Windows-GroupPolicy-ServerAdminTools-Update',
-    'DirectoryServices-DomainController',
-  ].each do |feature|
+  %w(
+    NetFx3
+    Microsoft-Windows-GroupPolicy-ServerAdminTools-Update
+    DirectoryServices-DomainController
+  ).each do |feature|
     windows_feature feature do
       action :install
     end

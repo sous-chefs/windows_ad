@@ -1,9 +1,9 @@
 #
 # Author:: Miguel Ferreira (<miguelferreira@me.com>)
-# Cookbook Name:: windows_ad
+# Cookbook:: windows_ad
 # Provider:: group_member
 #
-# Copyright 2015, Schuberg Philis B.V.
+# Copyright:: 2015, Schuberg Philis B.V.
 
 actions :add, :remove
 default_action :add

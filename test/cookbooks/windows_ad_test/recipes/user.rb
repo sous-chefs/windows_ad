@@ -1,7 +1,6 @@
 domain = 'contoso.com'
 
 windows_ad_user 'John Doe' do
-  name 'John Doe'
   action :create
   ou 'Users'
   domain_name domain

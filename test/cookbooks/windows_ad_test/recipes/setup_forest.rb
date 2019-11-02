@@ -3,21 +3,16 @@
 
 include_recipe 'windows_ad::default'
 
-user = 'Administrator'
-safe_pass = 'Passw0rd'
-pass = 'vagrant'
-domain = 'contoso.local'
-
-windows_ad_domain domain do
+windows_ad_domain 'contoso.local' do
   type 'forest'
-  safe_mode_pass safe_pass
-  domain_pass pass
-  domain_user user
+  safe_mode_pass 'Passw0rd'
+  domain_pass 'vagrant'
+  domain_user 'Administrator'
   case node['os_version']
   when '6.1'
-    options( 'InstallDNS': 'yes' )
+    options('InstallDNS': 'yes')
   when '6.2'
-    options( 'InstallDNS': nil )
+    options('InstallDNS': nil)
   end
   action :create
   restart false

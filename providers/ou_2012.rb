@@ -1,9 +1,9 @@
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
-# Cookbook Name:: windows_ad
+# Cookbook:: windows_ad
 # Provider:: ou_2012
 #
-# Copyright 2013, Texas A&M
+# Copyright: 2013, Texas A&M
 
 action :create do
   if exists?

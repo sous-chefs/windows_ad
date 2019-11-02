@@ -1,9 +1,9 @@
 #
 # Author:: Miguel Ferreira (<miguelferreira@me.com>)
-# Cookbook Name:: windows_ad
+# Cookbook:: windows_ad
 # Provider:: group_member
 #
-# Copyright 2015, Schuberg Philis B.V.
+# Copyright:: 2015, Schuberg Philis B.V.
 
 action :add do
   group_dn = CmdHelper.dn(new_resource.group_name, new_resource.group_ou, new_resource.domain_name)

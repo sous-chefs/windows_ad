@@ -1,9 +1,9 @@
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
-# Cookbook Name:: windows_ad
+# Cookbook:: windows_ad
 # Provider:: domain
 #
-# Copyright 2013, Texas A&M
+# Copyright:: 2013, Texas A&M
 
 require 'mixlib/shellout'
 

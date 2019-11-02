@@ -1,9 +1,9 @@
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
-# Cookbook Name:: windows_ad
+# Cookbook:: windows_ad
 # Resource:: domain
 #
-# Copyright 2013, Texas A&M
+# Copyright:: 2013, Texas A&M
 
 actions :create, :delete
 default_action :create

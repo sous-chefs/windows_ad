@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: windows_ad
-# Spec::default
+# Cookbook:: windows_ad
+# Spec:: default
 #
-# Copyright (c) 2017 The Authors, All Rights Reserved.
+# Copyright:: 2017 The Authors, All Rights Reserved.
 
 require 'spec_helper'
 
