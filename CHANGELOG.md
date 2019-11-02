@@ -1,5 +1,10 @@
 # CHANGELOG for windows_ad
 
+## 0.7.0
+
+* Remove depends on 'windows' cookbook, features are now part of chef core.
+* Improved test kitchen tests and subcommand flow without need to run each subcommand.
+
 ## 0.6.4
 
 * Corrects .kitchen file to allow Converge, verify, and test to complete successfully with additional recipes after system reboot.
