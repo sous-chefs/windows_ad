@@ -35,12 +35,18 @@ platforms:
   - name: windows-2012-r2
     driver:
       box: tas50/windows_2012r2
+      customize:
+        memory: 2048
   - name: windows-2016
     driver:
       box: tas50/windows_2016
+      customize:
+        memory: 2048
   - name: windows-2019
     driver:
       box: tas50/windows_2019
+      customize:
+        memory: 2048
 
 suites:
   - name: default
@@ -48,7 +54,7 @@ suites:
       - recipe[windows_ad::default]
     verifier:
       inspec_tests:
-        - test/integration/default      
+        - test/integration/default
     attributes:
 
   - name: forest
@@ -56,5 +62,5 @@ suites:
       - recipe[windows_ad_test::setup_forest]
     verifier:
       inspec_tests:
-        - test/integration/forest      
+        - test/integration/forest
     attributes:
