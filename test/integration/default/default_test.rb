@@ -1,10 +1,7 @@
-#
-# Cookbook:: windows_ad
-# Spec:: default
-#
+# InSpec test for recipe windows_ad::default
 
-# The following are only examples, check out https://github.com/chef/inspec/tree/master/docs
-# for everything you can do
+# The InSpec reference, with examples and extensive documentation, can be
+# found at https://www.inspec.io/docs/reference/resources/
 
 # Uses Name Property for Get-WindowsFeature to verify
 if os.release.include?('6.2') || os.release.include?('6.3') || os.release.include?('10')
