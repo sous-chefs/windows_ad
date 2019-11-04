@@ -40,6 +40,7 @@ class CmdHelper
     if shellout.exitstatus != 0
       raise "Failed to execute command.\nSTDOUT: #{shellout.stdout}\nSTDERR: #{shellout.stderr}"
     end
+
     shellout
   end
 end

@@ -19,7 +19,7 @@ describe 'windows_ad::default' do
     end
 
     it 'converges successfully' do
-      expect(chef_run).to_not raise_error
+      expect { chef_run }.to_not raise_error
     end
   end
   context 'when all attributes are default, on a server 2008 platform' do
@@ -30,7 +30,7 @@ describe 'windows_ad::default' do
     end
 
     it 'converges successfully' do
-      expect(chef_run).to_not raise_error
+      expect { chef_run }.to_not raise_error
     end
   end
 
@@ -66,7 +66,7 @@ describe 'windows_ad::default' do
     end
 
     it 'converges successfully' do
-      expect(chef_run).to_not raise_error
+      expect { chef_run }.to_not raise_error
     end
   end
 end

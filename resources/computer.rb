@@ -96,7 +96,7 @@ end
 
 action_class do
   def computer_exists?
-    comp = Mixlib::ShellOut.new("powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"").run_command
+    comp = Mixlib::ShellOut.new('powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"').run_command
     stdout = comp.stdout.downcase
     Chef::Log.debug("computer_exists? is #{stdout.downcase}")
     stdout.include?(new_resource.domain_name.downcase)
@@ -104,7 +104,7 @@ action_class do
 
   def exists?
     # Supports workstation and server platforms, Windows Server 2008 R2 and Windows 7 share the same version number, Win7 doesnot include netdom command without RSAT.
-    if ['os_version'] == '6.1.7600'
+    if node['os_version'] == '6.1.7600'
       Chef::Log.warn('Unable to determine specific OS version. Windows 7 does not have the native tools to query if the domain exists. Assuming domain exists.')
       return true
     end

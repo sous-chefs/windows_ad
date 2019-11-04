@@ -84,11 +84,11 @@ end
 
 action_class do
   def dn
-    if new_resource.reverse == 'true'
-      name = new_resource.name.split(' ').reverse.map! { |k| k }.join('\\, ')
-    else
-      name = new_resource.name
-    end
+    name = if new_resource.reverse == 'true'
+             new_resource.name.split(' ').reverse.map! { |k| k }.join('\\, ')
+           else
+             new_resource.name
+           end
     CmdHelper.dn(name, new_resource.ou, new_resource.domain_name)
   end
 
@@ -100,12 +100,11 @@ action_class do
       reverse_name = new_resource.name.split(' ').reverse.map! { |k| k }.join(', ')
       contact = CmdHelper.shell_out("dsquery contact -name \"#{reverse_name}\"", cmd_user, cmd_pass, cmd_domain)
       user = CmdHelper.shell_out("dsquery user -name \"#{reverse_name}\"", cmd_user, cmd_pass, cmd_domain)
-      contact.stdout.downcase.include?('dc') || user.stdout.downcase.include?('dc')
     else
       contact = CmdHelper.shell_out("dsquery contact -name \"#{new_resource.name}\"", cmd_user, cmd_pass, cmd_domain)
       user = CmdHelper.shell_out("dsquery user -name \"#{new_resource.name}\"", cmd_user, cmd_pass, cmd_domain)
-      contact.stdout.downcase.include?('dc') || user.stdout.downcase.include?('dc')
     end
+    contact.stdout.downcase.include?('dc') || user.stdout.downcase.include?('dc')
   end
 
   def print_msg(action)

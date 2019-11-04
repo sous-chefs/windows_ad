@@ -17,11 +17,10 @@ property :safe_mode_pass, String, required: true
 property :options, Hash, default: {}
 property :local_pass, String
 property :replica_type, String, default: 'domain'
-property :ou, String
 
 require 'mixlib/shellout'
 
-ENUM_NAMES = %w{(Win2003) (Win2008) (Win2008R2) (Win2012) (Win2012R2) (Default)}
+ENUM_NAMES = %w[(Win2003) (Win2008) (Win2008R2) (Win2012) (Win2012R2) (Default)].freeze
 
 action :create do
   if exists?
@@ -31,20 +30,20 @@ action :create do
       cmd << " -DomainName #{new_resource.name}"
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << ' -Force:$true'
-      cmd << ' -NoRebootOnCompletion' if !new_resource.restart
-    else Chef::Version.new(node['os_version']) <= Chef::Version.new('6.1')
+      cmd << ' -NoRebootOnCompletion' unless new_resource.restart
+    elsif
       cmd = 'dcpromo -unattend'
       cmd << " -newDomain:#{new_resource.type}"
       cmd << " -NewDomainDNSName:#{new_resource.name}"
-      if !new_resource.restart
-        cmd << ' -RebootOnCompletion:No'
-      else
-        cmd << ' -RebootOnCompletion:Yes'
-      end
+      cmd << if !new_resource.restart
+               ' -RebootOnCompletion:No'
+             else
+               ' -RebootOnCompletion:Yes'
+             end
       cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
     end
-
+    Chef::Log.debug("cmd is #{cmd}")
     cmd << format_options(new_resource.options)
 
     powershell_script "create_domain_#{new_resource.name}" do
@@ -55,9 +54,11 @@ action :create do
 end
 
 action :delete do
-  Chef::Log.warn('This version of Windows Server is currently unsupported
-                  beyond installing the required roles and features. Help us
-                  out by submitting a pull request.') if Chef::Version.new(['os_version']) <= Chef::Version.new('6.1')
+  if Chef::Version.new(['os_version']) <= Chef::Version.new('6.1')
+    Chef::Log.warn('This version of Windows Server is currently unsupported
+                    beyond installing the required roles and features. Help us
+                    out by submitting a pull request.')
+  end
   if exists?
     cmd = 'Uninstall-ADDSDomainController'
     cmd << " -LocalAdministratorPassword (ConverTTo-SecureString '#{new_resource.local_pass}' -AsPlainText -Force)"
@@ -73,11 +74,6 @@ action :delete do
 end
 
 action_class do
-  def ou_dn
-    ou_name = new_resource.ou.split('/').reverse.map { |k| "OU=#{k}" }.join(',') << ','
-    ou_name << new_resource.name.split('.').map! { |k| "DC=#{k}" }.join(',')
-  end
-
   def exists?
     ldap_path = new_resource.name.split('.').map! { |k| "dc=#{k}" }.join(',')
     check = Mixlib::ShellOut.new("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')").run_command
@@ -128,21 +124,21 @@ action_class do
 
   def format_options(options)
     options.reduce('') do |cmd, (option, value)|
-      if value.nil?
-        cmd << " -#{option}"
-      elsif ENUM_NAMES.include?(value) || value.is_a?(Numeric)
-        if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
-          cmd << " -#{option} #{value}"
-        else
-          cmd << " -#{option}:#{value}"
-        end
-      else
-        if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
-          cmd << " -#{option} '#{value}'"
-        else
-          cmd << " -#{option}:'#{value}'"
-        end
-      end
+      cmd << if value.nil?
+               " -#{option}"
+             elsif ENUM_NAMES.include?(value) || value.is_a?(Numeric)
+               if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
+                 " -#{option} #{value}"
+               else
+                 " -#{option}:#{value}"
+               end
+             else
+               if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
+                 " -#{option} '#{value}'"
+               else
+                 " -#{option}:'#{value}'"
+               end
+             end
     end
   end
 end
