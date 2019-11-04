@@ -6,9 +6,10 @@ provisioner:
   name: chef_zero
   client_rb:
     chef_license: accept  
-#  product_name: chef
-#  product_version: <%= ENV['CHEF_VERSION'] || 'latest' %>
-#  install_strategy: once
+   # log_level: debug # Uncommit for Chef Debug logging
+  product_name: chef
+  product_version: <%= ENV['CHEF_VERSION'] || 'latest' %>
+  install_strategy: once
   retry_on_exit_code:
     - 0
     - 1 # Exit, success: You still must reboot, this just notes that the automatic restart flag was removed
@@ -72,5 +73,7 @@ suites:
       - recipe[windows_ad_test::user]
     verifier:
       inspec_tests:
-        - test/integration/object
+        - test/integration/default
+        - test/integration/forest
+        - test/integration/objects
     attributes:
