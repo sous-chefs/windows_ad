@@ -1,4 +1,4 @@
-source 'https://supermarket.chef.com'
+source 'https://supermarket.chef.io'
 
 metadata
 
