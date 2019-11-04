@@ -1,7 +1,6 @@
-domain = 'contoso.com'
+domain = 'contoso.local'
 
 windows_ad_user 'John Doe' do
-  name 'John Doe'
   action :create
   ou 'Users'
   domain_name domain
@@ -15,4 +14,6 @@ end
 
 windows_ad_user 'John Doe' do
   action :delete
+  ou 'Users'
+  domain_name domain
 end

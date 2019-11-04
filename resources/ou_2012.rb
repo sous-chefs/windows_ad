@@ -1,17 +1,58 @@
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
-# Cookbook Name:: windows_ad
+# Cookbook:: windows_ad
 # Resource:: ou_2012
 #
-# Copyright 2016, Texas A&M
+# Copyright:: 2016, Texas A&M
 
-actions :create
+resource_name :windows_ad_ou_2012
+
 default_action :create
 
-attribute :name, kind_of: String, name_attribute: true
-attribute :path, kind_of: String
-attribute :domain_name, kind_of: String
-attribute :options, kind_of: Hash, default: {}
-attribute :cmd_user, kind_of: String
-attribute :cmd_pass, kind_of: String
-attribute :cmd_domain, kind_of: String
+property :path, String
+property :domain_name, String
+property :options, Hash, default: {}
+property :cmd_user, String
+property :cmd_pass, String
+property :cmd_domain, String
+
+action :create do
+  if exists?
+    Chef::Log.info('The object already exists')
+  else
+    cmd = 'New-ADOrganizationalUnit'
+    cmd << " -Name \"#{new_resource.name}\""
+    cmd << " -Path \"#{dn}\"" unless new_resource.path.nil?
+
+    powershell_script "create_ou_2012_#{new_resource.name}" do
+      code cmd
+    end
+    Chef::Log.info('The object has been created')
+  end
+end
+
+action_class do
+  def dn
+    unless new_resource.path.nil?
+      dn = ''
+      dn << CmdHelper.ou_partial_dn(new_resource.path) << ','
+    end
+    dn << CmdHelper.dc_partial_dn(new_resource.domain_name)
+  end
+
+  def exists?
+    dc_partial_dn = CmdHelper.dc_partial_dn(new_resource.domain_name)
+    if new_resource.path.nil?
+      ldap = dc_partial_dn
+    else
+      ldap = CmdHelper.ou_partial_dn(new_resource.path) << ','
+      ldap << dc_partial_dn
+    end
+    path = "OU=#{new_resource.name},"
+    path = path.gsub('/', '\/') if path.include?('/')
+    path << ldap
+    Chef::Log.info("path is #{path}")
+    check = CmdHelper.shell_out("powershell.exe \"[adsi]::Exists('LDAP://#{path}')\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    check.stdout.downcase.include?('true')
+  end
+end
