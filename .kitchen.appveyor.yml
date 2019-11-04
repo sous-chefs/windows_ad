@@ -11,7 +11,7 @@ provisioner:
   name: chef_zero
   client_rb:
     chef_license: accept
-retry_on_exit_code:
+  retry_on_exit_code:
     - 0
     - 1 # Exit, success: You still must reboot, this just notes that the automatic restart flag was removed
     - 2 # Exit, success, need to reboot
