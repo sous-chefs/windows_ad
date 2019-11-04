@@ -25,6 +25,10 @@ provisioner:
 verifier:
   name: inspec
 
+transport:
+  connection_retry_sleep:	120 # Prevent Winrm from failing out when DC is created.
+  winrm_transport: plaintext  # When set to plaintext the winrm will run in one converge
+
 platforms:
   - name: windows-2012r2
     driver:
