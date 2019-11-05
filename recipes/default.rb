@@ -25,7 +25,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
-  %w[
+  %w(
     Microsoft-Windows-GroupPolicy-ServerAdminTools-Update
     ServerManager-Core-RSAT
     ServerManager-Core-RSAT-Role-Tools
@@ -35,18 +35,18 @@ if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
     DirectoryServices-DomainController-Tools
     DirectoryServices-AdministrativeCenter
     DirectoryServices-DomainController
-  ].each do |feature|
+  ).each do |feature|
     windows_feature feature do
       action :install
       all true
     end
   end
 else
-  %w[
+  %w(
     NetFx3
     Microsoft-Windows-GroupPolicy-ServerAdminTools-Update
     DirectoryServices-DomainController
-  ].each do |feature|
+  ).each do |feature|
     windows_feature feature do
       action :install
     end

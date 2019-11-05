@@ -12,7 +12,3 @@ Layout/EndOfLine:
 Style/IfInsideElse:
   Exclude:
     - 'resources/domain.rb'
-
-Style/PercentLiteralDelimiters:
-  Exclude:
-    - 'recipes/default.rb'
