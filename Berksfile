@@ -1,4 +1,4 @@
-source 'https://supermarket.getchef.com'
+source 'https://supermarket.chef.io'
 
 metadata
 
@@ -7,6 +7,6 @@ group :deps do
 end
 
 group :integration do
-  cookbook 'test_windows_ad',
-           path: 'test/fixtures/test_cookbooks/test_windows_ad'
+  cookbook 'windows_ad_test',
+           path: 'test/cookbooks/windows_ad_test'
 end

@@ -1,44 +1,14 @@
 inherit_from: .rubocop_todo.yml
 
-# cookstyle todo
-
-Lint/ElseLayout:
-  Exclude:
-    - 'providers/domain.rb'
-
-Layout/EndAlignment:
-  Exclude:
-    - 'providers/computer.rb'
-    - 'providers/domain.rb'
-
-Lint/ParenthesesAsGroupedExpression:
-  Exclude:
-    - 'test/fixtures/test_cookbooks/test_windows_ad/recipes/setup_forest.rb'
-
-Lint/UselessAssignment:
-  Exclude:
-    - 'Vagrantfile'
-    - 'test/fixtures/test_cookbooks/test_windows_ad/recipes/group.rb'
-    - 'test/fixtures/test_cookbooks/test_windows_ad/recipes/ou.rb'
-    - 'test/fixtures/test_cookbooks/test_windows_ad/recipes/user.rb'
-
-Lint/Void:
-  Exclude:
-    - 'providers/domain.rb'
-
 Metrics/BlockNesting:
   Max: 4
 
-Style/IdenticalConditionalBranches:
-  Exclude:
-    - 'providers/user.rb'
-
-Style/IfInsideElse:
-  Exclude:
-    - 'providers/domain.rb'
-
 Metrics/LineLength:
-  Max: 1555
+  Max: 180
 
 Layout/EndOfLine:
   EnforcedStyle: lf
+
+Style/IfInsideElse:
+  Exclude:
+    - 'resources/domain.rb'

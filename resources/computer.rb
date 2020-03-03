@@ -1,40 +1,127 @@
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
-# Cookbook Name:: windows_ad
+# Cookbook:: windows_ad
 # Resource:: computer
 #
-# Copyright 2013, Texas A&M
-#
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
-#
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
+# Copyright:: 2013, Texas A&M
 
-actions :create, :modify, :move, :delete, :join, :unjoin
+resource_name :windows_ad_computer
+
 default_action :create
 
-attribute :name, kind_of: String, name_attribute: true
-attribute :domain_name, kind_of: String
-attribute :domain_user, kind_of: String
-attribute :domain_pass, kind_of: String
-attribute :ou, kind_of: String
-attribute :options, kind_of: Hash, default: {}
-attribute :cmd_user, kind_of: String
-attribute :cmd_pass, kind_of: String
-attribute :cmd_domain, kind_of: String
-attribute :restart, kind_of: [TrueClass, FalseClass], required: true
+property :domain_name, String
+property :domain_user, String
+property :domain_pass, String
+property :ou, String
+property :options, Hash, default: {}
+property :cmd_user, String
+property :cmd_pass, String
+property :cmd_domain, String
+property :restart, [TrueClass, FalseClass], required: true
+
+require 'mixlib/shellout'
+
+action :create do
+  if exists?
+    Chef::Log.debug('The object already exists')
+  else
+    cmd = 'dsadd'
+    cmd << ' computer '
+    cmd << '"'
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
+                        new_resource.domain_name)
+    cmd << '"'
+    cmd << CmdHelper.cmd_options(new_resource.options)
+
+    Chef::Log.info(print_msg("create #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+                        new_resource.cmd_domain)
+  end
+end
+
+action :modify do
+  if exists?
+    cmd = 'dsmod'
+    cmd << ' computer '
+    cmd << '"'
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
+                        new_resource.domain_name)
+    cmd << '"'
+    cmd << CmdHelper.cmd_options(new_resource.options)
+
+    Chef::Log.info(print_msg("modify #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+                        new_resource.cmd_domain)
+  else
+    Chef::Log.error('The object does not exist')
+  end
+end
+
+action :move do
+  if exists?
+    cmd = 'dsmove '
+    cmd << '"'
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
+                        new_resource.domain_name)
+    cmd << '"'
+    cmd << CmdHelper.cmd_options(new_resource.options)
+
+    Chef::Log.info(print_msg("move #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+                        new_resource.cmd_domain)
+  else
+    Chef::Log.error('The object does not exist')
+  end
+end
+
+action :delete do
+  if exists?
+    cmd = 'dsrm '
+    cmd << '"'
+    cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
+                        new_resource.domain_name)
+    cmd << '"'
+    cmd << ' -noprompt'
+
+    cmd << CmdHelper.cmd_options(new_resource.options)
+
+    Chef::Log.info(print_msg("delete #{new_resource.name}"))
+    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+                        new_resource.cmd_domain)
+
+  else
+    Chef::Log.debug('The object has already been removed')
+  end
+end
+
+action_class do
+  def computer_exists?
+    comp = Mixlib::ShellOut.new('powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"').run_command
+    stdout = comp.stdout.downcase
+    Chef::Log.debug("computer_exists? is #{stdout.downcase}")
+    stdout.include?(new_resource.domain_name.downcase)
+  end
+
+  def exists?
+    # Supports workstation and server platforms, Windows Server 2008 R2 and Windows 7 share the same version number, Win7 doesnot include netdom command without RSAT.
+    if node['os_version'] == '6.1.7600'
+      Chef::Log.warn('Unable to determine specific OS version. Windows 7 does not have the native tools to query if the domain exists. Assuming domain exists.')
+      return true
+    end
+    check = Mixlib::ShellOut.new("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc").run_command
+    Chef::Log.debug("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc")
+    Chef::Log.debug("check.stdout.include is #{check.stdout}")
+    check.stdout.include? 'The command completed successfully.'
+  end
+
+  def ou_dn
+    ou_name = new_resource.ou.split('/').reverse.map { |k| "OU=#{k}" }.join(',') << ','
+    ou_name << new_resource.name.split('.').map! { |k| "DC=#{k}" }.join(',')
+    check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    check.stdout.downcase.include?('dc')
+  end
+
+  def print_msg(action)
+    "windows_ad_contact[#{action}]"
+  end
+end
