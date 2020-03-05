@@ -9,6 +9,7 @@ resource_name :windows_ad_group_member
 
 default_action :add
 
+property :user_name, String, name_property: true
 property :group_name, String, required: true
 property :domain_name, String
 property :user_ou, String
