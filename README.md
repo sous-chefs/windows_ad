@@ -46,9 +46,9 @@ The windows_ad::default recipe installs the required roles and features to suppo
 * :move: Rename a computer object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
 * :unjoin: Removes computer from domain.
 
-#### Attribute Parameters
+#### Property Parameters
 
-* name: name attribute.  Name of the computer object.
+* name: name property.  Name of the computer object.
 * domain_name: FQDN
 * domain_pass: domain password
 * domain_user: domain user
@@ -140,9 +140,9 @@ The windows_ad::default recipe installs the required roles and features to suppo
 * :modify: Modifies an existing contact object.
 * :move:  Rename a contact object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
 
-#### Attribute Parameters
+#### Property Parameters
 
-* name: name attribute.  Name of the contact object.
+* name: name property.  Name of the contact object.
 * domain_name: FQDN
 * ou: Organization Unit path where object is to be located.
 * options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc771883.aspx
@@ -185,9 +185,9 @@ The windows_ad::default recipe installs the required roles and features to suppo
 * :create: Installs a forest, domain, or domain controller
 * :delete: Removes a domain controller from domain
 
-#### Attribute Parameters
+#### Property Parameters
 
-* name: name attribute.  Name of the forest/domain to operate against.
+* name: name property.  Name of the forest/domain to operate against.
 * type: type of install. Valid values: forest, domain, read-only.
 * safe_mode_pass: safe mode administrative password.
 * domain_user: User account to join the domain or to create a domain controller. **Required**: for `:create` except on `type` `forest` on windows 2012 and above.
@@ -261,9 +261,9 @@ The windows_ad::default recipe installs the required roles and features to suppo
 * :move:  Rename a group object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
 * :delete:  Remove a group object from Active Directory.
 
-#### Attribute Parameters
+#### Property Parameters
 
-* name: name attribute.  Name of the group object.
+* name: name property.  Name of the group object.
 * domain_name: FQDN
 * ou: Organization Unit path where object is to be located.
 * options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754037.aspx
@@ -308,10 +308,10 @@ The windows_ad::default recipe installs the required roles and features to suppo
 * :add: Adds a user to a group.
 * :remove: Removes a user from a group.
 
-#### Attribute Parameters
+#### Property Parameters
 
-* user_name: user name attribute. Name of the user object.
-* group_name: group name attribute. Name of the group object.
+* user_name: user name property. Name of the user object.
+* group_name: group name property. Name of the group object.
 * domain_name: FQDN.
 * user_ou: Organization Unit path where user object is located.
 * group_ou: Organization Unit path where group object is located.
@@ -357,9 +357,9 @@ Warning: Data bags can be used, however OU names must be unique (restriction of 
 * :move:  Rename an organizational unit object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
 * :delete:  Remove an organizational unit object from Active Directory.
 
-#### Attribute Parameters
+#### Property Parameters
 
-* name: name attribute.  Name of the Organization Unit object.
+* name: name property.  Name of the Organization Unit object.
 * domain_name: FQDN
 * ou: Organization Unit path where object is to be located.
 * options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
@@ -403,9 +403,9 @@ WIP:
 * :move:  Rename an organizational unit object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
 * :delete:  Remove an organizational unit object from Active Directory.
 
-#### Attribute Parameters
+#### Property Parameters
 
-* name: name attribute.  Name of the Organization Unit object.
+* name: name property.  Name of the Organization Unit object.
 * domain_name: FQDN
 * ou: Organization Unit path where object is to be located.
 * options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
@@ -423,9 +423,9 @@ WIP:
 * :move:  Rename an organizational unit object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
 * :delete:  Remove an organizational unit object from Active Directory.
 
-#### Attribute Parameters
+#### Property Parameters
 
-* name: name attribute.  Name of the Organization Unit object.
+* name: name property.  Name of the Organization Unit object.
 * domain_name: FQDN
 * path: Organization Unit path where object is to be located.
 * options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
@@ -442,9 +442,9 @@ WIP:
 * :move:  Rename an user object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
 * :delete:  Remove an user object from Active Directory.
 
-#### Attribute Parameters
+#### Property Parameters
 
-* name: name attribute.  Name of the user object.
+* name: name property.  Name of the user object.
 * domain_name: FQDN
 * ou: Organization Unit path where object is located.
 * options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc731279.aspx
