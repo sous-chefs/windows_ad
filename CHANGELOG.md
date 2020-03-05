@@ -1,5 +1,11 @@
 # CHANGELOG for windows_ad
 
+## 0.7.1
+
+* Corrects the removal of the name_property in the group_members resource
+* Clean up delivery testing
+* github templates and actions
+
 ## 0.7.0
 
 * Remove depends on 'windows' cookbook, features are now part of chef core.
