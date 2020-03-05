@@ -1,12 +1,14 @@
 ---
 driver:
   name: vagrant
+  customize:
+    cpus: 2
+    memory: 4096  
 
 provisioner:
   name: chef_zero
-  client_rb:
-    chef_license: accept  
-   # log_level: debug # Uncommit for Chef Debug logging
+  deprecations_as_errors: true
+  chef_license: accept-no-persist
   product_name: chef
   product_version: <%= ENV['CHEF_VERSION'] || 'latest' %>
   install_strategy: once
@@ -29,9 +31,6 @@ transport:
   winrm_transport: plaintext  # When set to plaintext the winrm will run in one converge
 
 platforms:
-  - name: windows-2008-r2
-    driver:
-      box: tas50/windows_2008r2
   - name: windows-2012-r2
     driver:
       box: tas50/windows_2012r2
