@@ -10,10 +10,6 @@ This cookbook installs Active Directory Domain Services on Windows Server includ
 * Windows Server 2016 Family
 * Windows Server 2019 Family
 
-### Cookbooks
-
-* Windows * Official windows cookbook from opscode https://github.com/opscode-cookbooks/windows.git
-
 ## Usage
 
 This is a library style cookbook that provides a set of resources to install and configure Windows ADDS in a composable way. It is intended to be used in your own wrapper cookbook suited to your specific needs. You can see example usage in the recipes of the [windows_ad_test](https://github.com/TAMUarch/cookbook.windows_ad/blob/master/test/cookbooks/windows_ad_test/recipes/) cookbook that is included in this repo. These recipes are used as part of integration testing.
