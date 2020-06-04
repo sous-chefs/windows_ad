@@ -6,8 +6,6 @@ This cookbook installs Active Directory Domain Services on Windows Server includ
 
 ### Platform
 
-* Windows workstations (join and unjoin)
-* Windows Server 2008 R2 Family
 * Windows Server 2012 Family
 * Windows Server 2016 Family
 * Windows Server 2019 Family
@@ -37,14 +35,14 @@ The windows_ad::default recipe installs the required roles and features to suppo
 
 ### `computer`
 
+**NOTE** joining and unjoining computers from a domain has been removed from this cookbook, [windows_ad_join](https://docs.chef.io/resources/windows_ad_join/) should be used instead as it is part of Chef Infra Client 14.0.
+
 #### Actions
 
 * :create: Adds a computer object to Active Directory
 * :delete: Remove a computer object from Active Directory.
-* :join: Joins computer to domain.
 * :modify: Modifies an existing computer object.
 * :move: Rename a computer object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-* :unjoin: Removes computer from domain.
 
 #### Property Parameters
 
@@ -85,49 +83,6 @@ The windows_ad::default recipe installs the required roles and features to suppo
       cmd_user "Administrator"
       cmd_pass "password"
       cmd_domain "contoso.local"
-    end
-
-    # Join Contoso.com domain
-    windows_ad_computer 'Workstation' do
-      action :join
-      domain_pass 'Passw0rd'
-      domain_user 'Administrator'
-      domain_name 'contoso.local'
-    end
-
-    # Join Contoso.com domain without restart
-    windows_ad_computer "contoso.local" do
-      action :join
-      domain_pass 'Passw0rd'
-      domain_user 'Administrator'
-      domain_name 'contoso.local'
-      restart false
-    end
-
-    # Join Contoso.com domain with OU
-    windows_ad_computer "contoso.local" do
-      action :join
-      domain_pass 'Passw0rd'
-      domain_user 'Administrator'
-      domain_name 'contoso.local'
-      ou "Servers/Web"
-    end
-
-    # Unjoin Contoso.com domain
-    windows_ad_computer "contoso.local" do
-      action :unjoin
-      domain_pass 'Passw0rd'
-      domain_user 'Administrator'
-      domain_name 'contoso.local'
-    end
-
-    # Unjoin Contoso.com domain without restart
-    windows_ad_computer "contoso.local" do
-      action :unjoin
-      domain_pass 'Passw0rd'
-      domain_user 'Administrator'
-      domain_name 'contoso.local'
-      restart false
     end
     ```
 
