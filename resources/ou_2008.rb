@@ -6,6 +6,7 @@
 # Copyright:: 2016, Texas A&M
 
 resource_name :windows_ad_ou_2008
+provides :windows_ad_ou_2008
 
 default_action :create
 

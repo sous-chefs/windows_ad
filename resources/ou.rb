@@ -6,6 +6,7 @@
 # Copyright:: 2013, Texas A&M
 
 resource_name :windows_ad_ou
+provides :windows_ad_ou
 
 default_action :create
 
