@@ -1,5 +1,12 @@
 # CHANGELOG for windows_ad
 
+## 0.7.2
+
+* Add compatibility for Chef 16
+* Update README.md to match resource options (removal of `:join` & `:unjoin` actions for `:windows_ad_computer`) and windows cookbook dependency.
+* Use `:powershell` resource for inspec tests.
+* Change supported platform to `>= 6.2` (Windows 2012) to match README.md.
+
 ## 0.7.1
 
 * Corrects the removal of the name_property in the group_members resource
