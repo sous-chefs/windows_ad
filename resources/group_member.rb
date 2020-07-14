@@ -6,6 +6,7 @@
 # Copyright:: 2015, Schuberg Philis B.V.
 
 resource_name :windows_ad_group_member
+provides :windows_ad_group_member
 
 default_action :add
 
