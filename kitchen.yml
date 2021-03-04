@@ -3,7 +3,7 @@ driver:
   name: vagrant
   customize:
     cpus: 2
-    memory: 4096  
+    memory: 4096
 
 provisioner:
   name: chef_zero
@@ -11,6 +11,7 @@ provisioner:
   chef_license: accept-no-persist
   product_name: chef
   product_version: <%= ENV['CHEF_VERSION'] || 'latest' %>
+  # log_level: debug
   install_strategy: once
   retry_on_exit_code:
     - 0
@@ -27,11 +28,11 @@ verifier:
   name: inspec
 
 transport:
-  connection_retry_sleep:	120 # Prevent Winrm from failing out when DC is created.
+  connection_retry_sleep: 120 # Prevent Winrm from failing out when DC is created.
   winrm_transport: plaintext  # When set to plaintext the winrm will run in one converge
 
 platforms:
-  - name: windows-2012-r2
+  - name: windows-2012r2
     driver:
       box: tas50/windows_2012r2
       customize:
