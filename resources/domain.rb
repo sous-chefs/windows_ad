@@ -12,16 +12,14 @@ default_action :create
 
 property :domain_user, String, required: true
 property :domain_pass, String, required: true
-property :restart, [TrueClass, FalseClass], required: true
+property :restart, [true, false], required: true
 property :type, String, default: 'forest'
 property :safe_mode_pass, String, required: true
 property :options, Hash, default: {}
 property :local_pass, String
 property :replica_type, String, default: 'domain'
 
-require 'mixlib/shellout'
-
-ENUM_NAMES = %w[(Win2003) (Win2008) (Win2008R2) (Win2012) (Win2012R2) (Default)].freeze
+ENUM_NAMES = %w[(Win2012) (Win2012R2) (2016) (2019) (Default)].freeze
 
 action :create do
   if exists?
@@ -32,17 +30,8 @@ action :create do
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << ' -Force:$true'
       cmd << ' -NoRebootOnCompletion' unless new_resource.restart
-    elsif
-      cmd = 'dcpromo -unattend'
-      cmd << " -newDomain:#{new_resource.type}"
-      cmd << " -NewDomainDNSName:#{new_resource.name}"
-      cmd << if !new_resource.restart
-               ' -RebootOnCompletion:No'
-             else
-               ' -RebootOnCompletion:Yes'
-             end
-      cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
-      cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
+    elsif Chef::Log.warn('This version of Windows Server is no longer supported
+        as the platform is EOL.')
     end
     Chef::Log.debug("cmd is #{cmd}")
     cmd << format_options(new_resource.options)
@@ -56,9 +45,8 @@ end
 
 action :delete do
   if Chef::Version.new(['os_version']) <= Chef::Version.new('6.1')
-    Chef::Log.warn('This version of Windows Server is currently unsupported
-                    beyond installing the required roles and features. Help us
-                    out by submitting a pull request.')
+    Chef::Log.warn('This version of Windows Server is no longer supported
+                    as the platform is EOL.')
   end
   if exists?
     cmd = 'Uninstall-ADDSDomainController'
@@ -77,18 +65,18 @@ end
 action_class do
   def exists?
     ldap_path = new_resource.name.split('.').map! { |k| "dc=#{k}" }.join(',')
-    check = Mixlib::ShellOut.new("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')").run_command
+    check = shell_out("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')")
     check.stdout.match('True')
   end
 
   def computer_exists?
-    comp = Mixlib::ShellOut.new('powershell.exe -command "get-wmiobject -class win32_computersystem -computername . | select domain"').run_command
+    comp = shell_out('powershell.exe -command "get-wmiobject -class win32_computersystem -computername . | select domain"')
     stdout = comp.stdout.downcase
     stdout.include?(new_resource.name.downcase)
   end
 
   def last_dc?
-    dsquery = Mixlib::ShellOut.new('dsquery server -forest').run_command
+    dsquery = shell_out('dsquery server -forest')
     dsquery.stdout.split("\n").size == 1
   end
 

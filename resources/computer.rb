@@ -18,14 +18,17 @@ property :options, Hash, default: {}
 property :cmd_user, String
 property :cmd_pass, String
 property :cmd_domain, String
-property :restart, [TrueClass, FalseClass], required: true
-
-require 'mixlib/shellout'
 
 action :create do
   if exists?
     Chef::Log.debug('The object already exists')
   else
+    powershell_script "create ADComputer #{name}" do
+      code "New-ADComputer -Name #{new_resource.name}" << -EOH
+      powershell code
+      EOH
+    end
+
     cmd = 'dsadd'
     cmd << ' computer '
     cmd << '"'
@@ -97,19 +100,14 @@ end
 
 action_class do
   def computer_exists?
-    comp = Mixlib::ShellOut.new('powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"').run_command
+    comp = shell_out('powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"')
     stdout = comp.stdout.downcase
     Chef::Log.debug("computer_exists? is #{stdout.downcase}")
     stdout.include?(new_resource.domain_name.downcase)
   end
 
   def exists?
-    # Supports workstation and server platforms, Windows Server 2008 R2 and Windows 7 share the same version number, Win7 doesnot include netdom command without RSAT.
-    if node['os_version'] == '6.1.7600'
-      Chef::Log.warn('Unable to determine specific OS version. Windows 7 does not have the native tools to query if the domain exists. Assuming domain exists.')
-      return true
-    end
-    check = Mixlib::ShellOut.new("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc").run_command
+    check = shell_out("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc")
     Chef::Log.debug("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc")
     Chef::Log.debug("check.stdout.include is #{check.stdout}")
     check.stdout.include? 'The command completed successfully.'
