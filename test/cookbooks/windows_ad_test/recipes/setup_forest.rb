@@ -8,15 +8,10 @@ windows_ad_domain 'contoso.local' do
   safe_mode_pass 'Passw0rd'
   domain_pass 'vagrant'
   domain_user 'Administrator'
-  case node['os_version']
-  when '6.1'
-    options('InstallDNS': 'yes')
-  when '6.2'
-    options('InstallDNS': nil)
-  end
+  options('InstallDNS': nil)
   action :create
   restart false
-  notifies :reboot_now, 'reboot[now]', :immediate
+  notifies :reboot_now, 'reboot[now]', :immediately
 end
 
 reboot 'now' do

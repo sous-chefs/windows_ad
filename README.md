@@ -51,7 +51,6 @@ The windows_ad::default recipe installs the required roles and features to suppo
 * cmd_user: user under which the interaction with AD should happen
 * cmd_pass: password for user specified in cmd_user (only needed if user requires password)
 * cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
-* restart: allows preventing reboot after join or unjoin action. Default true to reboot.  **Required**
 
 #### Examples
 
@@ -140,7 +139,7 @@ The windows_ad::default recipe installs the required roles and features to suppo
 
 * name: name property.  Name of the forest/domain to operate against.
 * type: type of install. Valid values: forest, domain, read-only.
-* safe_mode_pass: safe mode administrative password.
+* safe_mode_pass: safe mode administrative password. **Note**: [Password must meet complexity requirements](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/password-must-meet-complexity-requirements)
 * domain_user: User account to join the domain or to create a domain controller. **Required**: for `:create` except on `type` `forest` on windows 2012 and above.
 * domain_pass: User password to join the domain or to create a domain controller. **Required**: for `:create` except on `type` `forest` on windows 2012 and above.
 * local_pass: Local Administrator Password for removing domain controller.
@@ -173,27 +172,6 @@ The windows_ad::default recipe installs the required roles and features to suppo
       safe_mode_pass "Passw0rd"
       domain_pass "Passw0rd"
       domain_user "Administrator"
-    end
-
-    # Create Contoso.com forest with DNS, Win2008 R2 Operational Mode Windows Server 2008 R2
-    windows_ad_domain "contoso.local" do
-      action :create
-      type "forest"
-      safe_mode_pass "Passw0rd"
-      options ({ "domainlevel" => "4",
-                 "forestlevel" => "4",
-                 "InstallDNS" => "yes"
-               })
-    end
-
-    # Create Contoso.com forest with DNS, Win2008 Operational Mode Windows Server 2012
-    windows_ad_domain "contoso.local" do
-      action :create
-      type "forest"
-      safe_mode_pass "Passw0rd"
-      options ({ "ForestMode" => "Win2008",
-                 "InstallDNS" => nil
-               })
     end
 
     # Remove Domain Controller
@@ -297,8 +275,6 @@ The windows_ad::default recipe installs the required roles and features to suppo
 
 ### `ou`
 
-Note: Chef 12 Custom Resource WIP.
-ou provider will call `ou_2008` or `ou_2012` based on OS version.
 Warning: Data bags can be used, however OU names must be unique (restriction of data bags)
 
 #### Actions
@@ -343,46 +319,6 @@ Warning: Data bags can be used, however OU names must be unique (restriction of 
       cmd_domain "contoso.local"
     end
     ```
-
-### 'ou_2008'
-
-#### Actions
-
-* :create: Adds organizational units to Active Directory.
-WIP:
-* :modify: Modifies an organizational unit.
-* :move:  Rename an organizational unit object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-* :delete:  Remove an organizational unit object from Active Directory.
-
-#### Property Parameters
-
-* name: name property.  Name of the Organization Unit object.
-* domain_name: FQDN
-* ou: Organization Unit path where object is to be located.
-* options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
-* cmd_user: user under which the interaction with AD should happen
-* cmd_pass: password for user specified in cmd_user (only needed if user requires password)
-* cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
-
-### 'ou_2012'
-
-#### Actions
-
-* :create: Adds organizational units to Active Directory.
-WIP:
-* :modify: Modifies an organizational unit.
-* :move:  Rename an organizational unit object without moving it in the directory tree, or move an object from its current location in the directory to a new location within a single domain controller.
-* :delete:  Remove an organizational unit object from Active Directory.
-
-#### Property Parameters
-
-* name: name property.  Name of the Organization Unit object.
-* domain_name: FQDN
-* path: Organization Unit path where object is to be located.
-* options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
-* cmd_user: user under which the interaction with AD should happen
-* cmd_pass: password for user specified in cmd_user (only needed if user requires password)
-* cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
 
 ### `users`
 
