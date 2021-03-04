@@ -22,17 +22,6 @@ describe 'windows_ad::default' do
       expect { chef_run }.to_not raise_error
     end
   end
-  context 'when all attributes are default, on a server 2008 platform' do
-    let(:chef_run) { ChefSpec::ServerRunner.new(platform: 'windows', version: '2008').converge(described_recipe) }
-
-    it 'installs a windows_feature `NetFx3`' do
-      expect(chef_run).to install_windows_feature('NetFx3')
-    end
-
-    it 'converges successfully' do
-      expect { chef_run }.to_not raise_error
-    end
-  end
 
   context 'when all attributes are default, on a server 2012 platform' do
     let(:chef_run) { ChefSpec::ServerRunner.new(platform: 'windows', version: '2012').converge(described_recipe) }
