@@ -23,23 +23,26 @@ ENUM_NAMES = %w[(Win2012) (Win2012R2) (2016) (2019) (Default)].freeze
 
 action :create do
   if exists?
+    Chef::Log.debug('The object already exists')
   else
-    if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
-      cmd = create_command
-      cmd << " -DomainName #{new_resource.name}"
-      cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
-      cmd << ' -Force:$true'
-      cmd << ' -NoRebootOnCompletion' unless new_resource.restart
-    elsif Chef::Log.warn('This version of Windows Server is no longer supported
-        as the platform is EOL.')
-    end
-    Chef::Log.debug("cmd is #{cmd}")
-    cmd << format_options(new_resource.options)
+    cmd = create_command
+    cmd << " -DomainName #{new_resource.name}"
+    cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
+    cmd << ' -Force:$true'
+    cmd << ' -NoRebootOnCompletion' unless new_resource.restart
+  end
 
-    powershell_script "create_domain_#{new_resource.name}" do
-      code cmd
-      returns [0, 1, 2, 3, 4]
-    end
+  if Chef::Version.new(node['os_version']) < Chef::Version.new('6.2')
+    Chef::Log.warn('This version of Windows Server is no longer supported as the platform is EOL.')
+  end
+
+  Chef::Log.debug("cmd is #{cmd}")
+
+  cmd << format_options(new_resource.options)
+
+  powershell_script "create_domain_#{new_resource.name}" do
+    code cmd
+    returns [0, 1, 2, 3, 4]
   end
 end
 
@@ -121,12 +124,10 @@ action_class do
                else
                  " -#{option}:#{value}"
                end
+             elsif Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
+               " -#{option} '#{value}'"
              else
-               if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
-                 " -#{option} '#{value}'"
-               else
-                 " -#{option}:'#{value}'"
-               end
+               " -#{option}:'#{value}'"
              end
     end
   end
