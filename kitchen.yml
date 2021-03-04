@@ -15,10 +15,10 @@ provisioner:
   install_strategy: once
   retry_on_exit_code:
     - 0
-    - 1 # Exit, success: You still must reboot, this just notes that the automatic restart flag was removed
+    - 1 # Exit, success: You still must reboot
     - 2 # Exit, success, need to reboot
-    - 3 # Exit, success, with a non-critical failure: Typically seen when returning the DNS Delegation warning.
-    - 4 # Exit, success, with a non-critical failure, need to reboot: Typically seen when returning the DNS Delegation warning.
+    - 3 # Exit, success, with a non-critical failure
+    - 4 # Exit, success, with a non-critical failure, need to reboot
     - 35 # 35 is the exit code signaling that the node is rebooting
     - 1190 #1190 is the exit code signaling that a reboot is scheduled
   wait_for_retry: 200 # May need to increase depending on computing resources.
@@ -28,8 +28,10 @@ verifier:
   name: inspec
 
 transport:
-  connection_retry_sleep: 120 # Prevent Winrm from failing out when DC is created.
-  winrm_transport: plaintext  # When set to plaintext the winrm will run in one converge
+  # Prevent Winrm from failing out when DC is created.
+  connection_retry_sleep: 120
+  # When set to plaintext the winrm will run in one converge
+  winrm_transport: plaintext
 
 platforms:
   - name: windows-2012r2
