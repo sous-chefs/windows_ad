@@ -33,6 +33,7 @@ jobs:
         uses: actions/checkout@master
       - name: Run Markdown Lint
         uses: actionshub/markdownlint@main
+
   windows-2016:
     needs: [mdl, yamllint, delivery]
     runs-on: windows-2016
@@ -49,7 +50,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@master
       - name: Install Chef
-        uses: actionshub/chef-install@master
+        uses: actionshub/chef-install@main
       - name: test-kitchen
         uses: actionshub/test-kitchen@master
         env:
@@ -75,7 +76,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@master
       - name: Install Chef
-        uses: actionshub/chef-install@master
+        uses: actionshub/chef-install@main
       - name: Kitchen Exec
         uses: actionshub/test-kitchen@master
         env:
