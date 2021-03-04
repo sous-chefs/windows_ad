@@ -175,7 +175,7 @@ The windows_ad::default recipe installs the required roles and features to suppo
       domain_user "Administrator"
     end
 
-    # Create Contoso.com forest with DNS, Win2008 R2 Operational Mode Windows Server 2008 R2
+    # Create Contoso.com forest without DNS, Win2008 R2 Operational Mode Windows Server 2008 R2
     windows_ad_domain "contoso.local" do
       action :create
       type "forest"
