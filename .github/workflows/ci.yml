@@ -50,7 +50,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@master
       - name: Install Chef
-        uses: actionshub/chef-install@main
+        uses: actionshub/chef-install@master
       - name: test-kitchen
         uses: actionshub/test-kitchen@master
         env:
@@ -76,7 +76,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@master
       - name: Install Chef
-        uses: actionshub/chef-install@main
+        uses: actionshub/chef-install@master
       - name: Kitchen Exec
         uses: actionshub/test-kitchen@master
         env:
