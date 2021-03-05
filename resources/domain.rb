@@ -30,19 +30,19 @@ action :create do
     cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
     cmd << ' -Force:$true'
     cmd << ' -NoRebootOnCompletion' unless new_resource.restart
+
+    Chef::Log.debug("cmd is #{cmd}")
+
+    cmd << format_options(new_resource.options)
+
+    powershell_script "create_domain_#{new_resource.name}" do
+      code cmd
+      returns [0, 1, 2, 3, 4]
+    end
   end
 
   if Chef::Version.new(node['os_version']) < Chef::Version.new('6.2')
     Chef::Log.warn('This version of Windows Server is no longer supported as the platform is EOL.')
-  end
-
-  Chef::Log.debug("cmd is #{cmd}")
-
-  cmd << format_options(new_resource.options)
-
-  powershell_script "create_domain_#{new_resource.name}" do
-    code cmd
-    returns [0, 1, 2, 3, 4]
   end
 end
 
