@@ -1,4 +1,4 @@
-Reference: http://danger.systems/reference.html
+# Reference: http://danger.systems/reference.html
 
 # A pull request summary is required. Add a description of the pull request purpose.
 # Changelog must be updated for each pull request that changes code.
