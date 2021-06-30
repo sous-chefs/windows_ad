@@ -6,13 +6,14 @@ name: ci
   push:
     branches:
       - master
+      - develop
 
 jobs:
   delivery:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@main
+        uses: actions/checkout@v2
       - name: Run Chef Delivery
         uses: actionshub/chef-delivery@main
         env:
@@ -22,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
       - name: Run yaml Lint
         uses: actionshub/yamllint@main
 
@@ -30,11 +31,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
       - name: Run Markdown Lint
         uses: actionshub/markdownlint@main
 
-  windows-2016:
+  integration-windows-2016:
     needs: [mdl, yamllint, delivery]
     runs-on: windows-2016
     strategy:
@@ -48,11 +49,13 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
       - name: Install Chef
-        uses: actionshub/chef-install@master
-      - name: test-kitchen
-        uses: actionshub/test-kitchen@master
+        uses: actionshub/chef-install@main
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+      - name: Kitchen Exec
+        uses: actionshub/test-kitchen@main
         env:
           CHEF_LICENSE: accept-no-persist
           KITCHEN_LOCAL_YAML: kitchen.exec.yml
@@ -60,7 +63,7 @@ jobs:
           suite: ${{ matrix.suite }}
           os: ${{ matrix.os }}
 
-  windows-2019:
+  integration-windows-2019:
     needs: [mdl, yamllint, delivery]
     runs-on: windows-2019
     strategy:
@@ -74,21 +77,16 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
       - name: Install Chef
-        uses: actionshub/chef-install@master
+        uses: actionshub/chef-install@main
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       - name: Kitchen Exec
-        uses: actionshub/test-kitchen@master
+        uses: actionshub/test-kitchen@main
         env:
           CHEF_LICENSE: accept-no-persist
           KITCHEN_LOCAL_YAML: kitchen.exec.yml
         with:
           suite: ${{ matrix.suite }}
           os: ${{ matrix.os }}
-
-  final:
-    needs: [windows-2016, windows-2019]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@master
