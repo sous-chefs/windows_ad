@@ -19,6 +19,8 @@ property :options, Hash, default: {}
 property :local_pass, String
 property :replica_type, String, default: 'domain'
 
+unified_mode true
+
 ENUM_NAMES = %w[(Win2012) (Win2012R2) (2016) (2019) (Default)].freeze
 
 action :create do

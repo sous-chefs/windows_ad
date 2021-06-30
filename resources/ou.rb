@@ -17,23 +17,20 @@ property :cmd_user, String
 property :cmd_pass, String
 property :cmd_domain, String
 
+unified_mode true
+
 action :create do
-  require 'chef/win32/version'
-  win_ver = Chef::ReservedNames::Win32::Version.new
-  if win_ver.windows_server_2008? || win_ver.windows_server_2008_r2?
-    windows_ad_ou_2008 new_resource.name do
-      action :create
-      ou new_resource.ou unless new_resource.ou.nil?
-      domain_name new_resource.domain_name
-    end
-  elsif Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
-    windows_ad_ou_2012 new_resource.name do
-      action :create
-      path new_resource.ou unless new_resource.ou.nil?
-      domain_name new_resource.domain_name
-    end
+  if exists?
+    Chef::Log.info('The object already exists')
   else
-    Chef::Log.error('This version of Windows is not supported')
+    cmd = 'New-ADOrganizationalUnit'
+    cmd << " -Name \"#{new_resource.name}\""
+    cmd << " -Path \"#{dn}\"" unless new_resource.path.nil?
+
+    powershell_script "create_ou_2012_#{new_resource.name}" do
+      code cmd
+    end
+    Chef::Log.info('The object has been created')
   end
 end
 

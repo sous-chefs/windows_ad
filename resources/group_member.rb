@@ -19,6 +19,8 @@ property :cmd_user, String
 property :cmd_pass, String
 property :cmd_domain, String
 
+unified_mode true
+
 action :add do
   group_dn = CmdHelper.dn(new_resource.group_name, new_resource.group_ou, new_resource.domain_name)
   user_dn  = CmdHelper.dn(new_resource.user_name,  new_resource.user_ou, new_resource.domain_name)
