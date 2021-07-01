@@ -20,8 +20,8 @@ provisioner:
     - 4 # Exit, success, with a non-critical failure, need to reboot
     - 35 # 35 is the exit code signaling that the node is rebooting
     - 1190 #1190 is the exit code signaling that a reboot is scheduled
-  wait_for_retry: 300 # May need to increase depending on computing resources.
-  max_retries: 3
+  wait_for_retry: 500 # May need to increase depending on computing resources.
+  max_retries: 1
 
 platforms:
   - name: windows-2016
