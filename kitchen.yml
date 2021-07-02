@@ -10,7 +10,7 @@ provisioner:
   deprecations_as_errors: true
   chef_license: accept-no-persist
   product_name: chef
-  product_version: <%= ENV['CHEF_VERSION'] || 'latest' %>
+  product_version: '16' # <%= ENV['CHEF_VERSION'] || 'latest' %>
   # log_level: debug
   install_strategy: once
   retry_on_exit_code:
@@ -79,3 +79,10 @@ suites:
         - test/integration/forest
         - test/integration/objects
     attributes:
+
+  - name: reboot
+    run_list:
+      - recipe[windows_ad_test::reboot]
+    verifier:
+      inspec_tests:
+        - test/integration/reboot

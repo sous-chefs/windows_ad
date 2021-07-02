@@ -6,12 +6,6 @@ name: ci
   push:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      debug_enabled:
-        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
-        required: false
-        default: false
 
 jobs:
   delivery:
@@ -50,6 +44,7 @@ jobs:
         suite:
           - 'default'
           - 'forest'
+          - 'reboot'
       fail-fast: false
 
     steps:
@@ -78,6 +73,7 @@ jobs:
         suite:
           - 'default'
           - 'forest'
+          - 'reboot'
       fail-fast: false
 
     steps:
