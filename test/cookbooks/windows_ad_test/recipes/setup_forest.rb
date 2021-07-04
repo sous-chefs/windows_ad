@@ -17,5 +17,6 @@ end
 reboot 'now' do
   action :nothing
   reason 'Cannot continue Chef run without a reboot.'
-  delay_mins 1
+  delay_mins 5
+  not_if "powershell.exe -command [adsi]::Exists('LDAP://contoso.local')"
 end
