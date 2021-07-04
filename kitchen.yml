@@ -21,8 +21,8 @@ provisioner:
     - 4 # Exit, success, with a non-critical failure, need to reboot
     - 35 # 35 is the exit code signaling that the node is rebooting
     - 1190 # 1190 is the exit code signaling that a reboot is scheduled
-  wait_for_retry: 500 # May need to increase depending on computing resources.
-  max_retries: 1
+  # wait_for_retry: 500 # May need to increase depending on computing resources.
+  # max_retries: 1
 
 verifier:
   name: inspec
@@ -60,6 +60,9 @@ suites:
     attributes:
 
   - name: forest
+    provisioner:
+      wait_for_retry: 500 # May need to increase depending on computing resources.
+      max_retries: 1
     run_list:
       - recipe[windows_ad_test::setup_forest]
     verifier:
@@ -68,6 +71,9 @@ suites:
     attributes:
 
   - name: objects
+    provisioner:
+      wait_for_retry: 500 # May need to increase depending on computing resources.
+      max_retries: 1
     run_list:
       - recipe[windows_ad_test::setup_forest]
       - recipe[windows_ad_test::ou]
@@ -79,10 +85,3 @@ suites:
         - test/integration/forest
         - test/integration/objects
     attributes:
-
-  - name: reboot
-    run_list:
-      - recipe[windows_ad_test::reboot]
-    verifier:
-      inspec_tests:
-        - test/integration/reboot
