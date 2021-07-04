@@ -45,6 +45,7 @@ jobs:
           - 'default'
           - 'forest'
           - 'reboot'
+          - 'objects'
       fail-fast: false
 
     steps:
@@ -74,6 +75,7 @@ jobs:
           - 'default'
           - 'forest'
           - 'reboot'
+          - 'objects'
       fail-fast: false
 
     steps:
