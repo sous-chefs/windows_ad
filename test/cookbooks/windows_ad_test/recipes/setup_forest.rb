@@ -10,7 +10,7 @@ windows_ad_domain 'contoso.local' do
   domain_user 'Administrator'
   options('InstallDNS': nil)
   action :create
-  restart true
+  restart false
   notifies :reboot_now, 'reboot[now]', :immediately
 end
 
