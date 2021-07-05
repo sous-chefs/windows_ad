@@ -12,6 +12,7 @@ transport:
 provisioner:
   name: chef_zero
   deprecations_as_errors: true
+  log_level: debug
   retry_on_exit_code:
     - 0
     - 1  # Exit, success: You still must reboot
