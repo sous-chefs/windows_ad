@@ -5,7 +5,7 @@ driver:
 transport:
   name: exec
   # Prevent Winrm from failing out when DC is created.
-  connection_retry_sleep: 120
+  connection_retry_sleep: 300
   # When set to plaintext the winrm will run in one converge
   winrm_transport: plaintext
 
