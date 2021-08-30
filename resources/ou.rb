@@ -17,7 +17,9 @@ property :cmd_user, String
 property :cmd_pass, String
 property :cmd_domain, String
 
-action :create do # ~FC017
+unified_mode true
+
+action :create do
   require 'chef/win32/version'
   win_ver = Chef::ReservedNames::Win32::Version.new
   if win_ver.windows_server_2008? || win_ver.windows_server_2008_r2?
