@@ -4,25 +4,11 @@ driver:
 
 transport:
   name: exec
-  # Prevent Winrm from failing out when DC is created.
-  connection_retry_sleep: 300
-  # When set to plaintext the winrm will run in one converge
-  winrm_transport: plaintext
 
 provisioner:
   name: chef_zero
   deprecations_as_errors: true
   log_level: debug
-  retry_on_exit_code:
-    - 0
-    - 1  # Exit, success: You still must reboot
-    - 2  # Exit, success, need to reboot
-    - 3  # Exit, success, with a non-critical failure
-    - 4  # Exit, success, with a non-critical failure, need to reboot
-    - 35  # 35 is the exit code signaling that the node is rebooting
-    - 1190  # 1190 is the exit code signaling that a reboot is scheduled
-  wait_for_retry: 600  # May need to increase depending on computing resources.
-  max_retries: 2
 
 platforms:
   - name: windows-2016
