@@ -28,12 +28,10 @@ install:
   - ps: net localgroup administrators $env:machine_user /add
 
 build_script:
-  - ps: c:\opscode\chef-workstation\bin\chef.bat shell-init powershell | iex; cmd /c c:\opscode\chef-workstation\bin\chef.bat --version
+  - ps: c:\opscode\chef-workstation\bin\chef.exe shell-init powershell | iex; cmd /c c:\opscode\chef-workstation\bin\chef.exe --version
 
 test_script:
-  - c:\opscode\chef-workstation\bin\cookstyle --version
-  - c:\opscode\chef-workstation\bin\chef.bat exec foodcritic --version
-  - c:\opscode\chef-workstation\bin\chef.bat exec delivery local all
-  - c:\opscode\chef-workstation\bin\chef.bat exec kitchen verify
+  - c:\opscode\chef-workstation\bin\chef.exe exec delivery local all
+  - c:\opscode\chef-workstation\bin\chef.exe exec kitchen verify
 
 deploy: false
