@@ -38,6 +38,7 @@
 ).each do |feature|
   windows_feature feature do
     action :install
+    install_method :windows_feature_dism
     all true
   end
 end
