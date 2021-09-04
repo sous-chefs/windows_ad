@@ -34,6 +34,7 @@ install:
   - ps: net user /add $env:machine_user $env:machine_pass
   - ps: net localgroup administrators $env:machine_user /add
   - ps: $env:Path += ";c:\opscode\chef-workstation\bin\"
+  - ps: Get-ChildItem c:\projects\cookbook-windows-ad/
 
 build_script:
   - ps: c:\opscode\chef-workstation\bin\chef.exe --version
