@@ -1,7 +1,7 @@
 ---
 version: "build-{build}"
 
-os: Windows Server 2012 R2
+os: Windows Server 2019
 platform:
   - x64
 
@@ -35,7 +35,7 @@ install:
   - ps: net localgroup administrators $env:machine_user /add
 
 build_script:
-  - ps: c:\opscode\chefdk\bin\chef.exe shell-init powershell | iex; cmd /c c:\opscode\chefdk\bin\chef.exe --version
+  - ps: c:\opscode\chef-workstation\bin\chef.exe shell-init powershell | iex; cmd /c c:\opscode\chef-workstation\bin\chef.exe --version
 
 test_script:
   - c:\opscode\chef-workstation\bin\chef.exe exec delivery local all
