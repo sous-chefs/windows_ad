@@ -1,9 +1,9 @@
 ---
 version: "build-{build}"
 
-os: Windows Server 2012 R2
-platform:
-  - x64
+#os: Windows Server 2012 R2
+#platform:
+#  - x64
 
 environment:
   machine_user: vagrant
@@ -34,7 +34,6 @@ install:
   - ps: net user /add $env:machine_user $env:machine_pass
   - ps: net localgroup administrators $env:machine_user /add
   - ps: $env:Path += ";c:\opscode\chef-workstation\bin\"
-  - ps: Get-ChildItem c:\projects\cookbook-windows-ad/
 
 build_script:
   - ps: c:\opscode\chef-workstation\bin\chef.exe --version
