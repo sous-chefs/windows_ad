@@ -1,7 +1,7 @@
 ---
 version: "build-{build}"
 
-os: Windows Server 2019
+os: Windows Server 2012 R2
 platform:
   - x64
 
