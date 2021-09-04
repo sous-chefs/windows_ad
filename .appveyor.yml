@@ -33,6 +33,7 @@ install:
   - ps: secedit /configure /db $env:windir/security/new.sdb /cfg $env:temp/export.cfg /areas SECURITYPOLICY
   - ps: net user /add $env:machine_user $env:machine_pass
   - ps: net localgroup administrators $env:machine_user /add
+  - ps: $env:Path += ";c:\opscode\chef-workstation\bin\"
 
 build_script:
   - ps: c:\opscode\chef-workstation\bin\chef.exe --version
