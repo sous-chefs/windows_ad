@@ -9,7 +9,7 @@ environment:
   machine_user: vagrant
   machine_pass: vagrant
   machine_port: 5985
-  KITCHEN_YAML: .kitchen.appveyor.yml
+  KITCHEN_YAML: kitchen.appveyor.yml
 
 branches:
   only:
