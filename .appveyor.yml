@@ -13,7 +13,7 @@ environment:
 
 branches:
   only:
-    - master
+    - main
 
 # Do not build on tags (GitHub only)
 skip_tags: true
@@ -40,6 +40,6 @@ build_script:
 
 test_script:
   - c:\opscode\chef-workstation\bin\chef.exe exec delivery local all
-  - c:\opscode\chef-workstation\bin\chef.exe exec kitchen verify
+  - c:\opscode\chef-workstation\bin\chef.exe exec kitchen test --log-level debug
 
 deploy: false
