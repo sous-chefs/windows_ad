@@ -9,8 +9,7 @@ driver:
 
 provisioner:
   name: chef_zero
-  client_rb:
-    chef_license: accept
+  chef_license: accept
   retry_on_exit_code:
     - 0
     - 1     # Exit, success: You still must reboot, this just notes that the automatic restart flag was removed
@@ -28,12 +27,8 @@ verifier:
 transport:
   name: winrm
   elevated: true
-  username: <%= ENV["machine_user"] %>
-  password: <%= ENV["machine_pass"] %>
-  connection_retries: 20
-  connection_retry_sleep: 5
-  # connection_retry_sleep: 300  # Prevent Winrm from failing out when DC is created.
-  # winrm_transport: plaintext   # When set to plaintext the winrm will run in one converge
+  connection_retry_sleep: 300  # Prevent Winrm from failing out when DC is created.
+  winrm_transport: plaintext   # When set to plaintext the winrm will run in one converge
 
 platforms:
   - name: windows-2012r2
