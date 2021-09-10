@@ -27,6 +27,8 @@ verifier:
 transport:
   name: winrm
   elevated: true
+  username: <%= ENV["machine_user"] %>
+  password: <%= ENV["machine_pass"] %>
   connection_retry_sleep: 300  # Prevent Winrm from failing out when DC is created.
   winrm_transport: plaintext   # When set to plaintext the winrm will run in one converge
 
