@@ -10,6 +10,7 @@ environment:
   machine_pass: vagrant
   machine_port: 5985
   KITCHEN_YAML: kitchen.appveyor.yml
+  CHEF_LICENSE: accept
 
 branches:
   only:
@@ -20,6 +21,13 @@ skip_tags: true
 
 # faster cloning
 clone_depth: 1
+
+image:
+  - Visual Studio 2017
+  - Visual Studio 2019
+
+platform:
+  - Any CPU
 
 # Install the latest nightly of ChefWorkstation
 install:
