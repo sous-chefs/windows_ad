@@ -60,14 +60,14 @@ suites:
         - test/integration/default
     attributes:
 
-#  - name: forest
-#    run_list:
-#      - recipe[windows_ad_test::setup_forest]
-#    verifier:
-#      inspec_tests:
-#        - test/integration/forest
-#    attributes:
-#
+  - name: forest
+    run_list:
+      - recipe[windows_ad_test::setup_forest]
+    verifier:
+      inspec_tests:
+        - test/integration/forest
+    attributes:
+
 #  - name: objects
 #    run_list:
 #      - recipe[windows_ad_test::setup_forest]
