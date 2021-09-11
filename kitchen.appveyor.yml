@@ -30,7 +30,7 @@ transport:
   username: <%= ENV["machine_user"] %>
   password: <%= ENV["machine_pass"] %>
   connection_retries: 20
-  connection_retry_sleep: 5
+  connection_retry_sleep: 300
   # connection_retry_sleep: 300  # Prevent Winrm from failing out when DC is created.
   # winrm_transport: plaintext   # When set to plaintext the winrm will run in one converge
 
