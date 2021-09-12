@@ -17,6 +17,8 @@ property :cmd_user, String
 property :cmd_pass, String
 property :cmd_domain, String
 
+unified_mode true
+
 action :create do
   if exists?
     Chef::Log.info('The object already exists')

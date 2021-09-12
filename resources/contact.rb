@@ -17,7 +17,7 @@ property :cmd_user, String
 property :cmd_pass, String
 property :cmd_domain, String
 
-require 'mixlib/shellout'
+unified_mode true
 
 action :create do
   if exists?

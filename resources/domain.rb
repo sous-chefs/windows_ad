@@ -20,32 +20,22 @@ property :options, Hash, default: {}
 property :local_pass, String
 property :replica_type, String, default: 'domain'
 
-require 'mixlib/shellout'
+unified_mode true
 
-ENUM_NAMES = %w[(Win2003) (Win2008) (Win2008R2) (Win2012) (Win2012R2) (Default)].freeze
+ENUM_NAMES = %w[(Win2012) (Win2012R2) (2016) (2019) (Default)].freeze
 
 action :create do
   if exists?
+    Chef::Log.debug('The object already exists')
   else
-    if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
-      cmd = create_command
-      cmd << " -DomainName #{new_resource.name}"
-      cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
-      cmd << ' -Force:$true'
-      cmd << ' -NoRebootOnCompletion' unless new_resource.restart
-    elsif
-      cmd = 'dcpromo -unattend'
-      cmd << " -newDomain:#{new_resource.type}"
-      cmd << " -NewDomainDNSName:#{new_resource.name}"
-      cmd << if !new_resource.restart
-               ' -RebootOnCompletion:No'
-             else
-               ' -RebootOnCompletion:Yes'
-             end
-      cmd << " -SafeModeAdminPassword:(convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
-      cmd << " -ReplicaOrNewDomain:#{new_resource.replica_type}"
-    end
+    cmd = create_command
+    cmd << " -DomainName #{new_resource.name}"
+    cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
+    cmd << ' -Force:$true'
+    cmd << ' -NoRebootOnCompletion' unless new_resource.restart
+
     Chef::Log.debug("cmd is #{cmd}")
+
     cmd << format_options(new_resource.options)
 
     powershell_script "create_domain_#{new_resource.name}" do
@@ -53,13 +43,16 @@ action :create do
       returns [0, 1, 2, 3, 4]
     end
   end
+
+  if Chef::Version.new(node['os_version']) < Chef::Version.new('6.2')
+    Chef::Log.warn('This version of Windows Server is no longer supported as the platform is EOL.')
+  end
 end
 
 action :delete do
   if Chef::Version.new(['os_version']) <= Chef::Version.new('6.1')
-    Chef::Log.warn('This version of Windows Server is currently unsupported
-                    beyond installing the required roles and features. Help us
-                    out by submitting a pull request.')
+    Chef::Log.warn('This version of Windows Server is no longer supported
+                    as the platform is EOL.')
   end
   if exists?
     cmd = 'Uninstall-ADDSDomainController'
@@ -78,18 +71,18 @@ end
 action_class do
   def exists?
     ldap_path = new_resource.name.split('.').map! { |k| "dc=#{k}" }.join(',')
-    check = Mixlib::ShellOut.new("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')").run_command
+    check = shell_out("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')")
     check.stdout.match('True')
   end
 
   def computer_exists?
-    comp = Mixlib::ShellOut.new('powershell.exe -command "get-wmiobject -class win32_computersystem -computername . | select domain"').run_command
+    comp = shell_out('powershell.exe -command "get-wmiobject -class win32_computersystem -computername . | select domain"')
     stdout = comp.stdout.downcase
     stdout.include?(new_resource.name.downcase)
   end
 
   def last_dc?
-    dsquery = Mixlib::ShellOut.new('dsquery server -forest').run_command
+    dsquery = shell_out('dsquery server -forest')
     dsquery.stdout.split("\n").size == 1
   end
 
@@ -138,12 +131,10 @@ action_class do
                else
                  " -#{option}:#{value}"
                end
+             elsif Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
+               " -#{option} '#{value}'"
              else
-               if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
-                 " -#{option} '#{value}'"
-               else
-                 " -#{option}:'#{value}'"
-               end
+               " -#{option}:'#{value}'"
              end
     end
   end

@@ -3,35 +3,38 @@ driver:
   name: vagrant
   customize:
     cpus: 2
-    memory: 4096  
+    memory: 4096
 
 provisioner:
   name: chef_zero
   deprecations_as_errors: true
   chef_license: accept-no-persist
   product_name: chef
-  product_version: <%= ENV['CHEF_VERSION'] || 'latest' %>
+  product_version: '16'  # <%= ENV['CHEF_VERSION'] || 'latest' %>
+  # log_level: debug
   install_strategy: once
   retry_on_exit_code:
     - 0
-    - 1 # Exit, success: You still must reboot, this just notes that the automatic restart flag was removed
-    - 2 # Exit, success, need to reboot
-    - 3 # Exit, success, with a non-critical failure: Typically seen when returning the DNS Delegation warning.
-    - 4 # Exit, success, with a non-critical failure, need to reboot: Typically seen when returning the DNS Delegation warning.
-    - 35 # 35 is the exit code signaling that the node is rebooting
-    - 1190 #1190 is the exit code signaling that a reboot is scheduled
-  wait_for_retry: 200 # May need to increase depending on computing resources.
+    - 1  # Exit, success: You still must reboot
+    - 2  # Exit, success, need to reboot
+    - 3  # Exit, success, with a non-critical failure
+    - 4  # Exit, success, with a non-critical failure, need to reboot
+    - 35  # 35 is the exit code signaling that the node is rebooting
+    - 1190  # 1190 is the exit code signaling that a reboot is scheduled
+  wait_for_retry: 500  # May need to increase depending on computing resources.
   max_retries: 1
 
 verifier:
   name: inspec
 
 transport:
-  connection_retry_sleep:	120 # Prevent Winrm from failing out when DC is created.
-  winrm_transport: plaintext  # When set to plaintext the winrm will run in one converge
+  # Prevent Winrm from failing out when DC is created.
+  connection_retry_sleep: 120
+  # When set to plaintext the winrm will run in one converge
+  winrm_transport: plaintext
 
 platforms:
-  - name: windows-2012-r2
+  - name: windows-2012r2
     driver:
       box: tas50/windows_2012r2
       customize:
@@ -76,3 +79,10 @@ suites:
         - test/integration/forest
         - test/integration/objects
     attributes:
+
+  - name: reboot
+    run_list:
+      - recipe[windows_ad_test::reboot]
+    verifier:
+      inspec_tests:
+        - test/integration/reboot

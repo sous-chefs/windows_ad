@@ -1,0 +1,15 @@
+---
+driver:
+  name: exec
+
+transport:
+  name: exec
+
+provisioner:
+  name: chef_zero
+  deprecations_as_errors: true
+  log_level: debug
+
+platforms:
+  - name: windows-2016
+  - name: windows-2019

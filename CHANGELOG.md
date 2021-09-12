@@ -24,7 +24,7 @@
 
 ## 0.6.3
 
-* Issue 121 - https://github.com/TAMUArch/cookbook.windows_ad/issues/121 allow use of spaces in Distinguished Name.
+* Issue 121 - <https://github.com/TAMUArch/cookbook.windows_ad/issues/121> allow use of spaces in Distinguished Name.
 
 ## 0.6.2
 
@@ -44,16 +44,16 @@
 
 ## 0.5.4
 
-* Issue 100 - https://github.com/TAMUArch/cookbook.windows_ad/issues/100 initial support for Windows 2016.
+* Issue 100 - <https://github.com/TAMUArch/cookbook.windows_ad/issues/100> initial support for Windows 2016.
 * Quality changes - chefignore, default recipe uses float to compare os_version.
 
 ## 0.5.3
 
-* Issue 87 - https://github.com/TAMUArch/cookbook.windows_ad/issues/87 revert Robocop edits on providers
+* Issue 87 - <https://github.com/TAMUArch/cookbook.windows_ad/issues/87> revert Robocop edits on providers
 
 ## 0.5.2
 
-* Issue 85 - https://github.com/TAMUArch/cookbook.windows_ad/issues/85 revert Robocop edits on dsquery
+* Issue 85 - <https://github.com/TAMUArch/cookbook.windows_ad/issues/85> revert Robocop edits on dsquery
 
 ## 0.5.1
 
@@ -61,16 +61,16 @@
 
 ## 0.5.0
 
-* Join and unjoin actions from domain provider moved to computer provider - https://github.com/TAMUArch/cookbook.windows_ad/pull/77
-* Correct user action to address dsmod error - https://github.com/TAMUArch/cookbook.windows_ad/issues/71
+* Join and unjoin actions from domain provider moved to computer provider - <https://github.com/TAMUArch/cookbook.windows_ad/pull/77>
+* Correct user action to address dsmod error - <https://github.com/TAMUArch/cookbook.windows_ad/issues/71>
 * Fixed bug in join ou that always reported that the resource was updated
-* Gitter badger added - https://github.com/TAMUArch/cookbook.windows_ad/pull/66
-* Proper formattign for pre-win2012 systems - https://github.com/TAMUArch/cookbook.windows_ad/pull/70 and https://github.com/TAMUArch/cookbook.windows_ad/pull/74
+* Gitter badger added - <https://github.com/TAMUArch/cookbook.windows_ad/pull/66>
+* Proper formattign for pre-win2012 systems - <https://github.com/TAMUArch/cookbook.windows_ad/pull/70> and <https://github.com/TAMUArch/cookbook.windows_ad/pull/74>
 
 ## 0.4.5
 
-* Rubocop and foodcritic - https://github.com/TAMUArch/cookbook.windows_ad/issues/2
-* Add success return codes for installing DC. - https://github.com/TAMUArch/cookbook.windows_ad/issues/1
+* Rubocop and foodcritic - <https://github.com/TAMUArch/cookbook.windows_ad/issues/2>
+* Add success return codes for installing DC. - <https://github.com/TAMUArch/cookbook.windows_ad/issues/1>
 
 ## 0.4.4
 
@@ -103,7 +103,7 @@
 ## 0.3.7
 
 * Mark attributes as required for :domain resource
-* Fixed regression on install forest with unnecessary credentials 
+* Fixed regression on install forest with unnecessary credentials
 
 ## 0.3.6
 
@@ -117,27 +117,22 @@
 
 * Formatting changes - remove tabs
 
-## 0.3.2:
+## 0.3.2
 
 * Logic change to ensure server 2012 is still works correctly
 
-## 0.3.0:
+## 0.3.0
 
 * Support for Windows Server 2008 R2 for domain provider
 
-## 0.2.1:
+## 0.2.1
 
 * Community contributions - nested ou support
 
-## 0.2.0:
+## 0.2.0
 
 * AD Object Support
 
-## 0.1.0:
+## 0.1.0
 
 * Initial release of active-directory
-
-
-
-
-

@@ -1,0 +1,90 @@
+---
+driver:
+  name: proxy
+  host: localhost
+  reset_command: "exit 0"
+  port: 5985
+  username: <%= ENV["machine_user"] %>
+  password: <%= ENV["machine_pass"] %>
+
+provisioner:
+  name: chef_zero
+  chef_license: accept
+  retry_on_exit_code:
+    - 0
+    - 1     # Exit, success: You still must reboot, this just notes that the automatic restart flag was removed
+    - 2     # Exit, success, need to reboot
+    - 3     # Exit, success, with a non-critical failure: Typically seen when returning the DNS Delegation warning.
+    - 4     # Exit, success, with a non-critical failure, need to reboot: Typically seen when returning the DNS Delegation warning.
+    - 35    # 35 is the exit code signaling that the node is rebooting
+    - 1190  # 1190 is the exit code signaling that a reboot is scheduled
+  wait_for_retry: 600  # May need to increase depending on computing resources.
+  max_retries: 1
+
+verifier:
+  name: inspec
+
+transport:
+  name: winrm
+  elevated: true
+  username: <%= ENV["machine_user"] %>
+  password: <%= ENV["machine_pass"] %>
+  connection_retries: 20
+  connection_retry_sleep: 300
+  # connection_retry_sleep: 300  # Prevent Winrm from failing out when DC is created.
+  # winrm_transport: plaintext   # When set to plaintext the winrm will run in one converge
+
+platforms:
+  - name: windows-2012r2
+    driver:
+      box: tas50/windows_2012r2
+      customize:
+        memory: 2048
+#  - name: windows-2016
+#    driver:
+#      box: tas50/windows_2016
+#      customize:
+#        memory: 2048
+#  - name: windows-2019
+#    driver:
+#      box: tas50/windows_2016
+#      customize:
+#        memory: 2048
+
+suites:
+  - name: default
+    run_list:
+      - recipe[windows_ad::default]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+
+  - name: forest
+    run_list:
+      - recipe[windows_ad_test::setup_forest]
+    verifier:
+      inspec_tests:
+        - test/integration/forest
+    attributes:
+
+#  - name: objects
+#    run_list:
+#      - recipe[windows_ad_test::setup_forest]
+#      - recipe[windows_ad_test::ou]
+#      - recipe[windows_ad_test::group]
+#      - recipe[windows_ad_test::user]
+#    verifier:
+#      inspec_tests:
+#        - test/integration/default
+#        - test/integration/forest
+#        - test/integration/objects
+#    attributes:
+#
+#  - name: reboot
+#    run_list:
+#      - recipe[windows_ad_test::reboot]
+#    verifier:
+#      inspec_tests:
+#        - test/integration/reboot
+
