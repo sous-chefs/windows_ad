@@ -7,19 +7,18 @@
 
 resource_name :windows_ad_domain
 provides :windows_ad_domain
+unified_mode true
 
 default_action :create
 
 property :domain_user, String, required: true
 property :domain_pass, String, required: true
-property :restart, [TrueClass, FalseClass], required: true
+property :restart, [true, false], required: true
 property :type, String, default: 'forest'
 property :safe_mode_pass, String, required: true
 property :options, Hash, default: {}
 property :local_pass, String
 property :replica_type, String, default: 'domain'
-
-require 'mixlib/shellout'
 
 ENUM_NAMES = %w[(Win2003) (Win2008) (Win2008R2) (Win2012) (Win2012R2) (Default)].freeze
 
@@ -77,18 +76,18 @@ end
 action_class do
   def exists?
     ldap_path = new_resource.name.split('.').map! { |k| "dc=#{k}" }.join(',')
-    check = Mixlib::ShellOut.new("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')").run_command
+    check = shell_out("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')")
     check.stdout.match('True')
   end
 
   def computer_exists?
-    comp = Mixlib::ShellOut.new('powershell.exe -command "get-wmiobject -class win32_computersystem -computername . | select domain"').run_command
+    comp = shell_out('powershell.exe -command "get-wmiobject -class win32_computersystem -computername . | select domain"')
     stdout = comp.stdout.downcase
     stdout.include?(new_resource.name.downcase)
   end
 
   def last_dc?
-    dsquery = Mixlib::ShellOut.new('dsquery server -forest').run_command
+    dsquery = shell_out('dsquery server -forest')
     dsquery.stdout.split("\n").size == 1
   end
 

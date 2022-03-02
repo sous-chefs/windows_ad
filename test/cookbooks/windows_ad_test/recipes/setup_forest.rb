@@ -16,7 +16,7 @@ windows_ad_domain 'contoso.local' do
   end
   action :create
   restart false
-  notifies :reboot_now, 'reboot[now]', :immediate
+  notifies :reboot_now, 'reboot[now]', :immediately
 end
 
 reboot 'now' do

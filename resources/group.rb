@@ -7,6 +7,7 @@
 
 resource_name :windows_ad_group
 provides :windows_ad_group
+unified_mode true
 
 default_action :create
 
@@ -16,8 +17,6 @@ property :options, Hash, default: {}
 property :cmd_user, String
 property :cmd_pass, String
 property :cmd_domain, String
-
-require 'mixlib/shellout'
 
 action :create do
   if exists?

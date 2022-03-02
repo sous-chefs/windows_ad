@@ -7,6 +7,7 @@
 
 resource_name :windows_ad_group_member
 provides :windows_ad_group_member
+unified_mode true
 
 default_action :add
 
