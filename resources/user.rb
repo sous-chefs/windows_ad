@@ -7,6 +7,7 @@
 
 resource_name :windows_ad_user
 provides :windows_ad_user
+unified_mode true
 
 default_action :create
 

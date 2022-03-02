@@ -1,5 +1,32 @@
 # CHANGELOG for windows_ad
 
+## Unreleased
+
+- resolved cookstyle error: .delivery/project.toml:1:15 convention: `Style/StringLiterals`
+- resolved cookstyle error: resources/computer.rb:1:1 refactor: `Chef/Deprecations/ResourceWithoutUnifiedTrue`
+- resolved cookstyle error: resources/computer.rb:21:1 refactor: `Chef/Style/TrueClassFalseClassResourceProperties`
+- resolved cookstyle error: resources/computer.rb:23:1 refactor: `Chef/Modernize/UnnecessaryMixlibShelloutRequire`
+- resolved cookstyle error: resources/computer.rb:100:12 refactor: `Chef/Modernize/ShellOutHelper`
+- resolved cookstyle error: resources/computer.rb:112:13 refactor: `Chef/Modernize/ShellOutHelper`
+- resolved cookstyle error: resources/contact.rb:1:1 refactor: `Chef/Deprecations/ResourceWithoutUnifiedTrue`
+- resolved cookstyle error: resources/contact.rb:20:1 refactor: `Chef/Modernize/UnnecessaryMixlibShelloutRequire`
+- resolved cookstyle error: resources/domain.rb:1:1 refactor: `Chef/Deprecations/ResourceWithoutUnifiedTrue`
+- resolved cookstyle error: resources/domain.rb:15:1 refactor: `Chef/Style/TrueClassFalseClassResourceProperties`
+- resolved cookstyle error: resources/domain.rb:22:1 refactor: `Chef/Modernize/UnnecessaryMixlibShelloutRequire`
+- resolved cookstyle error: resources/domain.rb:80:13 refactor: `Chef/Modernize/ShellOutHelper`
+- resolved cookstyle error: resources/domain.rb:85:12 refactor: `Chef/Modernize/ShellOutHelper`
+- resolved cookstyle error: resources/domain.rb:91:15 refactor: `Chef/Modernize/ShellOutHelper`
+- resolved cookstyle error: resources/group.rb:1:1 refactor: `Chef/Deprecations/ResourceWithoutUnifiedTrue`
+- resolved cookstyle error: resources/group.rb:20:1 refactor: `Chef/Modernize/UnnecessaryMixlibShelloutRequire`
+- resolved cookstyle error: resources/group_member.rb:1:1 refactor: `Chef/Deprecations/ResourceWithoutUnifiedTrue`
+- resolved cookstyle error: resources/ou.rb:1:1 refactor: `Chef/Deprecations/ResourceWithoutUnifiedTrue`
+- resolved cookstyle error: resources/ou.rb:20:19 refactor: `Chef/Modernize/FoodcriticComments`
+- resolved cookstyle error: resources/ou.rb:21:18 convention: `Layout/TrailingWhitespace`
+- resolved cookstyle error: resources/ou_2008.rb:1:1 refactor: `Chef/Deprecations/ResourceWithoutUnifiedTrue`
+- resolved cookstyle error: resources/ou_2012.rb:1:1 refactor: `Chef/Deprecations/ResourceWithoutUnifiedTrue`
+- resolved cookstyle error: resources/user.rb:1:1 refactor: `Chef/Deprecations/ResourceWithoutUnifiedTrue`
+- resolved cookstyle error: test/cookbooks/windows_ad_test/recipes/setup_forest.rb:19:40 refactor: `Chef/Style/ImmediateNotificationTiming`
+
 ## 0.7.2
 
 * Add compatibility for Chef 16

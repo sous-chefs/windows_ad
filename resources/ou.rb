@@ -7,6 +7,7 @@
 
 resource_name :windows_ad_ou
 provides :windows_ad_ou
+unified_mode true
 
 default_action :create
 
@@ -17,7 +18,7 @@ property :cmd_user, String
 property :cmd_pass, String
 property :cmd_domain, String
 
-action :create do # ~FC017
+action :create do
   require 'chef/win32/version'
   win_ver = Chef::ReservedNames::Win32::Version.new
   if win_ver.windows_server_2008? || win_ver.windows_server_2008_r2?

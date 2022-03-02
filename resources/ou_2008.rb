@@ -7,6 +7,7 @@
 
 resource_name :windows_ad_ou_2008
 provides :windows_ad_ou_2008
+unified_mode true
 
 default_action :create
 
