@@ -1,5 +1,7 @@
 # CHANGELOG for windows_ad
 
+## Unreleased
+
 ## 0.7.9 - *2023-09-11*
 
 ## 0.7.8 - *2023-04-07*
