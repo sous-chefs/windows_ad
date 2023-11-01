@@ -47,7 +47,7 @@ The windows_ad::default recipe installs the required roles and features to suppo
 * domain_pass: domain password
 * domain_user: domain user
 * ou: Organization Unit path where object is to be located.
-* options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754539.aspx
+* options: ability to pass additional options <http://technet.microsoft.com/en-us/library/cc754539.aspx>
 * cmd_user: user under which the interaction with AD should happen
 * cmd_pass: password for user specified in cmd_user (only needed if user requires password)
 * cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
@@ -96,7 +96,7 @@ The windows_ad::default recipe installs the required roles and features to suppo
 * name: name property.  Name of the contact object.
 * domain_name: FQDN
 * ou: Organization Unit path where object is to be located.
-* options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc771883.aspx
+* options: ability to pass additional options <http://technet.microsoft.com/en-us/library/cc771883.aspx>
 * cmd_user: user under which the interaction with AD should happen
 * cmd_pass: password for user specified in cmd_user (only needed if user requires password)
 * cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
@@ -146,7 +146,7 @@ The windows_ad::default recipe installs the required roles and features to suppo
 * local_pass: Local Administrator Password for removing domain controller.
 * replica_type: For Windows Server 2008, specifies installing new or additional domain controller.  Valid values: domain, replica.
 * restart: when creating domain, will prevent Windows from automatically restarting. If not specified, defaults to true (which queues the restart). Valid values: true, false.
-* options: additional options as needed by AD DS Deployment http://technet.microsoft.com/en-us/library/cc732887.aspx for Windows Server 2008 and http://technet.microsoft.com/en-us/library/hh974719.aspx for Windows Server 2012.  Single parameters use nil for key value, see example below.
+* options: additional options as needed by AD DS Deployment <http://technet.microsoft.com/en-us/library/cc732887.aspx> for Windows Server 2008 and <http://technet.microsoft.com/en-us/library/hh974719.aspx> for Windows Server 2012.  Single parameters use nil for key value, see example below.
 
 #### Examples
 
@@ -217,7 +217,7 @@ The windows_ad::default recipe installs the required roles and features to suppo
 * name: name property.  Name of the group object.
 * domain_name: FQDN
 * ou: Organization Unit path where object is to be located.
-* options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc754037.aspx
+* options: ability to pass additional options <http://technet.microsoft.com/en-us/library/cc754037.aspx>
 * cmd_user: user under which the interaction with AD should happen
 * cmd_pass: password for user specified in cmd_user (only needed if user requires password)
 * cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
@@ -313,7 +313,7 @@ Warning: Data bags can be used, however OU names must be unique (restriction of 
 * name: name property.  Name of the Organization Unit object.
 * domain_name: FQDN
 * ou: Organization Unit path where object is to be located.
-* options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
+* options: ability to pass additional options <http://technet.microsoft.com/en-us/library/cc770883.aspx>
 * cmd_user: user under which the interaction with AD should happen
 * cmd_pass: password for user specified in cmd_user (only needed if user requires password)
 * cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
@@ -359,7 +359,7 @@ WIP:
 * name: name property.  Name of the Organization Unit object.
 * domain_name: FQDN
 * ou: Organization Unit path where object is to be located.
-* options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
+* options: ability to pass additional options <http://technet.microsoft.com/en-us/library/cc770883.aspx>
 * cmd_user: user under which the interaction with AD should happen
 * cmd_pass: password for user specified in cmd_user (only needed if user requires password)
 * cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
@@ -379,7 +379,7 @@ WIP:
 * name: name property.  Name of the Organization Unit object.
 * domain_name: FQDN
 * path: Organization Unit path where object is to be located.
-* options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc770883.aspx
+* options: ability to pass additional options <http://technet.microsoft.com/en-us/library/cc770883.aspx>
 * cmd_user: user under which the interaction with AD should happen
 * cmd_pass: password for user specified in cmd_user (only needed if user requires password)
 * cmd_domain: domain of the user specified in cmd_user (only needed if user is a domain account)
@@ -398,7 +398,7 @@ WIP:
 * name: name property.  Name of the user object.
 * domain_name: FQDN
 * ou: Organization Unit path where object is located.
-* options: ability to pass additional options http://technet.microsoft.com/en-us/library/cc731279.aspx
+* options: ability to pass additional options <http://technet.microsoft.com/en-us/library/cc731279.aspx>
 * reverse: allows the reversing of "First Name Last Name" to "Last Name, First Name"
 * cmd_user: user under which the interaction with AD should happen
 * cmd_pass: password for user specified in cmd_user (only needed if user requires password)
