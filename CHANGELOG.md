@@ -1,12 +1,7 @@
 # CHANGELOG for windows_ad
 
-## Unreleased
-
 Standardise files with files in sous-chefs/repo-management
-
 Standardise files with files in sous-chefs/repo-management
-
-## 0.7.12 - *2025-09-04*
 
 ## 0.7.11 - *2024-11-18*
 
@@ -20,17 +15,9 @@ Standardise files with files in sous-chefs/repo-management
 
 Standardise files with files in sous-chefs/repo-management
 
-## 0.7.10 - *2024-05-06*
-
-## 0.7.9 - *2023-09-11*
-
 ## 0.7.8 - *2023-04-07*
 
 Standardise files with files in sous-chefs/repo-management
-
-## 0.7.7 - *2023-04-01*
-
-## 0.7.6 - *2023-04-01*
 
 ## 0.7.5 - *2023-04-01*
 
