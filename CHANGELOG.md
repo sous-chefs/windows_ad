@@ -3,6 +3,13 @@
 Standardise files with files in sous-chefs/repo-management
 Standardise files with files in sous-chefs/repo-management
 
+## [0.7.13](https://github.com/sous-chefs/windows_ad/compare/0.7.12...v0.7.13) (2025-10-16)
+
+
+### Bug Fixes
+
+* **ci:** Update workflows to use release pipeline ([#156](https://github.com/sous-chefs/windows_ad/issues/156)) ([1329b52](https://github.com/sous-chefs/windows_ad/commit/1329b524fae07fa819d954f9081e06c288f4f55b))
+
 ## 0.7.11 - *2024-11-18*
 
 Standardise files with files in sous-chefs/repo-management
