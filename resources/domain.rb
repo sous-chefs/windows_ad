@@ -77,7 +77,7 @@ end
 action_class do
   def exists?
     ldap_path = new_resource.name.split('.').map! { |k| "dc=#{k}" }.join(',')
-    check = CmdHelper.shell_out("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')", nil, nil, nil)
+    check = CmdHelper.shell_out("powershell.exe -command \"try { [bool]([adsi]::Exists('LDAP://#{ldap_path}')) } catch { $false }\"", nil, nil, nil)
     check.stdout.match('True')
   end
 

@@ -4,8 +4,9 @@ require 'spec_helper'
 require_relative '../../../libraries/cmd_helper'
 
 RSpec.shared_context 'with stubbed command execution' do
+  let(:shellout) { instance_double(Mixlib::ShellOut, stdout: '', stderr: '', exitstatus: 0) }
+
   before do
-    shellout = instance_double(Mixlib::ShellOut, stdout: '', stderr: '', exitstatus: 0)
     allow(CmdHelper).to receive(:shell_out).and_return(shellout)
     allow_any_instance_of(Chef::Resource).to receive(:shell_out).and_return(shellout)
   end
@@ -58,6 +59,19 @@ describe 'windows_ad_domain' do
 
   it { is_expected.to create_windows_ad_domain('contoso.local') }
   it { is_expected.to run_powershell_script('create_domain_contoso.local') }
+
+  it 'treats a missing ADSI domain lookup as absent' do
+    expect(CmdHelper).to receive(:shell_out)
+      .with(
+        "powershell.exe -command \"try { [bool]([adsi]::Exists('LDAP://dc=contoso,dc=local')) } catch { $false }\"",
+        nil,
+        nil,
+        nil
+      )
+      .and_return(shellout)
+
+    expect(subject).to run_powershell_script('create_domain_contoso.local')
+  end
 end
 
 describe 'windows_ad_group' do
