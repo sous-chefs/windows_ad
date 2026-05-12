@@ -1,7 +1,19 @@
 ---
-driver: { name: exec }
-transport: { name: exec }
+driver:
+  name: exec
+
+transport:
+  name: exec
+
+provisioner:
+  name: chef_infra
+  product_name: cinc
+  chef_omnibus_install: false
+  chef_license: accept-no-persist
+  deprecations_as_errors: true
+
+verifier:
+  name: inspec
 
 platforms:
-  - name: macos-latest
   - name: windows-latest

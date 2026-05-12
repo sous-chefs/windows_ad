@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook:: windows_ad
@@ -7,33 +8,32 @@
 
 resource_name :windows_ad_domain
 provides :windows_ad_domain
+unified_mode true
 
 default_action :create
 
-property :domain_user, String, required: true
-property :domain_pass, String, required: true
-property :restart, [TrueClass, FalseClass], required: true
+property :domain_user, String
+property :domain_pass, String
+property :restart, [true, false], default: true
 property :type, String, default: 'forest'
 property :safe_mode_pass, String, required: true
 property :options, Hash, default: {}
 property :local_pass, String
 property :replica_type, String, default: 'domain'
 
-require 'mixlib/shellout'
-
 ENUM_NAMES = %w[(Win2003) (Win2008) (Win2008R2) (Win2012) (Win2012R2) (Default)].freeze
 
 action :create do
   if exists?
   else
-    if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
+    if modern_windows?
       cmd = create_command
       cmd << " -DomainName #{new_resource.name}"
       cmd << " -SafeModeAdministratorPassword (convertto-securestring '#{new_resource.safe_mode_pass}' -asplaintext -Force)"
       cmd << ' -Force:$true'
       cmd << ' -NoRebootOnCompletion' unless new_resource.restart
-    elsif
-      cmd = 'dcpromo -unattend'
+    else
+      cmd = +'dcpromo -unattend'
       cmd << " -newDomain:#{new_resource.type}"
       cmd << " -NewDomainDNSName:#{new_resource.name}"
       cmd << if !new_resource.restart
@@ -55,13 +55,13 @@ action :create do
 end
 
 action :delete do
-  if Chef::Version.new(['os_version']) <= Chef::Version.new('6.1')
+  unless modern_windows?
     Chef::Log.warn('This version of Windows Server is currently unsupported
                     beyond installing the required roles and features. Help us
                     out by submitting a pull request.')
   end
   if exists?
-    cmd = 'Uninstall-ADDSDomainController'
+    cmd = +'Uninstall-ADDSDomainController'
     cmd << " -LocalAdministratorPassword (ConverTTo-SecureString '#{new_resource.local_pass}' -AsPlainText -Force)"
     cmd << ' -Force:$true'
     cmd << ' -ForceRemoval'
@@ -77,24 +77,24 @@ end
 action_class do
   def exists?
     ldap_path = new_resource.name.split('.').map! { |k| "dc=#{k}" }.join(',')
-    check = Mixlib::ShellOut.new("powershell.exe -command [adsi]::Exists('LDAP://#{ldap_path}')").run_command
+    check = CmdHelper.shell_out("powershell.exe -command \"try { [bool]([adsi]::Exists('LDAP://#{ldap_path}')) } catch { $false }\"", nil, nil, nil)
     check.stdout.match('True')
   end
 
   def computer_exists?
-    comp = Mixlib::ShellOut.new('powershell.exe -command "get-wmiobject -class win32_computersystem -computername . | select domain"').run_command
+    comp = CmdHelper.shell_out('powershell.exe -command "get-wmiobject -class win32_computersystem -computername . | select domain"', nil, nil, nil)
     stdout = comp.stdout.downcase
     stdout.include?(new_resource.name.downcase)
   end
 
   def last_dc?
-    dsquery = Mixlib::ShellOut.new('dsquery server -forest').run_command
+    dsquery = CmdHelper.shell_out('dsquery server -forest', nil, nil, nil)
     dsquery.stdout.split("\n").size == 1
   end
 
   def create_command
-    if Chef::Version.new(node['os_version']) > Chef::Version.new('6.2')
-      cmd = ''
+    if modern_windows?
+      cmd = +''
       if new_resource.type != 'forest'
         cmd << "$secpasswd = ConvertTo-SecureString '#{new_resource.domain_pass}' -AsPlainText -Force;"
         cmd << "$mycreds = New-Object System.Management.Automation.PSCredential  ('#{new_resource.domain_user}', $secpasswd);"
@@ -124,22 +124,26 @@ action_class do
   end
 
   def format_options(options)
-    options.reduce('') do |cmd, (option, value)|
+    options.reduce(+'') do |cmd, (option, value)|
       cmd << if value.nil?
                " -#{option}"
              elsif ENUM_NAMES.include?(value) || value.is_a?(Numeric)
-               if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
+               if modern_windows?
                  " -#{option} #{value}"
                else
                  " -#{option}:#{value}"
                end
              else
-               if Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
+               if modern_windows?
                  " -#{option} '#{value}'"
                else
                  " -#{option}:'#{value}'"
                end
              end
     end
+  end
+
+  def modern_windows?
+    Chef::Version.new(node['platform_version']) >= Chef::Version.new('6.2')
   end
 end

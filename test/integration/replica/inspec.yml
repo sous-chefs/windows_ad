@@ -1,0 +1,7 @@
+---
+name: replica
+title: windows_ad replica tests
+maintainer: Sous Chefs
+license: Apache-2.0
+summary: Verifies replica domain controller creation
+version: 1.0.0

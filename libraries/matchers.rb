@@ -1,3 +1,10 @@
+# frozen_string_literal: true
+
+def install_windows_ad_features(resource_name)
+  ChefSpec::Matchers::ResourceMatcher.new(:windows_ad_features, :install,
+                                          resource_name)
+end
+
 def create_windows_ad_computer(resource_name)
   ChefSpec::Matchers::ResourceMatcher.new(:windows_ad_computer, :create,
                                           resource_name)
@@ -105,6 +112,16 @@ end
 
 def create_windows_ad_ou(resource_name)
   ChefSpec::Matchers::ResourceMatcher.new(:windows_ad_ou, :create, resource_name)
+end
+
+def create_windows_ad_ou_2008(resource_name)
+  ChefSpec::Matchers::ResourceMatcher.new(:windows_ad_ou_2008, :create,
+                                          resource_name)
+end
+
+def create_windows_ad_ou_2012(resource_name)
+  ChefSpec::Matchers::ResourceMatcher.new(:windows_ad_ou_2012, :create,
+                                          resource_name)
 end
 
 def delete_windows_ad_user(resource_name)

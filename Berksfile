@@ -1,12 +1,10 @@
+# frozen_string_literal: true
+
 source 'https://supermarket.chef.io'
 
 metadata
 
-group :deps do
-  cookbook 'windows'
-end
-
 group :integration do
-  cookbook 'windows_ad_test',
-           path: 'test/cookbooks/windows_ad_test'
+  cookbook 'test',
+           path: 'test/cookbooks/test'
 end

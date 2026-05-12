@@ -47,13 +47,6 @@ Naming/MethodParameterName:
   Exclude:
     - 'libraries/cmd_helper.rb'
 
-# Offense count: 34
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: always, never
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
 # Offense count: 3
 # Cop supports --auto-correct.
 Style/IfUnlessModifier:
