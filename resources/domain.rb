@@ -124,7 +124,7 @@ action_class do
   end
 
   def format_options(options)
-    options.reduce('') do |cmd, (option, value)|
+    options.reduce(+'') do |cmd, (option, value)|
       cmd << if value.nil?
                " -#{option}"
              elsif ENUM_NAMES.include?(value) || value.is_a?(Numeric)
