@@ -1,0 +1,52 @@
+---
+name: ci
+
+"on":
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  actions: write
+  checks: write
+  contents: read
+  issues: write
+  pull-requests: write
+  statuses: write
+
+jobs:
+  lint-unit:
+    runs-on: windows-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+      - name: Install Cinc Workstation
+        uses: sous-chefs/.github/.github/actions/install-workstation@6.0.0
+      - name: Install cookbooks
+        run: berks install
+      - name: Cookstyle
+        run: cookstyle
+      - name: ChefSpec
+        run: chef exec rspec --format documentation
+
+  integration:
+    needs: lint-unit
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite:
+          - default
+          - forest
+          - objects
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+      - name: Install Cinc Workstation
+        uses: sous-chefs/.github/.github/actions/install-workstation@6.0.0
+      - name: Test Kitchen
+        env:
+          CHEF_LICENSE: accept-no-persist
+          KITCHEN_LOCAL_YAML: kitchen.exec.yml
+        run: kitchen test ${{ matrix.suite }}-windows-latest --destroy=always

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook:: windows_ad
@@ -7,6 +8,7 @@
 
 resource_name :windows_ad_ou
 provides :windows_ad_ou
+unified_mode true
 
 default_action :create
 
@@ -17,29 +19,25 @@ property :cmd_user, String
 property :cmd_pass, String
 property :cmd_domain, String
 
-action :create do # ~FC017
-  require 'chef/win32/version'
-  win_ver = Chef::ReservedNames::Win32::Version.new
-  if win_ver.windows_server_2008? || win_ver.windows_server_2008_r2?
-    windows_ad_ou_2008 new_resource.name do
-      action :create
-      ou new_resource.ou unless new_resource.ou.nil?
-      domain_name new_resource.domain_name
-    end
-  elsif Chef::Version.new(node['os_version']) >= Chef::Version.new('6.2')
+action :create do
+  if modern_windows?
     windows_ad_ou_2012 new_resource.name do
       action :create
       path new_resource.ou unless new_resource.ou.nil?
       domain_name new_resource.domain_name
     end
   else
-    Chef::Log.error('This version of Windows is not supported')
+    windows_ad_ou_2008 new_resource.name do
+      action :create
+      ou new_resource.ou unless new_resource.ou.nil?
+      domain_name new_resource.domain_name
+    end
   end
 end
 
 action :modify do
   if exists?
-    cmd = 'dsmod'
+    cmd = +'dsmod'
     cmd << ' ou '
     cmd << '"'
     cmd << dn.to_s
@@ -56,7 +54,7 @@ end
 
 action :move do
   if exists?
-    cmd = 'dsmove '
+    cmd = +'dsmove '
     cmd << '"'
     cmd << dn.to_s
     cmd << '"'
@@ -72,7 +70,7 @@ end
 
 action :delete do
   if exists?
-    cmd = 'dsrm '
+    cmd = +'dsrm '
     cmd << '"'
     cmd << dn.to_s
     cmd << '"'
@@ -90,7 +88,7 @@ end
 
 action_class do
   def cmd_options(options)
-    cmd = ''
+    cmd = +''
     options.each do |option, value|
       cmd << " -#{option} \"#{value}\""
       # [-subtree [-exclude]] [-noprompt] [{-s Server | -d Domain}] [-u UserName]
@@ -100,7 +98,7 @@ action_class do
   end
 
   def dn
-    dn = "ou=#{new_resource.name},"
+    dn = +"ou=#{new_resource.name},"
     unless new_resource.ou.nil?
       dn << CmdHelper.ou_partial_dn(new_resource.ou) << ','
     end
@@ -127,16 +125,21 @@ action_class do
     if new_resource.ou.nil?
       ldap = dc_partial_dn
     else
-      ldap = CmdHelper.ou_partial_dn(new_resource.ou) << ','
+      ldap = +CmdHelper.ou_partial_dn(new_resource.ou)
+      ldap << ','
       ldap << dc_partial_dn
     end
     check = CmdHelper.shell_out("dsquery ou -name \"#{new_resource.name}\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-    path = "OU=#{new_resource.name},"
+    path = +"OU=#{new_resource.name},"
     path << ldap
     check.stdout.downcase.include? path.downcase
   end
 
   def print_msg(action)
     "windows_ad_ou[#{action}]"
+  end
+
+  def modern_windows?
+    Chef::Version.new(node['platform_version']) >= Chef::Version.new('6.2')
   end
 end

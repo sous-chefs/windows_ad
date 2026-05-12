@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook:: windows_ad
@@ -7,6 +8,7 @@
 
 resource_name :windows_ad_computer
 provides :windows_ad_computer
+unified_mode true
 
 default_action :create
 
@@ -18,15 +20,13 @@ property :options, Hash, default: {}
 property :cmd_user, String
 property :cmd_pass, String
 property :cmd_domain, String
-property :restart, [TrueClass, FalseClass], required: true
-
-require 'mixlib/shellout'
+property :restart, [true, false], required: true
 
 action :create do
   if exists?
     Chef::Log.debug('The object already exists')
   else
-    cmd = 'dsadd'
+    cmd = +'dsadd'
     cmd << ' computer '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
@@ -42,7 +42,7 @@ end
 
 action :modify do
   if exists?
-    cmd = 'dsmod'
+    cmd = +'dsmod'
     cmd << ' computer '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
@@ -60,7 +60,7 @@ end
 
 action :move do
   if exists?
-    cmd = 'dsmove '
+    cmd = +'dsmove '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
@@ -77,7 +77,7 @@ end
 
 action :delete do
   if exists?
-    cmd = 'dsrm '
+    cmd = +'dsrm '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
@@ -97,7 +97,7 @@ end
 
 action_class do
   def computer_exists?
-    comp = Mixlib::ShellOut.new('powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"').run_command
+    comp = CmdHelper.shell_out('powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"', nil, nil, nil)
     stdout = comp.stdout.downcase
     Chef::Log.debug("computer_exists? is #{stdout.downcase}")
     stdout.include?(new_resource.domain_name.downcase)
@@ -105,18 +105,19 @@ action_class do
 
   def exists?
     # Supports workstation and server platforms, Windows Server 2008 R2 and Windows 7 share the same version number, Win7 doesnot include netdom command without RSAT.
-    if node['os_version'] == '6.1.7600'
+    if legacy_windows_7?
       Chef::Log.warn('Unable to determine specific OS version. Windows 7 does not have the native tools to query if the domain exists. Assuming domain exists.')
       return true
     end
-    check = Mixlib::ShellOut.new("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc").run_command
+    check = CmdHelper.shell_out("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc", nil, nil, nil)
     Chef::Log.debug("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc")
     Chef::Log.debug("check.stdout.include is #{check.stdout}")
     check.stdout.include? 'The command completed successfully.'
   end
 
   def ou_dn
-    ou_name = new_resource.ou.split('/').reverse.map { |k| "OU=#{k}" }.join(',') << ','
+    ou_name = +new_resource.ou.split('/').reverse.map { |k| "OU=#{k}" }.join(',')
+    ou_name << ','
     ou_name << new_resource.name.split('.').map! { |k| "DC=#{k}" }.join(',')
     check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
     check.stdout.downcase.include?('dc')
@@ -124,5 +125,9 @@ action_class do
 
   def print_msg(action)
     "windows_ad_contact[#{action}]"
+  end
+
+  def legacy_windows_7?
+    node['platform_version'] == '6.1.7600'
   end
 end

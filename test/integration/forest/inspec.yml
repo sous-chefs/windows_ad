@@ -1,0 +1,7 @@
+---
+name: forest
+title: windows_ad forest tests
+maintainer: Sous Chefs
+license: Apache-2.0
+summary: Verifies forest creation
+version: 1.0.0

@@ -1,0 +1,7 @@
+---
+name: objects
+title: windows_ad object tests
+maintainer: Sous Chefs
+license: Apache-2.0
+summary: Verifies Active Directory object resources
+version: 1.0.0

@@ -1,0 +1,7 @@
+---
+name: default
+title: windows_ad default tests
+maintainer: Sous Chefs
+license: Apache-2.0
+summary: Verifies AD DS feature installation
+version: 1.0.0

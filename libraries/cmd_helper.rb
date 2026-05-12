@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'mixlib/shellout'
 # Provides formatting options for cmd
 class CmdHelper
   def self.cmd_options(options)
-    cmd = ''
+    cmd = +''
     options.each do |option, value|
       cmd << " -#{option} \"#{value}\""
     end
@@ -11,7 +13,7 @@ class CmdHelper
 
   def self.dn(name, ou, domain)
     containers = ['users', 'builtin', 'computers', 'foreignsecurityprincipals', 'managed service accounts']
-    dn = "CN=#{name},"
+    dn = +"CN=#{name},"
     unless ou.nil?
       if containers.include? ou.downcase
         dn << "CN=#{ou},"

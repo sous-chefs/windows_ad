@@ -1,0 +1,23 @@
+# frozen_string_literal: true
+
+# Tests windows_ad_features
+# Tests windows_ad::domain - create forest
+
+windows_ad_features 'default'
+
+windows_ad_domain 'contoso.local' do
+  type 'forest'
+  safe_mode_pass 'Passw0rd'
+  domain_pass 'vagrant'
+  domain_user 'Administrator'
+  options('InstallDNS': nil)
+  action :create
+  restart false
+  notifies :reboot_now, 'reboot[now]', :immediately
+end
+
+reboot 'now' do
+  action :nothing
+  reason 'Cannot continue Chef run without a reboot.'
+  delay_mins 1
+end

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook:: windows_ad
@@ -7,6 +8,7 @@
 
 resource_name :windows_ad_contact
 provides :windows_ad_contact
+unified_mode true
 
 default_action :create
 
@@ -17,13 +19,11 @@ property :cmd_user, String
 property :cmd_pass, String
 property :cmd_domain, String
 
-require 'mixlib/shellout'
-
 action :create do
   if exists?
     Chef::Log.debug('The object already exists')
   else
-    cmd = 'dsadd'
+    cmd = +'dsadd'
     cmd << ' contact '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
@@ -38,7 +38,7 @@ end
 
 action :modify do
   if exists?
-    cmd = 'dsmod'
+    cmd = +'dsmod'
     cmd << ' contact '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
@@ -54,7 +54,7 @@ end
 
 action :move do
   if exists?
-    cmd = 'dsmove '
+    cmd = +'dsmove '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << '"'
@@ -70,7 +70,7 @@ end
 
 action :delete do
   if exists?
-    cmd = 'dsrm '
+    cmd = +'dsrm '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << '"'

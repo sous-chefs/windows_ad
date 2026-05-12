@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Author:: Miguel Ferreira (<miguelferreira@me.com>)
 # Cookbook:: windows_ad
@@ -7,6 +8,7 @@
 
 resource_name :windows_ad_group_member
 provides :windows_ad_group_member
+unified_mode true
 
 default_action :add
 
@@ -50,7 +52,7 @@ end
 
 action_class do
   def dsmod_group_cmd(group_dn, user_dn, option)
-    cmd = 'dsmod'
+    cmd = +'dsmod'
     cmd << ' group '
     cmd << '"'
     cmd << group_dn

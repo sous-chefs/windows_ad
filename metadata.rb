@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 name             'windows_ad'
 maintainer       'Texas A&M'
 maintainer_email 'derekgroh@github.com'
@@ -6,5 +8,5 @@ description      'Installs/Configures windows active directory'
 version          '0.7.13'
 issues_url       'https://github.com/TAMUArch/cookbook.windows_ad/issues'
 source_url       'https://github.com/TAMUArch/cookbook.windows_ad'
-supports         'windows', '>= 6.2'
-chef_version     '>= 12.1'
+supports         'windows', '>= 10.0'
+chef_version     '>= 15.3'
