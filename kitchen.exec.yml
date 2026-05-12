@@ -7,6 +7,7 @@ transport:
 
 provisioner:
   name: chef_infra
+  product_name: cinc
   chef_omnibus_install: false
   chef_license: accept-no-persist
   deprecations_as_errors: true
