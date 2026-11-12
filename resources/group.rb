@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook:: windows_ad
@@ -7,6 +9,7 @@
 
 resource_name :windows_ad_group
 provides :windows_ad_group
+unified_mode true
 
 default_action :create
 
@@ -14,16 +17,14 @@ property :domain_name, String
 property :ou, String
 property :options, Hash, default: {}
 property :cmd_user, String
-property :cmd_pass, String
+property :cmd_pass, String, sensitive: true
 property :cmd_domain, String
-
-require 'mixlib/shellout'
 
 action :create do
   if exists?
     Chef::Log.debug('The object already exists')
   else
-    cmd = 'dsadd'
+    cmd = +'dsadd'
     cmd << ' group '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
@@ -31,13 +32,15 @@ action :create do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("create #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    end
   end
 end
 
 action :modify do
   if exists?
-    cmd = 'dsmod'
+    cmd = +'dsmod'
     cmd << ' group '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
@@ -45,7 +48,9 @@ action :modify do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    end
   else
     Chef::Log.error('The object does not exist')
   end
@@ -53,14 +58,16 @@ end
 
 action :move do
   if exists?
-    cmd = 'dsmove '
+    cmd = +'dsmove '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << '"'
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    end
   else
     Chef::Log.error('The object does not exist')
   end
@@ -68,7 +75,7 @@ end
 
 action :delete do
   if exists?
-    cmd = 'dsrm '
+    cmd = +'dsrm '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name)
     cmd << '"'
@@ -77,7 +84,9 @@ action :delete do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    end
   else
     Chef::Log.debug('The object has already been removed')
   end

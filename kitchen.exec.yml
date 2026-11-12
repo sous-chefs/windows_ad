@@ -1,7 +1,10 @@
 ---
-driver: { name: exec }
-transport: { name: exec }
-
+driver:
+  name: exec
+transport:
+  name: exec
+provisioner:
+  install_strategy: skip
+  chef_client_path: <%= File.expand_path('../../bin/chef-client.bat', RbConfig::CONFIG['bindir']) %>
 platforms:
-  - name: macos-latest
   - name: windows-latest

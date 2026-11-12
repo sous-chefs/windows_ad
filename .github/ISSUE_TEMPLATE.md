@@ -1,4 +1,6 @@
-### Cookbook version
+# Issue report
+
+## Cookbook version
 
 [Version of the cookbook where you are encountering the issue]
 

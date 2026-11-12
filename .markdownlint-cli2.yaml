@@ -1,9 +1,12 @@
+---
 config:
-  ul-indent: false # MD007
-  line-length: false # MD013
-  no-duplicate-heading: false # MD024
-  reference-links-images: false # MD052
+  ul-indent: false
+  line-length: false
+  no-duplicate-heading: false
+  reference-links-images: false
   no-multiple-blanks:
     maximum: 2
+  MD060: false
 ignores:
+  - CHANGELOG.md
   - .github/copilot-instructions.md

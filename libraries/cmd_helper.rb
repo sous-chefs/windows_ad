@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'mixlib/shellout'
 # Provides formatting options for cmd
 class CmdHelper
   def self.cmd_options(options)
-    cmd = ''
+    cmd = +''
     options.each do |option, value|
       cmd << " -#{option} \"#{value}\""
     end

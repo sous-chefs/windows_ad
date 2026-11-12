@@ -1,0 +1,37 @@
+---
+name: ci
+"on":
+  pull_request:
+  push:
+    branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  lint-unit:
+    uses: sous-chefs/.github/.github/workflows/lint-unit.yml@9.0.1
+    permissions:
+      actions: write
+      checks: write
+      pull-requests: write
+      statuses: write
+      issues: write
+  integration-windows:
+    needs: lint-unit
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      matrix:
+        platform: [windows-2022, windows-2025]
+      fail-fast: false
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+      - name: Install Cinc Workstation
+        uses: sous-chefs/.github/.github/actions/install-workstation@9.0.1
+      - name: Verify directory role installation
+        env:
+          CHEF_LICENSE: accept-no-persist
+          KITCHEN_LOCAL_YAML: kitchen.exec.yml
+        run: |
+          Remove-Item Env:PSModulePath -ErrorAction SilentlyContinue
+          chef exec kitchen test default-windows-latest --destroy=always

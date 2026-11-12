@@ -1,0 +1,9 @@
+name: windows-ad-default
+title: Windows AD default
+maintainer: Sous Chefs
+copyright: Sous Chefs
+summary: Verify Windows AD integration state
+license: MIT
+version: 1.0.0
+supports:
+  - platform-family: windows
