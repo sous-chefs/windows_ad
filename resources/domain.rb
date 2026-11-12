@@ -8,7 +8,7 @@ property :domain_pass, String, required: true, sensitive: true
 property :restart, [true, false], required: true
 property :type, String, default: 'forest', equal_to: %w(forest domain replica read-only)
 property :safe_mode_pass, String, required: true, sensitive: true
-property :options, Hash, default: {}
+property :options, Hash, default: {}, sensitive: true
 property :local_pass, String, sensitive: true
 property :replica_type, String, default: 'domain'
 

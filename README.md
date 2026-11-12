@@ -25,7 +25,7 @@ directory resources separately. Domain promotion and demotion can reboot the ser
 - [windows_ad_ou_2012](documentation/windows_ad_ou_2012.md): Retained public name for the PowerShell OU provider. Creates an OU under a domain or parent OU.
 - [windows_ad_domain](documentation/windows_ad_domain.md): Promote or demote an AD DS domain controller. Run only on a Windows Server host dedicated to that domain operation.
 
-See the [migration guide](documentation/migration.md),
+See the [migration guide](migration.md),
 [test fixtures](test/cookbooks/test/recipes) and [testing instructions](TESTING.md).
 
 ## Licence

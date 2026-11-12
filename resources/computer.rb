@@ -17,7 +17,7 @@ property :domain_name, String
 property :domain_user, String
 property :domain_pass, String, sensitive: true
 property :ou, String
-property :options, Hash, default: {}
+property :options, Hash, default: {}, sensitive: true
 property :cmd_user, String
 property :cmd_pass, String, sensitive: true
 property :cmd_domain, String

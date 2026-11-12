@@ -15,7 +15,7 @@ default_action :create
 
 property :domain_name, String, required: true
 property :ou, String
-property :options, Hash, default: {}
+property :options, Hash, default: {}, sensitive: true
 property :reverse, String
 property :cmd_user, String
 property :cmd_pass, String, sensitive: true
