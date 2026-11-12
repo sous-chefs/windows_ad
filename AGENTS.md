@@ -33,3 +33,11 @@ Hosted exec CI validates role installation twice, with idempotency enforced.
 It cannot validate a rebooting domain controller. Forest, objects and demotion
 need an isolated reboot-capable Windows VM before full migration acceptance.
 Do not describe hosted role-only tests as full domain acceptance.
+
+## Local workflow exception
+
+The local lint-unit reusable workflow copies sous-chefs/.github 9.0.1 exactly,
+with only the metadata licence input set to MIT. The shared workflow exposes no
+licence input and otherwise incorrectly requires Apache-2.0. Keep the caller and
+inner job names unchanged to preserve required branch-protection contexts.
+Return to the shared workflow when it supports the existing MIT licence.

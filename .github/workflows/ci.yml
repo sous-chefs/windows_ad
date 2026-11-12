@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   lint-unit:
-    uses: sous-chefs/.github/.github/workflows/lint-unit.yml@9.0.1
+    uses: ./.github/workflows/lint-unit.yml
     permissions:
       actions: write
       checks: write

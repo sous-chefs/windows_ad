@@ -1,0 +1,157 @@
+---
+name: Lint & Unit test
+
+"on":
+  workflow_call:
+    secrets:
+      token: { required: false }
+
+    inputs:
+      gems:
+        required: false
+        type: string
+        default: ""
+      platform:
+        required: false
+        type: string
+        default: "ubuntu-latest"
+      run_linkspector:
+        required: false
+        type: boolean
+        default: false
+      fail_on_link_errors:
+        required: false
+        type: boolean
+        default: false # Don't fail on link errors as release-please adds links to the PR which don't exists yet (but are correct!)
+      link-reporter:
+        required: false
+        type: string
+        default: "github-pr-review" # local, github, pr-check, github-check, github-pr-review
+
+jobs:
+  rspec:
+    # Some RSpec tests require a Windows environment
+    runs-on: ${{ inputs.platform }}
+    name: runner / RSpec ${{ inputs.platform }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+      - name: Prepare Gemfile
+        run: |
+          if [ ! -f Gemfile ]; then
+            {
+              echo "source 'https://rubygems.org'"
+              echo "gem 'chefspec', '>= 9.3.7'"
+              echo "gem 'fauxhai-chef'"
+              echo "gem 'rspec-its'"
+            } > Gemfile
+            if [ -f metadata.rb ]; then
+              grep "^gem " metadata.rb >> Gemfile || true
+            fi
+            if [ -n "${{ inputs.gems }}" ]; then
+              for g in ${{ inputs.gems }}; do
+                echo "gem '$g'" >> Gemfile
+              done
+            fi
+          fi
+        shell: bash
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2" # Match Chef Workstation 25's bundled Ruby
+          bundler-cache: true
+      - name: Run RSpec
+        run: |
+          bundle exec rspec -f j -o tmp/rspec_results.json -f p
+        shell: bash
+      - name: RSpec Report
+        uses: SonicGarden/rspec-report-action@v8
+        with:
+          token: ${{ secrets.token || secrets.GITHUB_TOKEN }}
+          json-path: tmp/rspec_results.json
+        if: always() && github.event.pull_request.head.repo.fork == false
+
+  cookstyle:
+    runs-on: ubuntu-latest
+    name: runner / Cookstyle
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+      - name: Prepare Gemfile
+        run: |
+          if [ ! -f Gemfile ]; then
+            {
+              echo "source 'https://rubygems.org'"
+              echo "gem 'cookstyle'"
+            } > Gemfile
+          fi
+        shell: bash
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2" # Match Chef Workstation 25's bundled Ruby
+          bundler-cache: true
+      - name: Run Cookstyle
+        run: |
+          bundle exec cookstyle --display-cop-names --extra-details
+        shell: bash
+
+  check-yaml:
+    runs-on: ubuntu-latest
+    name: runner / yamllint
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+      - name: Run yaml Lint
+        uses: actionshub/yamllint@main
+
+  check-markdown:
+    runs-on: ubuntu-latest
+    name: runner / markdownlint
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+      - name: Run Markdown Lint
+        uses: DavidAnson/markdownlint-cli2-action@v24
+        with:
+          globs: "**/*.md"
+
+  check-links:
+    name: runner / linkspector
+    runs-on: ubuntu-latest
+    if: ${{ inputs.run_linkspector }}
+    # TODO: Allowed to fail due to https://github.com/UmbrellaDocs/action-linkspector/issues/62
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run linkspector
+        uses: umbrelladocs/action-linkspector@v1
+        with:
+          reporter: ${{ inputs.link-reporter }}
+          fail_on_error: ${{ inputs.fail_on_link_errors }}
+
+  check-workflows:
+    runs-on: ubuntu-latest
+    name: runner / actionlint
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+      - name: Run actionlint
+        uses: raven-actions/actionlint@v2
+
+  check-metadata:
+    if: github.event_name == 'pull_request'
+    name: runner / Check Metadata
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write # required for the status check
+      pull-requests: write # required for the PR comment
+      statuses: write # required for the status check
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Check Metadata
+        uses: damacus/check-chef-metadata-action@v3
+        with:
+          github-token: ${{ secrets.token || secrets.GITHUB_TOKEN }}
+          license: MIT
