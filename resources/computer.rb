@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook:: windows_ad
@@ -7,26 +9,25 @@
 
 resource_name :windows_ad_computer
 provides :windows_ad_computer
+unified_mode true
 
 default_action :create
 
 property :domain_name, String
 property :domain_user, String
-property :domain_pass, String
+property :domain_pass, String, sensitive: true
 property :ou, String
-property :options, Hash, default: {}
+property :options, Hash, default: {}, sensitive: true
 property :cmd_user, String
-property :cmd_pass, String
+property :cmd_pass, String, sensitive: true
 property :cmd_domain, String
-property :restart, [TrueClass, FalseClass], required: true
-
-require 'mixlib/shellout'
+property :restart, [true, false], required: true
 
 action :create do
   if exists?
     Chef::Log.debug('The object already exists')
   else
-    cmd = 'dsadd'
+    cmd = +'dsadd'
     cmd << ' computer '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
@@ -35,14 +36,16 @@ action :create do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("create #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
+    end
   end
 end
 
 action :modify do
   if exists?
-    cmd = 'dsmod'
+    cmd = +'dsmod'
     cmd << ' computer '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
@@ -51,8 +54,10 @@ action :modify do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
+    end
   else
     Chef::Log.error('The object does not exist')
   end
@@ -60,7 +65,7 @@ end
 
 action :move do
   if exists?
-    cmd = 'dsmove '
+    cmd = +'dsmove '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
@@ -68,8 +73,10 @@ action :move do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
+    end
   else
     Chef::Log.error('The object does not exist')
   end
@@ -77,7 +84,7 @@ end
 
 action :delete do
   if exists?
-    cmd = 'dsrm '
+    cmd = +'dsrm '
     cmd << '"'
     cmd << CmdHelper.dn(new_resource.name, new_resource.ou,
                         new_resource.domain_name)
@@ -87,8 +94,10 @@ action :delete do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
+    end
 
   else
     Chef::Log.debug('The object has already been removed')
@@ -97,22 +106,15 @@ end
 
 action_class do
   def computer_exists?
-    comp = Mixlib::ShellOut.new('powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"').run_command
+    comp = shell_out('powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"')
     stdout = comp.stdout.downcase
     Chef::Log.debug("computer_exists? is #{stdout.downcase}")
     stdout.include?(new_resource.domain_name.downcase)
   end
 
   def exists?
-    # Supports workstation and server platforms, Windows Server 2008 R2 and Windows 7 share the same version number, Win7 doesnot include netdom command without RSAT.
-    if node['os_version'] == '6.1.7600'
-      Chef::Log.warn('Unable to determine specific OS version. Windows 7 does not have the native tools to query if the domain exists. Assuming domain exists.')
-      return true
-    end
-    check = Mixlib::ShellOut.new("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc").run_command
-    Chef::Log.debug("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc")
-    Chef::Log.debug("check.stdout.include is #{check.stdout}")
-    check.stdout.include? 'The command completed successfully.'
+    check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    check.stdout.downcase.include?(CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name).downcase)
   end
 
   def ou_dn
