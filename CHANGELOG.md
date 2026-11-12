@@ -3,6 +3,22 @@
 Standardise files with files in sous-chefs/repo-management
 Standardise files with files in sous-chefs/repo-management
 
+## [1.0.0](https://github.com/sous-chefs/windows_ad/compare/v0.7.13...v1.0.0) (2026-11-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace Windows AD installation recipe with resources ([#174](https://github.com/sous-chefs/windows_ad/issues/174))
+
+### Features
+
+* replace Windows AD installation recipe with resources ([#174](https://github.com/sous-chefs/windows_ad/issues/174)) ([7c4568e](https://github.com/sous-chefs/windows_ad/commit/7c4568e0c1487b304f86686c3247f73fb843f8e0))
+
+
+### Bug Fixes
+
+* **ci:** Update workflows to use release pipeline ([#156](https://github.com/sous-chefs/windows_ad/issues/156)) ([1329b52](https://github.com/sous-chefs/windows_ad/commit/1329b524fae07fa819d954f9081e06c288f4f55b))
+
 ## [0.7.13](https://github.com/sous-chefs/windows_ad/compare/0.7.12...v0.7.13) (2025-10-16)
 
 
