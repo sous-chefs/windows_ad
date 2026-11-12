@@ -58,7 +58,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.2" # Match Chef Workstation 25's bundled Ruby
+          ruby-version: "4.0" # Match Chef Workstation 25's bundled Ruby
           bundler-cache: true
       - name: Run RSpec
         run: |
@@ -89,7 +89,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.2" # Match Chef Workstation 25's bundled Ruby
+          ruby-version: "4.0" # Match Chef Workstation 25's bundled Ruby
           bundler-cache: true
       - name: Run Cookstyle
         run: |
@@ -112,7 +112,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v7
       - name: Run Markdown Lint
-        uses: DavidAnson/markdownlint-cli2-action@v24
+        uses: DavidAnson/markdownlint-cli2-action@v25
         with:
           globs: "**/*.md"
 
