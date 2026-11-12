@@ -58,7 +58,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.2" # Match Chef Workstation 25's bundled Ruby
+          ruby-version: "3.4" # Match Chef Workstation 25's bundled Ruby
           bundler-cache: true
       - name: Run RSpec
         run: |
@@ -89,7 +89,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.2" # Match Chef Workstation 25's bundled Ruby
+          ruby-version: "3.4" # Match Chef Workstation 25's bundled Ruby
           bundler-cache: true
       - name: Run Cookstyle
         run: |
