@@ -3,6 +3,13 @@
 Standardise files with files in sous-chefs/repo-management
 Standardise files with files in sous-chefs/repo-management
 
+## [1.0.1](https://github.com/sous-chefs/windows_ad/compare/v1.0.0...v1.0.1) (2026-11-26)
+
+
+### Bug Fixes
+
+* **ci:** unblock Windows AD dependency checks ([#177](https://github.com/sous-chefs/windows_ad/issues/177)) ([57015c4](https://github.com/sous-chefs/windows_ad/commit/57015c473f701357075cf8eefc163422500d25d7))
+
 ## [1.0.0](https://github.com/sous-chefs/windows_ad/compare/v0.7.13...v1.0.0) (2026-11-12)
 
 
