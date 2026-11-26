@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 user = 'Administrator'
 pass = 'Passw0rd'
 domain = 'contoso.local'

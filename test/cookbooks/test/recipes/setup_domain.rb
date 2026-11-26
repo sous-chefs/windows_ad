@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
-# Tests windows_ad_features
+# Tests windows_ad::default
 # Tests windows_ad::domain - create domain controller
 
-windows_ad_features 'default'
+windows_ad_install 'AD DS'
 
 user = 'Administrator'
 pass = 'Passw0rd'

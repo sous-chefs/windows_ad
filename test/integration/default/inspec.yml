@@ -1,7 +1,9 @@
----
-name: default
-title: windows_ad default tests
+name: windows-ad-default
+title: Windows AD default
 maintainer: Sous Chefs
-license: Apache-2.0
-summary: Verifies AD DS feature installation
+copyright: Sous Chefs
+summary: Verify Windows AD integration state
+license: MIT
 version: 1.0.0
+supports:
+  - platform-family: windows

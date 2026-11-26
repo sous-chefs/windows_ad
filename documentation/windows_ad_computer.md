@@ -1,36 +1,33 @@
 # windows_ad_computer
 
-Manages Active Directory computer objects.
+Manage an Active Directory computer object. Use the native windows_ad_join resource to join or leave a domain.
 
 ## Actions
 
-| Action | Description |
-|--------|-------------|
-| `:create` | Creates a computer object. Default. |
-| `:modify` | Modifies a computer object. |
-| `:move` | Moves or renames a computer object. |
-| `:delete` | Removes a computer object. |
+`:create`, `:modify`, `:move`, `:delete`.
 
 ## Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `domain_name` | String | `nil` | Target domain FQDN. |
-| `domain_user` | String | `nil` | Domain user for domain queries. |
-| `domain_pass` | String | `nil` | Domain password for domain queries. |
-| `ou` | String | `nil` | OU or container path. |
-| `options` | Hash | `{}` | Additional dsadd/dsmod/dsmove options. |
-| `cmd_user` | String | `nil` | Command execution user. |
-| `cmd_pass` | String | `nil` | Command execution password. |
-| `cmd_domain` | String | `nil` | Command execution domain. |
-| `restart` | true, false | required | Reboot behavior for domain operations. |
+| Property | Type | Default | Behaviour |
+| --- | --- | --- | --- |
+| `name` | String | Resource name | Directory object or operation name. |
+| `domain_name` | `String` | `nil` | Domain FQDN. |
+| `domain_user` | `String` | `nil` | Account used to authenticate domain operations. |
+| `domain_pass` | `String` | `nil` | Sensitive domain account password. |
+| `ou` | `String` | `nil` | Parent OU path, separated by /; standard containers such as Users and Computers are also accepted for objects. |
+| `options` | `Hash` | `{}` | Additional options passed to the underlying directory tool. Option names and values must be trusted cookbook input. |
+| `cmd_user` | `String` | `nil` | Account used to execute directory commands; defaults to the Chef process account. |
+| `cmd_pass` | `String` | `nil` | Sensitive password for cmd_user. |
+| `cmd_domain` | `String` | `nil` | Domain for cmd_user. |
+| `restart` | `[true, false]` | `Required` | Whether the domain operation may reboot. Required. Computer object operations retain this property for API compatibility and do not join or reboot a host. Required. |
 
-## Examples
+## Example
 
 ```ruby
-windows_ad_computer 'workstation1' do
+windows_ad_computer 'Engineering' do
   domain_name 'contoso.local'
-  ou 'Computers'
   restart false
 end
 ```
+
+Creation and deletion check existence first. Explicit modify and move actions execute when the object exists; they do not compare every directory attribute.

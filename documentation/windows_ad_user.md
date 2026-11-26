@@ -1,33 +1,30 @@
 # windows_ad_user
 
-Manages Active Directory user objects.
+Manage an Active Directory user object using the directory service command-line tools.
 
 ## Actions
 
-| Action | Description |
-|--------|-------------|
-| `:create` | Creates a user object. Default. |
-| `:modify` | Modifies a user object. |
-| `:move` | Moves or renames a user object. |
-| `:delete` | Removes a user object. |
+`:create`, `:modify`, `:move`, `:delete`.
 
 ## Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `domain_name` | String | required | Target domain FQDN. |
-| `ou` | String | `nil` | OU or container path. |
-| `options` | Hash | `{}` | Additional dsadd/dsmod/dsmove options. |
-| `reverse` | String | `nil` | Reverses first and last name handling when set to `'true'`. |
-| `cmd_user` | String | `nil` | Command execution user. |
-| `cmd_pass` | String | `nil` | Command execution password. |
-| `cmd_domain` | String | `nil` | Command execution domain. |
+| Property | Type | Default | Behaviour |
+| --- | --- | --- | --- |
+| `name` | String | Resource name | Directory object or operation name. |
+| `domain_name` | `String` | `Required` | Domain FQDN. Required. |
+| `ou` | `String` | `nil` | Parent OU path, separated by /; standard containers such as Users and Computers are also accepted for objects. |
+| `options` | `Hash` | `{}` | Additional options passed to the underlying directory tool. Option names and values must be trusted cookbook input. |
+| `reverse` | `String` | `nil` | Set to the string true for legacy reversed user name queries. |
+| `cmd_user` | `String` | `nil` | Account used to execute directory commands; defaults to the Chef process account. |
+| `cmd_pass` | `String` | `nil` | Sensitive password for cmd_user. |
+| `cmd_domain` | `String` | `nil` | Domain for cmd_user. |
 
-## Examples
+## Example
 
 ```ruby
-windows_ad_user 'Jane Doe' do
+windows_ad_user 'Engineering' do
   domain_name 'contoso.local'
-  ou 'Users'
 end
 ```
+
+Creation and deletion check existence first. Explicit modify and move actions execute when the object exists; they do not compare every directory attribute.

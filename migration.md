@@ -1,27 +1,30 @@
-# Migration
+# Migrating to windows_ad 1.0
 
-## Full Custom Resource Migration
+The full migration removes the root `windows_ad::default` recipe. Replace its
+run-list entry with a wrapper recipe containing `windows_ad_install 'AD DS'`.
+There are no root attributes to migrate. The existing directory resource names
+remain available, including the historically named OU providers.
 
-`windows_ad` no longer ships public recipes. The former `windows_ad::default` behavior is now exposed through the `windows_ad_features` custom resource.
+Chef Infra Client 16 or later is required. Windows Server 2016 and 2019 remain
+supported; the hosted CI matrix also checks Windows Server 2022 and 2025.
+Windows Server 2008, 2008 R2, 2012 and 2012 R2 are outside support and their
+legacy dcpromo/OS-detection paths are removed.
 
-Before:
+The install resource uses Server Manager feature names and includes management
+tools. It does not promote or demote a domain. Keep those operations explicit.
+The `restart` property is honoured for both domain creation and demotion.
+Demotion now validates that `local_pass` is supplied. Passwords are sensitive
+and single quotes in ADDS passwords are escaped.
 
-```ruby
-include_recipe 'windows_ad::default'
-```
+The computer resource now queries the named computer object before creating it;
+reaching a domain controller no longer incorrectly suppresses object creation.
+The generic OU forwards credentials and options to the PowerShell provider;
+an OU without a parent is created under the supplied domain root.
 
-After:
+Explicit modify and move actions keep their command behaviour. They can report
+an update on every converge. Object create/delete and membership add/remove are
+guarded against repeating a completed operation.
 
-```ruby
-windows_ad_features 'default'
-```
-
-The cookbook has no `attributes/` API. Configure behavior with resource properties in wrapper cookbooks or test cookbook recipes.
-
-## Test Cookbook Examples
-
-Executable examples live under `test/cookbooks/test/recipes/`. Kitchen suites now run `recipe[test::default]`, `recipe[test::setup_forest]`, and the object-management recipes.
-
-## Domain Credentials
-
-`windows_ad_domain` only requires `domain_user` and `domain_pass` when creating a domain, replica, or read-only domain controller that needs credentials. Creating a new forest on modern Windows Server can omit those properties.
+The feature PR keeps the current metadata version. Its breaking conventional
+commit causes Release Please to replace the pending patch release with 1.0.0
+after the feature reaches main.

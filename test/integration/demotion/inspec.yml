@@ -1,0 +1,9 @@
+name: windows-ad-demotion
+title: Windows AD demotion
+maintainer: Sous Chefs
+copyright: Sous Chefs
+summary: Verify domain controller demotion
+license: MIT
+version: 1.0.0
+supports:
+  - platform-family: windows

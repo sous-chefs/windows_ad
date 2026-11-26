@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook:: windows_ad
@@ -14,9 +15,9 @@ default_action :create
 
 property :domain_name, String
 property :ou, String
-property :options, Hash, default: {}
+property :options, Hash, default: {}, sensitive: true
 property :cmd_user, String
-property :cmd_pass, String
+property :cmd_pass, String, sensitive: true
 property :cmd_domain, String
 
 action :create do
@@ -31,7 +32,9 @@ action :create do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("create #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    end
   end
 end
 
@@ -45,7 +48,9 @@ action :modify do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    end
   else
     Chef::Log.error('The object does not exist')
   end
@@ -60,7 +65,9 @@ action :move do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    end
   else
     Chef::Log.error('The object does not exist')
   end
@@ -77,7 +84,9 @@ action :delete do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    end
   else
     Chef::Log.debug('The object has already been removed')
   end

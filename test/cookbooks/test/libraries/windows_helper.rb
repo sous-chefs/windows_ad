@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # WindowsHelper finds networkadapters which are "connected" and finds their IP
 # address
 class WindowsHelper
@@ -9,12 +7,8 @@ class WindowsHelper
   end
 
   def self.nic_interface_indexes
-    indexes = []
-    nics = @@wmi.ExecQuery('Select * from Win32_NetworkAdapter
+    nics = @wmi.ExecQuery('Select * from Win32_NetworkAdapter
                            Where NetConnectionStatus = 2')
-    nics.each do |nic|
-      indexes << nic.interfaceindex
-    end
-    indexes
+    nics.map(&:interfaceindex)
   end
 end

@@ -13,7 +13,7 @@ class CmdHelper
 
   def self.dn(name, ou, domain)
     containers = ['users', 'builtin', 'computers', 'foreignsecurityprincipals', 'managed service accounts']
-    dn = +"CN=#{name},"
+    dn = "CN=#{name},"
     unless ou.nil?
       if containers.include? ou.downcase
         dn << "CN=#{ou},"

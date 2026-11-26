@@ -1,7 +1,9 @@
----
-name: replica
-title: windows_ad replica tests
+name: windows-ad-replica
+title: Windows AD replica
 maintainer: Sous Chefs
-license: Apache-2.0
-summary: Verifies replica domain controller creation
+copyright: Sous Chefs
+summary: Verify Windows AD integration state
+license: MIT
 version: 1.0.0
+supports:
+  - platform-family: windows

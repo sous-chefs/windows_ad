@@ -1,28 +1,27 @@
 # windows_ad_ou_2008
 
-Creates Active Directory organizational units with legacy `dsadd` tooling.
+Retained public name for the dsadd OU provider. The name does not imply support for Windows Server 2008.
 
 ## Actions
 
-| Action | Description |
-|--------|-------------|
-| `:create` | Creates an organizational unit. Default. |
+`:create`.
 
 ## Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `domain_name` | String | `nil` | Target domain FQDN. |
-| `ou` | String | `nil` | Parent OU path. |
-| `options` | Hash | `{}` | Additional dsadd options. |
-| `cmd_user` | String | `nil` | Command execution user. |
-| `cmd_pass` | String | `nil` | Command execution password. |
-| `cmd_domain` | String | `nil` | Command execution domain. |
+| Property | Type | Default | Behaviour |
+| --- | --- | --- | --- |
+| `name` | String | Resource name | Directory object or operation name. |
+| `domain_name` | `String` | `nil` | Domain FQDN. |
+| `ou` | `String` | `nil` | Parent OU path, separated by /; standard containers such as Users and Computers are also accepted for objects. |
+| `options` | `Hash` | `{}` | Additional options passed to the underlying directory tool. Option names and values must be trusted cookbook input. |
+| `cmd_user` | `String` | `nil` | Account used to execute directory commands; defaults to the Chef process account. |
+| `cmd_pass` | `String` | `nil` | Sensitive password for cmd_user. |
+| `cmd_domain` | `String` | `nil` | Domain for cmd_user. |
 
-## Examples
+## Example
 
 ```ruby
-windows_ad_ou_2008 'Hardware' do
+windows_ad_ou_2008 'Engineering' do
   domain_name 'contoso.local'
 end
 ```

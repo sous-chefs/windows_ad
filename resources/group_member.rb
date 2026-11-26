@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # Author:: Miguel Ferreira (<miguelferreira@me.com>)
 # Cookbook:: windows_ad
@@ -18,7 +19,7 @@ property :domain_name, String
 property :user_ou, String
 property :group_ou, String
 property :cmd_user, String
-property :cmd_pass, String
+property :cmd_pass, String, sensitive: true
 property :cmd_domain, String
 
 action :add do
@@ -32,7 +33,9 @@ action :add do
 
     Chef::Log.info(print_msg("add #{new_resource.user_name}
                              to #{new_resource.group_name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    end
   end
 end
 
@@ -44,7 +47,9 @@ action :remove do
     cmd = dsmod_group_cmd(group_dn, user_dn, '-rmmbr')
 
     Chef::Log.info(print_msg("remove #{new_resource.user_name} from #{new_resource.group_name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    end
   else
     Chef::Log.error('User is not a member of the group')
   end

@@ -1,12 +1,10 @@
-# frozen_string_literal: true
-
 name             'windows_ad'
-maintainer       'Texas A&M'
-maintainer_email 'derekgroh@github.com'
+maintainer       'Sous Chefs'
+maintainer_email 'help@sous-chefs.org'
 license          'MIT'
 description      'Installs/Configures windows active directory'
-version          '0.7.13'
-issues_url       'https://github.com/TAMUArch/cookbook.windows_ad/issues'
-source_url       'https://github.com/TAMUArch/cookbook.windows_ad'
+version          '1.0.1'
+issues_url       'https://github.com/sous-chefs/windows_ad/issues'
+source_url       'https://github.com/sous-chefs/windows_ad'
 supports         'windows', '>= 10.0'
-chef_version     '>= 15.3'
+chef_version     '>= 16.0'

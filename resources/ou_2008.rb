@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook:: windows_ad
@@ -14,9 +15,9 @@ default_action :create
 
 property :domain_name, String
 property :ou, String
-property :options, Hash, default: {}
+property :options, Hash, default: {}, sensitive: true
 property :cmd_user, String
-property :cmd_pass, String
+property :cmd_pass, String, sensitive: true
 property :cmd_domain, String
 
 action :create do
@@ -33,8 +34,10 @@ action :create do
       cmd << cmd_options(new_resource.options)
 
       Chef::Log.info(print_msg("create #{new_resource.name}"))
-      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+      converge_by("update #{new_resource}") do
+        CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                           new_resource.cmd_domain)
+      end
     end
   else
     Chef::Log.error('The parent OU does not exist')
@@ -53,7 +56,7 @@ action_class do
   end
 
   def dn
-    dn = +"ou=#{new_resource.name},"
+    dn = "ou=#{new_resource.name},"
     unless new_resource.ou.nil?
       dn << CmdHelper.ou_partial_dn(new_resource.ou) << ','
     end
@@ -69,8 +72,7 @@ action_class do
       parent = CmdHelper.shell_out("dsquery ou -name \"#{parent_ou_name}\"",
                                    new_resource.cmd_user, new_resource.cmd_pass,
                                    new_resource.cmd_domain)
-      path = +CmdHelper.ou_partial_dn(new_resource.ou)
-      path << ','
+      path = CmdHelper.ou_partial_dn(new_resource.ou) << ','
       path << ldap
       parent.stdout.downcase.include? path.downcase
     end
@@ -81,14 +83,13 @@ action_class do
     if new_resource.ou.nil?
       ldap = dc_partial_dn
     else
-      ldap = +CmdHelper.ou_partial_dn(new_resource.ou)
-      ldap << ','
+      ldap = CmdHelper.ou_partial_dn(new_resource.ou) << ','
       ldap << dc_partial_dn
     end
     check = CmdHelper.shell_out("dsquery ou -name \"#{new_resource.name}\"",
                                 new_resource.cmd_user, new_resource.cmd_pass,
                                 new_resource.cmd_domain)
-    path = +"OU=#{new_resource.name},"
+    path = "OU=#{new_resource.name},"
     path << ldap
     check.stdout.downcase.include? path.downcase
   end

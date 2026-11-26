@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook:: windows_ad
@@ -14,24 +15,19 @@ default_action :create
 
 property :domain_name, String
 property :ou, String
-property :options, Hash, default: {}
+property :options, Hash, default: {}, sensitive: true
 property :cmd_user, String
-property :cmd_pass, String
+property :cmd_pass, String, sensitive: true
 property :cmd_domain, String
 
 action :create do
-  if modern_windows?
-    windows_ad_ou_2012 new_resource.name do
-      action :create
-      path new_resource.ou unless new_resource.ou.nil?
-      domain_name new_resource.domain_name
-    end
-  else
-    windows_ad_ou_2008 new_resource.name do
-      action :create
-      ou new_resource.ou unless new_resource.ou.nil?
-      domain_name new_resource.domain_name
-    end
+  windows_ad_ou_2012 new_resource.name do
+    path new_resource.ou unless new_resource.ou.nil?
+    domain_name new_resource.domain_name
+    options new_resource.options
+    cmd_user new_resource.cmd_user
+    cmd_pass new_resource.cmd_pass
+    cmd_domain new_resource.cmd_domain
   end
 end
 
@@ -45,8 +41,10 @@ action :modify do
     cmd << cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
+    end
   else
     Chef::Log.error('The object does not exist')
   end
@@ -61,8 +59,10 @@ action :move do
     cmd << cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
+    end
   else
     Chef::Log.error('The object does not exist')
   end
@@ -79,8 +79,10 @@ action :delete do
     cmd << cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
+    end
   else
     Chef::Log.debug('The object has already been removed')
   end
@@ -98,7 +100,7 @@ action_class do
   end
 
   def dn
-    dn = +"ou=#{new_resource.name},"
+    dn = "ou=#{new_resource.name},"
     unless new_resource.ou.nil?
       dn << CmdHelper.ou_partial_dn(new_resource.ou) << ','
     end
@@ -125,21 +127,16 @@ action_class do
     if new_resource.ou.nil?
       ldap = dc_partial_dn
     else
-      ldap = +CmdHelper.ou_partial_dn(new_resource.ou)
-      ldap << ','
+      ldap = CmdHelper.ou_partial_dn(new_resource.ou) << ','
       ldap << dc_partial_dn
     end
     check = CmdHelper.shell_out("dsquery ou -name \"#{new_resource.name}\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
-    path = +"OU=#{new_resource.name},"
+    path = "OU=#{new_resource.name},"
     path << ldap
     check.stdout.downcase.include? path.downcase
   end
 
   def print_msg(action)
     "windows_ad_ou[#{action}]"
-  end
-
-  def modern_windows?
-    Chef::Version.new(node['platform_version']) >= Chef::Version.new('6.2')
   end
 end

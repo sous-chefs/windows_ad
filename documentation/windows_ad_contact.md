@@ -1,32 +1,29 @@
 # windows_ad_contact
 
-Manages Active Directory contact objects.
+Manage an Active Directory contact object using the directory service command-line tools.
 
 ## Actions
 
-| Action | Description |
-|--------|-------------|
-| `:create` | Creates a contact object. Default. |
-| `:modify` | Modifies a contact object. |
-| `:move` | Moves or renames a contact object. |
-| `:delete` | Removes a contact object. |
+`:create`, `:modify`, `:move`, `:delete`.
 
 ## Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `domain_name` | String | `nil` | Target domain FQDN. |
-| `ou` | String | `nil` | OU or container path. |
-| `options` | Hash | `{}` | Additional dsadd/dsmod/dsmove options. |
-| `cmd_user` | String | `nil` | Command execution user. |
-| `cmd_pass` | String | `nil` | Command execution password. |
-| `cmd_domain` | String | `nil` | Command execution domain. |
+| Property | Type | Default | Behaviour |
+| --- | --- | --- | --- |
+| `name` | String | Resource name | Directory object or operation name. |
+| `domain_name` | `String` | `nil` | Domain FQDN. |
+| `ou` | `String` | `nil` | Parent OU path, separated by /; standard containers such as Users and Computers are also accepted for objects. |
+| `options` | `Hash` | `{}` | Additional options passed to the underlying directory tool. Option names and values must be trusted cookbook input. |
+| `cmd_user` | `String` | `nil` | Account used to execute directory commands; defaults to the Chef process account. |
+| `cmd_pass` | `String` | `nil` | Sensitive password for cmd_user. |
+| `cmd_domain` | `String` | `nil` | Domain for cmd_user. |
 
-## Examples
+## Example
 
 ```ruby
-windows_ad_contact 'Jane Doe' do
+windows_ad_contact 'Engineering' do
   domain_name 'contoso.local'
-  ou 'Users'
 end
 ```
+
+Creation and deletion check existence first. Explicit modify and move actions execute when the object exists; they do not compare every directory attribute.

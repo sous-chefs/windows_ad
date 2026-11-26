@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # Author:: Derek Groh (<dgroh@arch.tamu.edu>)
 # Cookbook:: windows_ad
@@ -14,11 +15,11 @@ default_action :create
 
 property :domain_name, String
 property :domain_user, String
-property :domain_pass, String
+property :domain_pass, String, sensitive: true
 property :ou, String
-property :options, Hash, default: {}
+property :options, Hash, default: {}, sensitive: true
 property :cmd_user, String
-property :cmd_pass, String
+property :cmd_pass, String, sensitive: true
 property :cmd_domain, String
 property :restart, [true, false], required: true
 
@@ -35,8 +36,10 @@ action :create do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("create #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
+    end
   end
 end
 
@@ -51,8 +54,10 @@ action :modify do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("modify #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
+    end
   else
     Chef::Log.error('The object does not exist')
   end
@@ -68,8 +73,10 @@ action :move do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("move #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
+    end
   else
     Chef::Log.error('The object does not exist')
   end
@@ -87,8 +94,10 @@ action :delete do
     cmd << CmdHelper.cmd_options(new_resource.options)
 
     Chef::Log.info(print_msg("delete #{new_resource.name}"))
-    CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
+    converge_by("update #{new_resource}") do
+      CmdHelper.shell_out(cmd, new_resource.cmd_user, new_resource.cmd_pass,
                         new_resource.cmd_domain)
+    end
 
   else
     Chef::Log.debug('The object has already been removed')
@@ -97,27 +106,19 @@ end
 
 action_class do
   def computer_exists?
-    comp = CmdHelper.shell_out('powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"', nil, nil, nil)
+    comp = shell_out('powershell.exe -command \"get-wmiobject -class win32_computersystem -computername . | select domain\"')
     stdout = comp.stdout.downcase
     Chef::Log.debug("computer_exists? is #{stdout.downcase}")
     stdout.include?(new_resource.domain_name.downcase)
   end
 
   def exists?
-    # Supports workstation and server platforms, Windows Server 2008 R2 and Windows 7 share the same version number, Win7 doesnot include netdom command without RSAT.
-    if legacy_windows_7?
-      Chef::Log.warn('Unable to determine specific OS version. Windows 7 does not have the native tools to query if the domain exists. Assuming domain exists.')
-      return true
-    end
-    check = CmdHelper.shell_out("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc", nil, nil, nil)
-    Chef::Log.debug("netdom query /domain:#{new_resource.domain_name} /userD:#{new_resource.domain_user} /passwordd:#{new_resource.domain_pass} dc")
-    Chef::Log.debug("check.stdout.include is #{check.stdout}")
-    check.stdout.include? 'The command completed successfully.'
+    check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
+    check.stdout.downcase.include?(CmdHelper.dn(new_resource.name, new_resource.ou, new_resource.domain_name).downcase)
   end
 
   def ou_dn
-    ou_name = +new_resource.ou.split('/').reverse.map { |k| "OU=#{k}" }.join(',')
-    ou_name << ','
+    ou_name = new_resource.ou.split('/').reverse.map { |k| "OU=#{k}" }.join(',') << ','
     ou_name << new_resource.name.split('.').map! { |k| "DC=#{k}" }.join(',')
     check = CmdHelper.shell_out("dsquery computer -name \"#{new_resource.name}\"", new_resource.cmd_user, new_resource.cmd_pass, new_resource.cmd_domain)
     check.stdout.downcase.include?('dc')
@@ -125,9 +126,5 @@ action_class do
 
   def print_msg(action)
     "windows_ad_contact[#{action}]"
-  end
-
-  def legacy_windows_7?
-    node['platform_version'] == '6.1.7600'
   end
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 domain = 'contoso.local'
 
 windows_ad_ou 'Hardware' do

@@ -1,33 +1,32 @@
 # windows_ad_domain
 
-Creates or removes Active Directory forests, domains, and domain controllers.
+Promote or demote an AD DS domain controller. Run only on a Windows Server host dedicated to that domain operation.
 
 ## Actions
 
-| Action | Description |
-|--------|-------------|
-| `:create` | Creates a forest, domain, replica, or read-only domain controller. Default. |
-| `:delete` | Removes a domain controller. |
+`:create`, `:delete`.
 
 ## Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `domain_user` | String | `nil` | Credential user for non-forest create operations. |
-| `domain_pass` | String | `nil` | Credential password for non-forest create operations. |
-| `restart` | true, false | `true` | Allows Windows to restart after promotion. |
-| `type` | String | `'forest'` | One of `forest`, `domain`, `replica`, or `read-only`. |
-| `safe_mode_pass` | String | required | Directory Services Restore Mode password. |
-| `options` | Hash | `{}` | Additional AD DS deployment options. |
-| `local_pass` | String | `nil` | Local Administrator password for demotion. |
-| `replica_type` | String | `'domain'` | Windows Server 2008 replica type. |
+| Property | Type | Default | Behaviour |
+| --- | --- | --- | --- |
+| `name` | String | Resource name | Directory object or operation name. |
+| `domain_user` | `String` | `nil` | Required when creating a domain, replica, or read-only controller account. |
+| `domain_pass` | `String` | `nil` | Sensitive password for the domain account. Required wherever `domain_user` is required. |
+| `restart` | `[true, false]` | `Required` | Whether the domain operation may reboot. Required. Computer object operations retain this property for API compatibility and do not join or reboot a host. Required. |
+| `type` | `String` | `'forest'` | forest, domain, replica, or read-only. The read-only operation creates a pre-staged read-only DC account. |
+| `safe_mode_pass` | `String` | `Required` | Sensitive Directory Services Restore Mode password. Required. |
+| `options` | `Hash` | `{}` | Additional options passed to the underlying directory tool. Option names and values must be trusted cookbook input. |
+| `local_pass` | `String` | `nil` | Sensitive local Administrator password. Required for demotion. |
+| `replica_type` | `String` | `'domain'` | Retained for API compatibility; supported Windows uses type and ADDSDeployment instead of dcpromo. |
 
-## Examples
+## Example
 
 ```ruby
 windows_ad_domain 'contoso.local' do
-  type 'forest'
-  safe_mode_pass 'Passw0rd'
+  safe_mode_pass secret('dsrm_password')
   restart false
 end
 ```
+
+Use your secret store in place of the illustrative `secret` helper.
