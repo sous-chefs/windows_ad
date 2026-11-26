@@ -3,6 +3,13 @@
 Standardise files with files in sous-chefs/repo-management
 Standardise files with files in sous-chefs/repo-management
 
+## [1.0.2](https://github.com/sous-chefs/windows_ad/compare/v1.0.1...v1.0.2) (2026-11-26)
+
+
+### Bug Fixes
+
+* allow Windows AD forest creation without domain credentials ([#162](https://github.com/sous-chefs/windows_ad/issues/162)) ([6ef0e48](https://github.com/sous-chefs/windows_ad/commit/6ef0e48b40382f8d8cad2dd94bf8a5f814736dfc))
+
 ## [1.0.1](https://github.com/sous-chefs/windows_ad/compare/v1.0.0...v1.0.1) (2026-11-26)
 
 
