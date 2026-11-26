@@ -3,8 +3,8 @@
 unified_mode true
 provides :windows_ad_domain
 
-property :domain_user, String, required: true
-property :domain_pass, String, required: true, sensitive: true
+property :domain_user, String
+property :domain_pass, String, sensitive: true
 property :restart, [true, false], required: true
 property :type, String, default: 'forest', equal_to: %w(forest domain replica read-only)
 property :safe_mode_pass, String, required: true, sensitive: true
@@ -64,6 +64,10 @@ action_class do
   def create_command
     cmd = +''
     unless new_resource.type == 'forest'
+      if new_resource.domain_user.to_s.strip.empty? || new_resource.domain_pass.to_s.empty?
+        raise ArgumentError, 'domain_user and domain_pass are required when creating a domain, replica, or read-only controller account'
+      end
+
       cmd << "$secpasswd = ConvertTo-SecureString #{ps_quote(new_resource.domain_pass)} -AsPlainText -Force;"
       cmd << "$mycreds = New-Object System.Management.Automation.PSCredential (#{ps_quote(new_resource.domain_user)}, $secpasswd);"
     end

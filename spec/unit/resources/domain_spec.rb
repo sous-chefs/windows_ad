@@ -8,6 +8,8 @@ describe 'windows_ad_domain' do
   let(:present) { false }
   let(:requested_action) { :create }
   let(:domain_type) { 'forest' }
+  let(:configured_user) { nil }
+  let(:configured_password) { nil }
 
   before do
     allow_any_instance_of(Chef::Provider).to receive(:shell_out).and_return(double(stdout: present ? 'True' : 'False'))
@@ -17,10 +19,12 @@ describe 'windows_ad_domain' do
   let(:chef_run) do
     selected_action = requested_action
     selected_type = domain_type
+    selected_user = configured_user
+    selected_password = configured_password
     chef_runner.converge_block do
       windows_ad_domain 'contoso.local' do
-        domain_user 'CONTOSO\\Administrator'
-        domain_pass "Domain'password"
+        domain_user selected_user if selected_user
+        domain_pass selected_password if selected_password
         safe_mode_pass "Recovery'password"
         local_pass "Local'password"
         restart false
@@ -38,11 +42,29 @@ describe 'windows_ad_domain' do
   { 'domain' => 'Install-ADDSDomain', 'replica' => 'Install-ADDSDomainController', 'read-only' => 'Add-ADDSReadOnlyDomainControllerAccount' }.each do |kind, command|
     context kind do
       let(:domain_type) { kind }
+      let(:configured_user) { 'CONTOSO\\Administrator' }
+      let(:configured_password) { "Domain'password" }
 
       it 'builds the requested ADDS operation with escaped credentials' do
         script = chef_run.powershell_script('create_domain_contoso.local')
         expect(script.code).to include("ConvertTo-SecureString 'Domain''password'", "#{command} -Credential $mycreds")
         expect(script.sensitive).to be true
+      end
+
+      context 'without a domain user' do
+        let(:configured_user) { nil }
+
+        it 'rejects missing credentials before declaring a PowerShell script' do
+          expect { chef_run }.to raise_error(ArgumentError, /domain_user and domain_pass are required/)
+        end
+      end
+
+      context 'without a domain password' do
+        let(:configured_password) { nil }
+
+        it 'rejects missing credentials before declaring a PowerShell script' do
+          expect { chef_run }.to raise_error(ArgumentError, /domain_user and domain_pass are required/)
+        end
       end
     end
   end

@@ -11,8 +11,8 @@ Promote or demote an AD DS domain controller. Run only on a Windows Server host 
 | Property | Type | Default | Behaviour |
 | --- | --- | --- | --- |
 | `name` | String | Resource name | Directory object or operation name. |
-| `domain_user` | `String` | `Required` | Account used to authenticate domain operations. Required. |
-| `domain_pass` | `String` | `Required` | Sensitive domain account password. Required. |
+| `domain_user` | `String` | `nil` | Required when creating a domain, replica, or read-only controller account. |
+| `domain_pass` | `String` | `nil` | Sensitive password for the domain account. Required wherever `domain_user` is required. |
 | `restart` | `[true, false]` | `Required` | Whether the domain operation may reboot. Required. Computer object operations retain this property for API compatibility and do not join or reboot a host. Required. |
 | `type` | `String` | `'forest'` | forest, domain, replica, or read-only. The read-only operation creates a pre-staged read-only DC account. |
 | `safe_mode_pass` | `String` | `Required` | Sensitive Directory Services Restore Mode password. Required. |
@@ -24,8 +24,6 @@ Promote or demote an AD DS domain controller. Run only on a Windows Server host 
 
 ```ruby
 windows_ad_domain 'contoso.local' do
-  domain_user 'CONTOSO\\Administrator'
-  domain_pass secret('domain_password')
   safe_mode_pass secret('dsrm_password')
   restart false
 end

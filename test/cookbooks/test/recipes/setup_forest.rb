@@ -6,8 +6,6 @@ windows_ad_install 'AD DS'
 windows_ad_domain 'contoso.local' do
   type 'forest'
   safe_mode_pass 'Passw0rd'
-  domain_pass 'vagrant'
-  domain_user 'Administrator'
   case node['os_version']
   when '6.1'
     options('InstallDNS': 'yes')
